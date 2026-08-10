@@ -1,5 +1,5 @@
 ---
-name: implementing-coffee-bakery-store
+name: skill-project
 description: Use when building or extending any part of this store (pages, API routes, Prisma schema, cart, auth, admin panel) — defines what to build, in what order, and how it maps onto docs/architecture.md, docs/about-project.md and docs/technologies.md.
 ---
 
