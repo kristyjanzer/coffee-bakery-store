@@ -1,0 +1,4 @@
+/* Точка входа Tailwind — три директивы подключают base/components/utilities слои */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

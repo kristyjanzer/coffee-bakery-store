@@ -1,0 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Модели (Category, Product, Order, OrderItem, Customer, Review, AdminUser)
+// добавляются отдельным шагом — см. architecture.md, раздел 3.
