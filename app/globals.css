@@ -2,3 +2,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Скрывает нативный скроллбар у горизонтально скроллящихся блоков (CategoryTabs) —
+   Tailwind не даёт готовой utility-класс для этого, поэтому кросс-браузерное решение
+   вынесено сюда (единственное разрешённое исключение из правила "только Tailwind"). */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Edge/IE */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
