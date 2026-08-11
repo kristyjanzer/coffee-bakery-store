@@ -46,7 +46,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative w-full max-w-md bg-warm-cream p-[30px] text-black-olive"
+        className="relative max-h-[85vh] w-full max-w-md overflow-y-auto bg-warm-cream p-[30px] text-black-olive"
         onClick={(event) => event.stopPropagation()}
       >
         <button
