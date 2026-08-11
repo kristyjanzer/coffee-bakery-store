@@ -67,6 +67,7 @@ export function CartWidget() {
                   imageUrl={item.imageUrl}
                   unit={item.unit}
                   max={getProductById(item.productId)?.stockQuantity ?? 0}
+                  preventRemoveAtOne
                 />
 
                 <button
