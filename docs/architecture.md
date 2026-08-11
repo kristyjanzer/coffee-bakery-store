@@ -9,10 +9,12 @@
 ```
 store/
 ├── app/
-│   ├── layout.tsx              # корневой layout: <html>, шрифты, globals.css
-│   ├── page.tsx                 # главная страница (Server Component)
+│   ├── layout.tsx              # корневой layout: <html>, шрифты (next/font), Font Awesome config, globals.css
 │   ├── globals.css              # точка входа Tailwind
-│   ├── product/[id]/page.tsx    # страница товара (Server Component)
+│   ├── (site)/                   # route group — публичный сайт, оборачивается Header/Footer
+│   │   ├── layout.tsx             # Header + {children} + Footer (не затрагивает /admin)
+│   │   ├── page.tsx                # главная страница (Server Component)
+│   │   └── product/[id]/page.tsx   # страница товара (Server Component)
 │   ├── admin/
 │   │   ├── layout.tsx           # сайдбар (20%) + контент, сессия проверяется в middleware
 │   │   ├── login/page.tsx       # логин админа (НЕ защищён)
