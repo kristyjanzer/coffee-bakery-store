@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { scrollToId } from "@/lib/utils";
 import type { MenuCategory } from "@/lib/menu";
 
 interface CategoryTabsProps {
@@ -64,6 +65,11 @@ export function CategoryTabs({ categories, activeSlug, onSelect }: CategoryTabsP
             // должен ещё и переключать категорию — иначе перетаскивание "дёргается".
             if (drag.current.moved) return;
             onSelect(category.slug);
+            // Если пользователь долистал длинную категорию вниз, а новая короче —
+            // без этого он окажется в следующем блоке (отзывы), а не в начале секции.
+            // Цель — не сам (sticky) таб-бар: у sticky-элементов scrollIntoView
+            // в headless-хроме не пересчитывает позицию, скроллим к секции целиком.
+            scrollToId("menu");
           }}
           className={
             category.slug === activeSlug
