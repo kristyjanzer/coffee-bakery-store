@@ -1,6 +1,5 @@
 import { Hero } from "@/components/layout/Hero";
-import { CategoryTabs } from "@/components/catalog/CategoryTabs";
-import { ProductSection } from "@/components/catalog/ProductSection";
+import { Catalog } from "@/components/catalog/Catalog";
 import { ReviewsSlider } from "@/components/catalog/ReviewsSlider";
 import { getCatalog } from "@/lib/menu";
 import { getReviews } from "@/lib/reviews";
@@ -14,12 +13,7 @@ export default function HomePage() {
       <Hero />
       <section id="menu" className="scroll-mt-20 bg-warm-cream px-6 py-16">
         <div className="mx-auto max-w-[1200px]">
-          <CategoryTabs categories={catalog} />
-          <div className="mt-10 flex flex-col gap-16">
-            {catalog.map((category) => (
-              <ProductSection key={category.slug} category={category} />
-            ))}
-          </div>
+          <Catalog categories={catalog} />
         </div>
       </section>
       <section id="reviews" className="scroll-mt-20 bg-black-olive px-6 py-16">

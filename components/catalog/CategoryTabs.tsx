@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { scrollToId } from "@/lib/utils";
 import type { MenuCategory } from "@/lib/menu";
 
 interface CategoryTabsProps {
   categories: MenuCategory[];
+  activeSlug: string | undefined;
+  onSelect: (slug: string) => void;
 }
 
-// Скролл-спай (какая секция сейчас в зоне видимости) + клик-прокрутка (вручную
-// через scrollToId — см. её комментарий в lib/utils.ts)
-export function CategoryTabs({ categories }: CategoryTabsProps) {
-  const [activeSlug, setActiveSlug] = useState(categories[0]?.slug);
+// Активный таб контролируется родителем (Catalog) — сам компонент отвечает
+// только за drag-to-scroll мышкой по горизонтальному списку табов.
+export function CategoryTabs({ categories, activeSlug, onSelect }: CategoryTabsProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   // Состояние драга держим в ref, а не в useState — mousemove стреляет очень часто,
   // и ре-рендер на каждый пиксель тут не нужен.
@@ -20,7 +21,6 @@ export function CategoryTabs({ categories }: CategoryTabsProps) {
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     const track = trackRef.current;
     if (!track) return;
-    // Иначе браузер стартует нативный drag ссылки (таб — это <a>) вместо нашего скролла.
     event.preventDefault();
     drag.current = {
       isDragging: true,
@@ -44,32 +44,10 @@ export function CategoryTabs({ categories }: CategoryTabsProps) {
     track.scrollLeft = drag.current.startScrollLeft - delta;
   };
 
-  useEffect(() => {
-    const sections = categories
-      .map((category) => document.getElementById(category.slug))
-      .filter((element): element is HTMLElement => element !== null);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const topMostVisible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-
-        if (topMostVisible) {
-          setActiveSlug(topMostVisible.target.id);
-        }
-      },
-      { rootMargin: "-100px 0px -70% 0px" }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-
-    return () => observer.disconnect();
-  }, [categories]);
-
   return (
     <div
       ref={trackRef}
+      role="tablist"
       className="scrollbar-hide sticky top-20 z-30 flex h-16 cursor-grab select-none items-center gap-3 overflow-x-auto bg-warm-cream active:cursor-grabbing"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -77,15 +55,21 @@ export function CategoryTabs({ categories }: CategoryTabsProps) {
       onMouseLeave={stopDragging}
     >
       {categories.map((category) => (
-        <a
+        <button
           key={category.slug}
-          href={`#${category.slug}`}
-          onClick={(event) => {
-            event.preventDefault();
+          type="button"
+          role="tab"
+          aria-selected={category.slug === activeSlug}
+          onClick={() => {
             // Клик в конце драга (mouseup срабатывает прямо на табе под курсором) не
-            // должен ещё и скроллить к секции — иначе перетаскивание "дёргается".
+            // должен ещё и переключать категорию — иначе перетаскивание "дёргается".
             if (drag.current.moved) return;
-            scrollToId(category.slug);
+            onSelect(category.slug);
+            // Если пользователь долистал длинную категорию вниз, а новая короче —
+            // без этого он окажется в следующем блоке (отзывы), а не в начале секции.
+            // Цель — не сам (sticky) таб-бар: у sticky-элементов scrollIntoView
+            // в headless-хроме не пересчитывает позицию, скроллим к секции целиком.
+            scrollToId("menu");
           }}
           className={
             category.slug === activeSlug
@@ -94,7 +78,7 @@ export function CategoryTabs({ categories }: CategoryTabsProps) {
           }
         >
           {category.name}
-        </a>
+        </button>
       ))}
     </div>
   );
