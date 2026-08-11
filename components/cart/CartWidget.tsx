@@ -26,7 +26,7 @@ export function CartWidget() {
         <p className="font-venuscom text-body-sm text-black-olive/60">Корзина пуста</p>
       ) : (
         <>
-          <ul className="flex max-h-[50vh] flex-col gap-4 overflow-y-auto">
+          <ul className="flex flex-col gap-4">
             {items.map((item) => (
               <li
                 key={item.productId}
