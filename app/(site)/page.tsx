@@ -1,11 +1,13 @@
 import { Hero } from "@/components/layout/Hero";
 import { CategoryTabs } from "@/components/catalog/CategoryTabs";
 import { ProductSection } from "@/components/catalog/ProductSection";
+import { ReviewsSlider } from "@/components/catalog/ReviewsSlider";
 import { getCatalog } from "@/lib/menu";
+import { getReviews } from "@/lib/reviews";
 
-// Отзывы появятся здесь следующей задачей (docs/plan.md, пункт 7)
 export default function HomePage() {
   const catalog = getCatalog();
+  const reviews = getReviews();
 
   return (
     <main>
@@ -17,6 +19,16 @@ export default function HomePage() {
             {catalog.map((category) => (
               <ProductSection key={category.slug} category={category} />
             ))}
+          </div>
+        </div>
+      </section>
+      <section id="reviews" className="scroll-mt-20 bg-black-olive px-6 py-16">
+        <div className="mx-auto max-w-[1200px]">
+          <h2 className="font-venuscom text-heading-sm uppercase tracking-[0.03em] text-warm-cream">
+            Отзывы
+          </h2>
+          <div className="mt-8">
+            <ReviewsSlider reviews={reviews} />
           </div>
         </div>
       </section>
