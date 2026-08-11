@@ -37,7 +37,7 @@ export function CategoryTabs({ categories }: CategoryTabsProps) {
   }, [categories]);
 
   return (
-    <div className="sticky top-20 z-30 flex gap-3 overflow-x-auto bg-warm-cream py-4">
+    <div className="sticky top-20 z-30 flex h-16 items-center gap-3 overflow-x-auto bg-warm-cream">
       {categories.map((category) => (
         <a
           key={category.slug}

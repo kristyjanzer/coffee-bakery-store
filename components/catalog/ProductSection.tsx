@@ -5,10 +5,11 @@ interface ProductSectionProps {
   category: MenuCategory;
 }
 
-// scroll-mt-20 — отступ под sticky Header (h-20/80px) при переходе по якорю из CategoryTabs
+// scroll-mt-36 (144px) = Header (h-20/80px) + CategoryTabs (h-16/64px), которые оба sticky
+// друг под другом — иначе заголовок секции при переходе по якорю прячется под ними
 export function ProductSection({ category }: ProductSectionProps) {
   return (
-    <section id={category.slug} className="scroll-mt-20">
+    <section id={category.slug} className="scroll-mt-36">
       <h2 className="font-venuscom text-heading-sm uppercase tracking-[0.03em] text-forest-ink">
         {category.name}
       </h2>
