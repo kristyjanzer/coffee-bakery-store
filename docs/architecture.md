@@ -36,7 +36,7 @@ store/
 │
 ├── components/
 │   ├── layout/     # Header, Footer, Nav
-│   ├── catalog/     # CategoryTabs, ProductSection, ProductCard, ReviewsSlider
+│   ├── catalog/     # Catalog, CategoryTabs, ProductSection, ProductCard, ReviewsSlider
 │   ├── product/      # ProductDetail
 │   ├── cart/         # CartIcon, CartWidget, QtyStepper
 │   ├── admin/         # Sidebar, OrdersTable, ProductForm...
@@ -237,7 +237,9 @@ enum AdminRole { ADMIN ORDER_MANAGER }
 админки (запрос данных + таблица).
 
 **Client (`"use client"`):** `CartIcon`, `CartWidget`, `QtyStepper` (общий для карточки товара,
-страницы товара и виджета корзины), `CategoryTabs` (скролл-спай + клик-прокрутка),
+страницы товара и виджета корзины), `Catalog` (держит выбранный таб категории — на странице
+рендерится только его `ProductSection`, не все категории подряд) + `CategoryTabs` (переключение
+таба + клик-прокрутка к началу секции, drag-to-scroll мышкой по списку табов),
 `ReviewsSlider` (Swiper/Embla), формы админки (`ProductForm`, смена статуса заказа — запросы
 к API-роутам), обёртка `SessionProvider` вокруг `admin/layout.tsx`.
 
