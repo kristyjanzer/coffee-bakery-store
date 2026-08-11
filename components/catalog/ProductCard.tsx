@@ -19,7 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
       : null;
 
   return (
-    <article className="flex flex-col">
+    <article className="group relative z-0 flex h-full flex-col transition-transform duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:shadow-[0_20px_30px_-18px_rgba(29,11,13,0.45)]">
       {product.imageUrl ? (
         <div className="relative aspect-square w-full">
           <Image
@@ -36,12 +36,14 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       )}
 
-      <div className="mt-[30px]">
+      {/* flex-1 + mt-auto на цене — цена и "+" всегда приклеены к низу карточки,
+          независимо от того, сколько строк занимает название соседних товаров в ряду. */}
+      <div className="mt-[30px] flex flex-1 flex-col">
         <h3 className="font-venuscom text-body-lg text-black-olive">{product.name}</h3>
         {weightLabel && (
           <p className="mt-1 font-venuscom text-caption text-black-olive/60">{weightLabel}</p>
         )}
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-auto flex items-center justify-between pt-3">
           <span className="font-venuscom text-body-sm font-semibold text-black-olive">
             {formatPrice(product.price, product.currency)}
           </span>
