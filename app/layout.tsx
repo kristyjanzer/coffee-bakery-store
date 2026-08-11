@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={venuscom.variable}>
+    <html lang="ru" className={`${venuscom.variable} scroll-smooth`}>
       <body className="bg-black-olive text-warm-cream antialiased">
         {children}
       </body>
