@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useCartStore } from "@/stores/cartStore";
 
 interface QtyStepperProps {
+  productId: number;
+  name: string;
+  price: number;
+  imageUrl: string;
+  unit: string;
   max: number;
 }
 
-// Пока без cartStore (появится в задаче 8 плана) — количество живёт только в
-// локальном состоянии карточки. В корзину товар пока не попадает.
-export function QtyStepper({ max }: QtyStepperProps) {
-  const [count, setCount] = useState(0);
+// Общий компонент для карточки товара, страницы товара и виджета корзины
+// (docs/architecture.md, раздел 5) — количество берётся из cartStore, а не из
+// локального состояния, чтобы счётчик был единым во всех трёх местах.
+export function QtyStepper({ productId, name, price, imageUrl, unit, max }: QtyStepperProps) {
+  const count = useCartStore(
+    (state) => state.items.find((item) => item.productId === productId)?.quantity ?? 0
+  );
+  const addItem = useCartStore((state) => state.addItem);
+  const incrementQty = useCartStore((state) => state.incrementQty);
+  const decrementQty = useCartStore((state) => state.decrementQty);
 
   if (max <= 0) {
     return (
@@ -29,7 +40,7 @@ export function QtyStepper({ max }: QtyStepperProps) {
       <button
         type="button"
         aria-label="Добавить в корзину"
-        onClick={() => setCount(1)}
+        onClick={() => addItem({ productId, name, price, imageUrl, unit })}
         className="flex h-9 w-9 items-center justify-center rounded-sm bg-lemon-zest text-lg font-semibold text-black-olive"
       >
         +
@@ -42,7 +53,7 @@ export function QtyStepper({ max }: QtyStepperProps) {
       <button
         type="button"
         aria-label="Уменьшить количество"
-        onClick={() => setCount((prev) => prev - 1)}
+        onClick={() => decrementQty(productId)}
         className="flex h-7 w-7 items-center justify-center text-lg font-semibold"
       >
         −
@@ -54,7 +65,7 @@ export function QtyStepper({ max }: QtyStepperProps) {
         type="button"
         aria-label="Увеличить количество"
         disabled={count >= max}
-        onClick={() => setCount((prev) => prev + 1)}
+        onClick={() => incrementQty(productId)}
         className="flex h-7 w-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
       >
         +
