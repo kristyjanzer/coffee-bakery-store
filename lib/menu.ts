@@ -63,3 +63,26 @@ export function getCatalog(): MenuCategory[] {
     })),
   }));
 }
+
+// menu.json импортируется как обычный JSON-модуль (не fs.readFile), поэтому доступен и в
+// клиентских компонентах — нужен виджету корзины (CartWidget), чтобы узнать актуальный
+// stockQuantity товара для лимита QtyStepper (CartItem в cartStore остаток не хранит).
+export function getProductById(id: number): MenuProduct | undefined {
+  for (const category of menu.categories) {
+    const item = category.items.find((product) => product.id === id);
+    if (item) {
+      return {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        currency: item.currency,
+        stockQuantity: item.stock_quantity,
+        imageUrl: item.image_url,
+        volumeMl: item.volume_ml,
+        weightG: item.weight_g,
+        calories: item.calories,
+      };
+    }
+  }
+  return undefined;
+}
