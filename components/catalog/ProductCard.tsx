@@ -3,14 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { formatPrice } from "@/lib/utils";
 import type { MenuProduct } from "@/lib/menu";
+import { QtyStepper } from "@/components/catalog/QtyStepper";
 
 interface ProductCardProps {
   product: MenuProduct;
 }
 
-// Кнопка "+" пока не добавляет товар в корзину — счётчик (QtyStepper) и cartStore
-// подключатся в задачах 6 и 8 (docs/plan.md). У всех товаров пока нет фото
-// (image_url пустой в menu.json) — вместо него нейтральная плашка-заглушка.
+// QtyStepper пока считает количество локально, без cartStore — тот появится
+// в задаче 8 (docs/plan.md). У всех товаров пока нет фото (image_url пустой
+// в menu.json) — вместо него нейтральная плашка-заглушка.
 export function ProductCard({ product }: ProductCardProps) {
   const weightLabel = product.volumeMl
     ? `${product.volumeMl} мл`
@@ -45,13 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className="font-venuscom text-body-sm font-semibold text-black-olive">
             {formatPrice(product.price, product.currency)}
           </span>
-          <button
-            type="button"
-            aria-label="Добавить в корзину"
-            className="flex h-9 w-9 items-center justify-center rounded-sm bg-lemon-zest text-lg font-semibold text-black-olive"
-          >
-            +
-          </button>
+          <QtyStepper max={product.stockQuantity} />
         </div>
       </div>
     </article>
