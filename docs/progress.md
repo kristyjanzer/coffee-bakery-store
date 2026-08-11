@@ -344,3 +344,48 @@ placeholder-иконка вместо фото; ошибок в консоли �
 **Security review:** не применялся по существу — статичные тестовые данные на сервере, компонент
 не принимает пользовательский ввод и ничего не отправляет на сервер; `imageUrl` рендерится только
 через `next/image` при условии непустой строки — сторонний JS/HTML внутрь не попадает.
+
+## Задача 11
+
+Выполнен пункт 8 плана (`docs/plan.md`) — «Корзина (клиент): cartStore на Zustand + persist
+(localStorage)». Ветка `feature/cart-store`. `zustand@^5.0.0` уже был в зависимостях.
+
+- `stores/cartStore.ts` — по форме из `docs/architecture.md`, раздел 4: `items: CartItem[]`
+  (`{ productId, name, price, imageUrl, quantity, unit }`), `isWidgetOpen`, действия `addItem`,
+  `removeItem`, `incrementQty`, `decrementQty`, `clearCart`, `openWidget`/`closeWidget`.
+  `totalCount`/`totalPrice` в сторе не хранятся — вынесены в селекторы `selectTotalCount`/
+  `selectTotalPrice` поверх `items`. Синтаксис `persist` (`create<T>()(persist(...))`,
+  `skipHydration`) сверил через context7.
+- **Гидратация:** та же особенность, что и с `Modal.tsx` (задача 3) — только теперь применена
+  по назначению. Стор создан с `skipHydration: true`, поэтому на сервере и при первом клиентском
+  рендере `items` всегда `[]` — гидратация не расходится. Реальные данные из localStorage
+  подтягиваются один раз через `useCartStore.persist.rehydrate()` в новом клиентском компоненте
+  `components/cart/CartHydration.tsx` (рендерит `null`, только эффект на маунте), подключённом в
+  `app/(site)/layout.tsx` — все подписанные на стор компоненты перерендерятся сами после
+  рехидратации. Админку (`/admin/*`) `CartHydration` не оборачивает — cartStore там не нужен.
+- `components/catalog/QtyStepper.tsx` — вместо локального `useState` считает количество из
+  cartStore (`items.find(...).quantity`), клики зовут `addItem`/`incrementQty`/`decrementQty`.
+  Проп `max` (остаток на складе) по-прежнему приходит снаружи и просто дизейблит "+" — стор о
+  стоке ничего не знает, это ответственность компонента, как и раньше.
+- `components/catalog/ProductCard.tsx` — передаёт `QtyStepper` новые пропы (`productId`, `name`,
+  `price`, `imageUrl`, `unit`) из `MenuProduct`.
+
+Проверено вручную в браузере (Chrome DevTools MCP): клик "+" на "Двойной эспрессо" → в
+`localStorage['cart-storage']` появляется `{"state":{"items":[{"productId":1,...,"quantity":1}],
+"isWidgetOpen":false}}`; перезагрузка страницы восстанавливает счётчик "1" на карточке без единой
+ошибки/предупреждения гидратации в консоли; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые/созданные файлы:**
+- `stores/cartStore.ts` — создан
+- `components/cart/CartHydration.tsx` — создан
+- `app/(site)/layout.tsx` — изменён (подключён `CartHydration`)
+- `components/catalog/QtyStepper.tsx` — изменён (читает/пишет в cartStore вместо локального state)
+- `components/catalog/ProductCard.tsx` — изменён (новые пропы для `QtyStepper`)
+
+**Новые переменные окружения:** нет.
+
+**Изменения схемы БД:** нет.
+
+**Security review:** не применялся по существу — состояние живёт только в браузере
+(localStorage), ничего не отправляется на сервер и не мутирует БД; пользовательского
+текстового ввода в сторе нет (только данные из уже доверенного `menu.json`).

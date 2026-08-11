@@ -9,9 +9,8 @@ interface ProductCardProps {
   product: MenuProduct;
 }
 
-// QtyStepper пока считает количество локально, без cartStore — тот появится
-// в задаче 8 (docs/plan.md). У всех товаров пока нет фото (image_url пустой
-// в menu.json) — вместо него нейтральная плашка-заглушка.
+// У всех товаров пока нет фото (image_url пустой в menu.json) — вместо него
+// нейтральная плашка-заглушка.
 export function ProductCard({ product }: ProductCardProps) {
   const weightLabel = product.volumeMl
     ? `${product.volumeMl} мл`
@@ -46,7 +45,14 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className="font-venuscom text-body-sm font-semibold text-black-olive">
             {formatPrice(product.price, product.currency)}
           </span>
-          <QtyStepper max={product.stockQuantity} />
+          <QtyStepper
+            productId={product.id}
+            name={product.name}
+            price={product.price}
+            imageUrl={product.imageUrl}
+            unit={weightLabel ?? ""}
+            max={product.stockQuantity}
+          />
         </div>
       </div>
     </article>
