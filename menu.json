@@ -1,0 +1,2275 @@
+{
+  "shop_name": "Кофейня-пекарня",
+  "categories": [
+    {
+      "category": "Кофе",
+      "items": [
+        {
+          "id": 1,
+          "name": "Двойной эспрессо",
+          "price": 350,
+          "currency": "RUB",
+          "stock_quantity": 5,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 195
+        },
+        {
+          "id": 2,
+          "name": "Горячий бамбл на соке",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 41,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 63
+        },
+        {
+          "id": 3,
+          "name": "Горячий бамбл на фреше",
+          "price": 420,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "volume_ml": 250,
+          "calories": 168
+        },
+        {
+          "id": 4,
+          "name": "Кофе американо",
+          "price": 380,
+          "currency": "RUB",
+          "stock_quantity": 27,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 219
+        },
+        {
+          "id": 5,
+          "name": "Кофе американо",
+          "price": 350,
+          "currency": "RUB",
+          "stock_quantity": 18,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 233
+        },
+        {
+          "id": 6,
+          "name": "Капучино",
+          "price": 270,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 167
+        },
+        {
+          "id": 7,
+          "name": "Капучино на безлактозном молоке",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 27,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 129
+        },
+        {
+          "id": 8,
+          "name": "Капучино",
+          "price": 170,
+          "currency": "RUB",
+          "stock_quantity": 50,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 47
+        },
+        {
+          "id": 9,
+          "name": "Капучино на безлактозном молоке",
+          "price": 420,
+          "currency": "RUB",
+          "stock_quantity": 35,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 383
+        },
+        {
+          "id": 10,
+          "name": "Капучино",
+          "price": 300,
+          "currency": "RUB",
+          "stock_quantity": 42,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 312
+        },
+        {
+          "id": 11,
+          "name": "Капучино на безлактозном молоке",
+          "price": 420,
+          "currency": "RUB",
+          "stock_quantity": 0,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 333
+        },
+        {
+          "id": 12,
+          "name": "Капучино",
+          "price": 290,
+          "currency": "RUB",
+          "stock_quantity": 16,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 488
+        },
+        {
+          "id": 13,
+          "name": "Капучино на безлактозном молоке",
+          "price": 200,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 34
+        },
+        {
+          "id": 14,
+          "name": "Мокко",
+          "price": 340,
+          "currency": "RUB",
+          "stock_quantity": 29,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 217
+        },
+        {
+          "id": 15,
+          "name": "Латте",
+          "price": 430,
+          "currency": "RUB",
+          "stock_quantity": 1,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 432
+        },
+        {
+          "id": 16,
+          "name": "Латте на безлактозном молоке",
+          "price": 160,
+          "currency": "RUB",
+          "stock_quantity": 0,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 244
+        },
+        {
+          "id": 17,
+          "name": "Латте",
+          "price": 170,
+          "currency": "RUB",
+          "stock_quantity": 31,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 99
+        },
+        {
+          "id": 18,
+          "name": "Латте на безлактозном молоке",
+          "price": 180,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 213
+        },
+        {
+          "id": 19,
+          "name": "Латте",
+          "price": 200,
+          "currency": "RUB",
+          "stock_quantity": 14,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 96
+        },
+        {
+          "id": 20,
+          "name": "Латте на безлактозном молоке",
+          "price": 300,
+          "currency": "RUB",
+          "stock_quantity": 29,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 442
+        },
+        {
+          "id": 21,
+          "name": "Латте",
+          "price": 180,
+          "currency": "RUB",
+          "stock_quantity": 3,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 407
+        },
+        {
+          "id": 22,
+          "name": "Латте на безлактозном молоке",
+          "price": 450,
+          "currency": "RUB",
+          "stock_quantity": 23,
+          "image_url": "",
+          "volume_ml": 600,
+          "calories": 498
+        },
+        {
+          "id": 23,
+          "name": "Раф",
+          "price": 400,
+          "currency": "RUB",
+          "stock_quantity": 14,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 397
+        },
+        {
+          "id": 24,
+          "name": "Раф",
+          "price": 450,
+          "currency": "RUB",
+          "stock_quantity": 33,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 41
+        },
+        {
+          "id": 25,
+          "name": "Флет Уайт",
+          "price": 440,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 341
+        },
+        {
+          "id": 26,
+          "name": "Флэт Уайт на безлактозном молоке",
+          "price": 370,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 274
+        }
+      ]
+    },
+    {
+      "category": "НеКофе",
+      "items": [
+        {
+          "id": 27,
+          "name": "Какао",
+          "price": 300,
+          "currency": "RUB",
+          "stock_quantity": 32,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 497
+        },
+        {
+          "id": 28,
+          "name": "Какао на безлактозном молоке",
+          "price": 280,
+          "currency": "RUB",
+          "stock_quantity": 14,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 345
+        },
+        {
+          "id": 29,
+          "name": "Матча-латте розовая",
+          "price": 410,
+          "currency": "RUB",
+          "stock_quantity": 6,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 58
+        },
+        {
+          "id": 30,
+          "name": "Матча-латте розовая на безлактозном молоке",
+          "price": 150,
+          "currency": "RUB",
+          "stock_quantity": 27,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 100
+        },
+        {
+          "id": 31,
+          "name": "Матча-латте голубая",
+          "price": 160,
+          "currency": "RUB",
+          "stock_quantity": 13,
+          "image_url": "",
+          "volume_ml": 600,
+          "calories": 31
+        },
+        {
+          "id": 32,
+          "name": "Матча-латте голубая на безлактозном молоке",
+          "price": 350,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 472
+        },
+        {
+          "id": 33,
+          "name": "Матча-латте зеленая",
+          "price": 160,
+          "currency": "RUB",
+          "stock_quantity": 24,
+          "image_url": "",
+          "volume_ml": 250,
+          "calories": 444
+        },
+        {
+          "id": 34,
+          "name": "Матча-латте зеленая на безлактозном молоке",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 84
+        }
+      ]
+    },
+    {
+      "category": "Летняя палитра вкусов",
+      "items": [
+        {
+          "id": 35,
+          "name": "Холодное какао \"Фундук-вишня\"",
+          "price": 390,
+          "currency": "RUB",
+          "stock_quantity": 19,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 46
+        },
+        {
+          "id": 36,
+          "name": "Айс-латте \"Черника\"",
+          "price": 170,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 197
+        },
+        {
+          "id": 37,
+          "name": "Кофе Айс латте черника безлактозное",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 39,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 406
+        },
+        {
+          "id": 38,
+          "name": "Айс-американо \"Смородина\"",
+          "price": 280,
+          "currency": "RUB",
+          "stock_quantity": 7,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 163
+        },
+        {
+          "id": 39,
+          "name": "Матча-бамбл на апельсиновом фреше",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 14,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 113
+        },
+        {
+          "id": 40,
+          "name": "Матча-тоник с манго и апельсином",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 358
+        }
+      ]
+    },
+    {
+      "category": "Чай",
+      "items": [
+        {
+          "id": 41,
+          "name": "Чай \"Эрл Грей\"",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 3,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 101
+        },
+        {
+          "id": 42,
+          "name": "Травяной чай",
+          "price": 380,
+          "currency": "RUB",
+          "stock_quantity": 25,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 101
+        },
+        {
+          "id": 43,
+          "name": "Травяной чай",
+          "price": 370,
+          "currency": "RUB",
+          "stock_quantity": 23,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 43
+        },
+        {
+          "id": 44,
+          "name": "Чай \"Бруника-клюква\"",
+          "price": 320,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 160
+        },
+        {
+          "id": 45,
+          "name": "Чай \"Брасника-клюква\"",
+          "price": 420,
+          "currency": "RUB",
+          "stock_quantity": 42,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 188
+        },
+        {
+          "id": 46,
+          "name": "Чай \"Эрл Грей\"",
+          "price": 420,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 472
+        },
+        {
+          "id": 47,
+          "name": "Чай \"Жасмин\"",
+          "price": 280,
+          "currency": "RUB",
+          "stock_quantity": 50,
+          "image_url": "",
+          "volume_ml": 600,
+          "calories": 490
+        },
+        {
+          "id": 48,
+          "name": "Чай \"Жасмин\"",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 19,
+          "image_url": "",
+          "volume_ml": 600,
+          "calories": 439
+        },
+        {
+          "id": 49,
+          "name": "Чай \"Молочный Улун\"",
+          "price": 450,
+          "currency": "RUB",
+          "stock_quantity": 25,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 305
+        },
+        {
+          "id": 50,
+          "name": "Чай \"Молочный Улун\"",
+          "price": 380,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 16
+        },
+        {
+          "id": 51,
+          "name": "Чай \"Малина-ежевика\"",
+          "price": 180,
+          "currency": "RUB",
+          "stock_quantity": 11,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 157
+        },
+        {
+          "id": 52,
+          "name": "Чай \"Малина-ежевика\"",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 16,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 222
+        },
+        {
+          "id": 53,
+          "name": "Чай \"Облепиха-имбирь\"",
+          "price": 350,
+          "currency": "RUB",
+          "stock_quantity": 9,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 15
+        },
+        {
+          "id": 54,
+          "name": "Чай \"Облепиха-имбирь\"",
+          "price": 330,
+          "currency": "RUB",
+          "stock_quantity": 33,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 340
+        },
+        {
+          "id": 55,
+          "name": "Чай \"Смородина-мята\"",
+          "price": 430,
+          "currency": "RUB",
+          "stock_quantity": 43,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 270
+        },
+        {
+          "id": 56,
+          "name": "Чай \"Смородина-мята\"",
+          "price": 430,
+          "currency": "RUB",
+          "stock_quantity": 49,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 238
+        },
+        {
+          "id": 57,
+          "name": "Чай черный \"Ассам\"",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 44,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 355
+        },
+        {
+          "id": 58,
+          "name": "Чай черный \"Ассам\"",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 6,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 181
+        }
+      ]
+    },
+    {
+      "category": "Холодные напитки",
+      "items": [
+        {
+          "id": 64,
+          "name": "Холодный бамбл на фреше",
+          "price": 390,
+          "currency": "RUB",
+          "stock_quantity": 41,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 329
+        },
+        {
+          "id": 65,
+          "name": "Айс-латте \"Карамель\"",
+          "price": 320,
+          "currency": "RUB",
+          "stock_quantity": 20,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 16
+        },
+        {
+          "id": 66,
+          "name": "Айс-латте \"Карамель\"",
+          "price": 330,
+          "currency": "RUB",
+          "stock_quantity": 35,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 192
+        },
+        {
+          "id": 67,
+          "name": "Айс-латте \"Клубника\"",
+          "price": 320,
+          "currency": "RUB",
+          "stock_quantity": 2,
+          "image_url": "",
+          "volume_ml": 600,
+          "calories": 341
+        },
+        {
+          "id": 68,
+          "name": "Айс-латте \"Клубника\"",
+          "price": 210,
+          "currency": "RUB",
+          "stock_quantity": 4,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 393
+        },
+        {
+          "id": 69,
+          "name": "Айс-капучино",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 395
+        },
+        {
+          "id": 70,
+          "name": "Айс-капучино на безлактозном молоке",
+          "price": 250,
+          "currency": "RUB",
+          "stock_quantity": 9,
+          "image_url": "",
+          "volume_ml": 250,
+          "calories": 95
+        },
+        {
+          "id": 71,
+          "name": "Айс-капучино",
+          "price": 300,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 167
+        },
+        {
+          "id": 72,
+          "name": "Айс-капучино на безлактозном молоке",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 400
+        },
+        {
+          "id": 73,
+          "name": "Айс-латте",
+          "price": 240,
+          "currency": "RUB",
+          "stock_quantity": 17,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 161
+        },
+        {
+          "id": 74,
+          "name": "Айс-латте на безлактозном молоке",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 33,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 349
+        },
+        {
+          "id": 75,
+          "name": "Айс-латте",
+          "price": 290,
+          "currency": "RUB",
+          "stock_quantity": 42,
+          "image_url": "",
+          "volume_ml": 250,
+          "calories": 104
+        },
+        {
+          "id": 76,
+          "name": "Айс-латте на безлактозном молоке",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 11,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 99
+        },
+        {
+          "id": 77,
+          "name": "Айс-матча голубая",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 25,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 332
+        },
+        {
+          "id": 78,
+          "name": "Айс-матча голубая на безлактозком молоке",
+          "price": 370,
+          "currency": "RUB",
+          "stock_quantity": 20,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 423
+        },
+        {
+          "id": 79,
+          "name": "Айс-матча зеленая",
+          "price": 450,
+          "currency": "RUB",
+          "stock_quantity": 35,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 347
+        },
+        {
+          "id": 80,
+          "name": "Айс-матча зеленая на безлактозком молоке",
+          "price": 240,
+          "currency": "RUB",
+          "stock_quantity": 7,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 173
+        },
+        {
+          "id": 81,
+          "name": "Айс-матча розовая",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 387
+        },
+        {
+          "id": 82,
+          "name": "Айс-матча розовая на безлактозком молоке",
+          "price": 150,
+          "currency": "RUB",
+          "stock_quantity": 31,
+          "image_url": "",
+          "volume_ml": 250,
+          "calories": 302
+        },
+        {
+          "id": 83,
+          "name": "Милкшейк \"Ваниль\"",
+          "price": 370,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 245
+        },
+        {
+          "id": 84,
+          "name": "Милкшейк \"Клубника\"",
+          "price": 180,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "volume_ml": 350,
+          "calories": 231
+        },
+        {
+          "id": 85,
+          "name": "Милкшейк \"Шоколад\"",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 23,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 443
+        },
+        {
+          "id": 86,
+          "name": "Холодный бамбл на соке",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 19,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 429
+        },
+        {
+          "id": 87,
+          "name": "Эспрессо-тоник",
+          "price": 390,
+          "currency": "RUB",
+          "stock_quantity": 47,
+          "image_url": "",
+          "volume_ml": 500,
+          "calories": 287
+        },
+        {
+          "id": 88,
+          "name": "Эспрессо-тоник",
+          "price": 370,
+          "currency": "RUB",
+          "stock_quantity": 8,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 55
+        }
+      ]
+    },
+    {
+      "category": "Лимонады",
+      "items": [
+        {
+          "id": 108,
+          "name": "Лимонад \"Дюшес\"",
+          "price": 390,
+          "currency": "RUB",
+          "stock_quantity": 5,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 52
+        },
+        {
+          "id": 109,
+          "name": "Лимонад \"Дюшес\"",
+          "price": 280,
+          "currency": "RUB",
+          "stock_quantity": 0,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 365
+        },
+        {
+          "id": 110,
+          "name": "Лимонад \"Мохито\"",
+          "price": 350,
+          "currency": "RUB",
+          "stock_quantity": 37,
+          "image_url": "",
+          "volume_ml": 200,
+          "calories": 294
+        },
+        {
+          "id": 111,
+          "name": "Лимонад \"Мохито\"",
+          "price": 270,
+          "currency": "RUB",
+          "stock_quantity": 3,
+          "image_url": "",
+          "volume_ml": 400,
+          "calories": 467
+        },
+        {
+          "id": 112,
+          "name": "Лимонад \"Доктор Черри\"",
+          "price": 390,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 94
+        },
+        {
+          "id": 113,
+          "name": "Лимонад \"Клубника-ревень\"",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "volume_ml": 250,
+          "calories": 409
+        },
+        {
+          "id": 114,
+          "name": "Лимонад \"Клубника-ревень\"",
+          "price": 300,
+          "currency": "RUB",
+          "stock_quantity": 39,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 476
+        },
+        {
+          "id": 115,
+          "name": "Лимонад \"Лимончелло\"",
+          "price": 210,
+          "currency": "RUB",
+          "stock_quantity": 48,
+          "image_url": "",
+          "volume_ml": 300,
+          "calories": 28
+        },
+        {
+          "id": 116,
+          "name": "Лимонад \"Лимончелло\"",
+          "price": 240,
+          "currency": "RUB",
+          "stock_quantity": 25,
+          "image_url": "",
+          "volume_ml": 550,
+          "calories": 104
+        },
+        {
+          "id": 117,
+          "name": "Лимонад \"Манго-Маракуйя\"",
+          "price": 210,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "volume_ml": 450,
+          "calories": 256
+        },
+        {
+          "id": 118,
+          "name": "Лимонад \"Манго-Маракуйя\"",
+          "price": 340,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "volume_ml": 600,
+          "calories": 257
+        }
+      ]
+    },
+    {
+      "category": "Печенье",
+      "items": [
+        {
+          "id": 123,
+          "name": "Печенье лимонное",
+          "price": 630,
+          "currency": "RUB",
+          "stock_quantity": 28,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 396
+        },
+        {
+          "id": 124,
+          "name": "Печенье \"Творожные ушки\"",
+          "price": 530,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 455
+        },
+        {
+          "id": 125,
+          "name": "Печенье \"Фитнес\" с цельными злаками",
+          "price": 600,
+          "currency": "RUB",
+          "stock_quantity": 7,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 478
+        },
+        {
+          "id": 126,
+          "name": "Печенье \"Бискотти\"",
+          "price": 140,
+          "currency": "RUB",
+          "stock_quantity": 9,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 377
+        },
+        {
+          "id": 127,
+          "name": "Безе мини ассорти",
+          "price": 1250,
+          "currency": "RUB",
+          "stock_quantity": 2,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 316
+        },
+        {
+          "id": 128,
+          "name": "Печенье \"Мадлен\" с цукатами и глазурью",
+          "price": 650,
+          "currency": "RUB",
+          "stock_quantity": 20,
+          "image_url": "",
+          "weight_g": 250,
+          "calories": 159
+        },
+        {
+          "id": 129,
+          "name": "Печенье апельсиновое с шоколадом",
+          "price": 950,
+          "currency": "RUB",
+          "stock_quantity": 23,
+          "image_url": "",
+          "weight_g": 1000,
+          "calories": 346
+        },
+        {
+          "id": 130,
+          "name": "Печенье \"Орешки\"",
+          "price": 770,
+          "currency": "RUB",
+          "stock_quantity": 1,
+          "image_url": "",
+          "weight_g": 80,
+          "calories": 329
+        },
+        {
+          "id": 131,
+          "name": "Печенье шоколадное с фундуком",
+          "price": 1590,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "weight_g": 1000,
+          "calories": 487
+        },
+        {
+          "id": 132,
+          "name": "Печенье овсяное с изюмом и кокосовой стружкой",
+          "price": 1570,
+          "currency": "RUB",
+          "stock_quantity": 12,
+          "image_url": "",
+          "weight_g": 70,
+          "calories": 402
+        },
+        {
+          "id": 133,
+          "name": "Печенье \"Амаретти\"",
+          "price": 180,
+          "currency": "RUB",
+          "stock_quantity": 4,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 175
+        },
+        {
+          "id": 134,
+          "name": "Печенье \"Венское\"",
+          "price": 680,
+          "currency": "RUB",
+          "stock_quantity": 35,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 166
+        },
+        {
+          "id": 135,
+          "name": "Печенье морковное постное",
+          "price": 240,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 38
+        },
+        {
+          "id": 136,
+          "name": "Рогалики с малиной",
+          "price": 220,
+          "currency": "RUB",
+          "stock_quantity": 40,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 314
+        }
+      ]
+    },
+    {
+      "category": "Выпечка",
+      "items": [
+        {
+          "id": 137,
+          "name": "Грилата с брынзой и зеленью",
+          "price": 540,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "weight_g": 90,
+          "calories": 238
+        },
+        {
+          "id": 138,
+          "name": "Пирожок с яйцом",
+          "price": 1180,
+          "currency": "RUB",
+          "stock_quantity": 11,
+          "image_url": "",
+          "weight_g": 160,
+          "calories": 154
+        },
+        {
+          "id": 139,
+          "name": "Пончик \"Фисташка\"",
+          "price": 1530,
+          "currency": "RUB",
+          "stock_quantity": 41,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 418
+        },
+        {
+          "id": 140,
+          "name": "Донатс малиновый",
+          "price": 500,
+          "currency": "RUB",
+          "stock_quantity": 11,
+          "image_url": "",
+          "weight_g": 160,
+          "calories": 192
+        },
+        {
+          "id": 141,
+          "name": "Донатс шоколадный",
+          "price": 1100,
+          "currency": "RUB",
+          "stock_quantity": 24,
+          "image_url": "",
+          "weight_g": 110,
+          "calories": 279
+        },
+        {
+          "id": 142,
+          "name": "Слойка Берлинская",
+          "price": 780,
+          "currency": "RUB",
+          "stock_quantity": 32,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 350
+        },
+        {
+          "id": 143,
+          "name": "Шатель",
+          "price": 1500,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "weight_g": 150,
+          "calories": 110
+        },
+        {
+          "id": 144,
+          "name": "Штрудель яблочный",
+          "price": 670,
+          "currency": "RUB",
+          "stock_quantity": 32,
+          "image_url": "",
+          "weight_g": 130,
+          "calories": 450
+        },
+        {
+          "id": 145,
+          "name": "Улитка яблочная",
+          "price": 1040,
+          "currency": "RUB",
+          "stock_quantity": 1,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 46
+        },
+        {
+          "id": 146,
+          "name": "Булочка с маком",
+          "price": 1140,
+          "currency": "RUB",
+          "stock_quantity": 43,
+          "image_url": "",
+          "weight_g": 600,
+          "calories": 212
+        },
+        {
+          "id": 147,
+          "name": "Ромовая баба",
+          "price": 1480,
+          "currency": "RUB",
+          "stock_quantity": 29,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 174
+        },
+        {
+          "id": 148,
+          "name": "Маффин шоколадный",
+          "price": 1100,
+          "currency": "RUB",
+          "stock_quantity": 17,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 171
+        },
+        {
+          "id": 149,
+          "name": "Маффин классический",
+          "price": 1170,
+          "currency": "RUB",
+          "stock_quantity": 41,
+          "image_url": "",
+          "weight_g": 500,
+          "calories": 323
+        },
+        {
+          "id": 150,
+          "name": "Сосиска с сыром в слойке",
+          "price": 1270,
+          "currency": "RUB",
+          "stock_quantity": 35,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 144
+        },
+        {
+          "id": 151,
+          "name": "Сосиска в тесте",
+          "price": 1120,
+          "currency": "RUB",
+          "stock_quantity": 17,
+          "image_url": "",
+          "weight_g": 250,
+          "calories": 442
+        },
+        {
+          "id": 152,
+          "name": "Пирожок с картошкой",
+          "price": 180,
+          "currency": "RUB",
+          "stock_quantity": 50,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 62
+        },
+        {
+          "id": 153,
+          "name": "Пирожок с яблоком",
+          "price": 600,
+          "currency": "RUB",
+          "stock_quantity": 29,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 147
+        },
+        {
+          "id": 154,
+          "name": "Пирожок с курицей",
+          "price": 1020,
+          "currency": "RUB",
+          "stock_quantity": 10,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 341
+        },
+        {
+          "id": 155,
+          "name": "Пирожок с капустой",
+          "price": 1340,
+          "currency": "RUB",
+          "stock_quantity": 37,
+          "image_url": "",
+          "weight_g": 300,
+          "calories": 349
+        },
+        {
+          "id": 156,
+          "name": "Бриошь с черной смородиной",
+          "price": 140,
+          "currency": "RUB",
+          "stock_quantity": 14,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 264
+        },
+        {
+          "id": 157,
+          "name": "Булочка с фисташкой",
+          "price": 1340,
+          "currency": "RUB",
+          "stock_quantity": 1,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 283
+        },
+        {
+          "id": 158,
+          "name": "Булочка с ванильным кремом и корицей",
+          "price": 1040,
+          "currency": "RUB",
+          "stock_quantity": 39,
+          "image_url": "",
+          "weight_g": 110,
+          "calories": 412
+        },
+        {
+          "id": 159,
+          "name": "Косичка с шоколадом",
+          "price": 840,
+          "currency": "RUB",
+          "stock_quantity": 25,
+          "image_url": "",
+          "weight_g": 200,
+          "calories": 240
+        },
+        {
+          "id": 160,
+          "name": "Улитка с изюмом",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 47,
+          "image_url": "",
+          "weight_g": 90,
+          "calories": 383
+        },
+        {
+          "id": 161,
+          "name": "Улитка с корицей",
+          "price": 1260,
+          "currency": "RUB",
+          "stock_quantity": 46,
+          "image_url": "",
+          "weight_g": 160,
+          "calories": 496
+        },
+        {
+          "id": 162,
+          "name": "Киш с ветчиной и грибами",
+          "price": 1410,
+          "currency": "RUB",
+          "stock_quantity": 37,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 482
+        },
+        {
+          "id": 163,
+          "name": "Киш \"4 сыра\"",
+          "price": 550,
+          "currency": "RUB",
+          "stock_quantity": 12,
+          "image_url": "",
+          "weight_g": 130,
+          "calories": 425
+        },
+        {
+          "id": 164,
+          "name": "Киш \"Курица\"",
+          "price": 110,
+          "currency": "RUB",
+          "stock_quantity": 26,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 194
+        },
+        {
+          "id": 165,
+          "name": "Грилата с куриным филе",
+          "price": 930,
+          "currency": "RUB",
+          "stock_quantity": 5,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 334
+        },
+        {
+          "id": 166,
+          "name": "Грилата с мясом",
+          "price": 160,
+          "currency": "RUB",
+          "stock_quantity": 9,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 427
+        },
+        {
+          "id": 167,
+          "name": "Грилата с картофелем и грибами",
+          "price": 1510,
+          "currency": "RUB",
+          "stock_quantity": 50,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 47
+        },
+        {
+          "id": 168,
+          "name": "Сочник",
+          "price": 1200,
+          "currency": "RUB",
+          "stock_quantity": 42,
+          "image_url": "",
+          "weight_g": 1000,
+          "calories": 107
+        },
+        {
+          "id": 169,
+          "name": "Бриошь с шоколадом",
+          "price": 850,
+          "currency": "RUB",
+          "stock_quantity": 45,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 475
+        },
+        {
+          "id": 170,
+          "name": "Круассан классический",
+          "price": 260,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 318
+        },
+        {
+          "id": 171,
+          "name": "Круассан с ванильным кремом",
+          "price": 420,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 218
+        },
+        {
+          "id": 172,
+          "name": "Круассан с творогом",
+          "price": 160,
+          "currency": "RUB",
+          "stock_quantity": 44,
+          "image_url": "",
+          "weight_g": 180,
+          "calories": 47
+        },
+        {
+          "id": 173,
+          "name": "Круассан с миндалем",
+          "price": 1260,
+          "currency": "RUB",
+          "stock_quantity": 9,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 486
+        },
+        {
+          "id": 174,
+          "name": "Круассан с шоколадом",
+          "price": 1230,
+          "currency": "RUB",
+          "stock_quantity": 39,
+          "image_url": "",
+          "weight_g": 400,
+          "calories": 255
+        },
+        {
+          "id": 175,
+          "name": "Круассан с сыром",
+          "price": 950,
+          "currency": "RUB",
+          "stock_quantity": 13,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 487
+        },
+        {
+          "id": 176,
+          "name": "Круассан с абрикосом",
+          "price": 1400,
+          "currency": "RUB",
+          "stock_quantity": 7,
+          "image_url": "",
+          "weight_g": 200,
+          "calories": 263
+        },
+        {
+          "id": 177,
+          "name": "Круассан с клубникой и шоколадом",
+          "price": 1000,
+          "currency": "RUB",
+          "stock_quantity": 28,
+          "image_url": "",
+          "weight_g": 400,
+          "calories": 340
+        },
+        {
+          "id": 178,
+          "name": "Шоссон с вишней",
+          "price": 1510,
+          "currency": "RUB",
+          "stock_quantity": 32,
+          "image_url": "",
+          "weight_g": 150,
+          "calories": 115
+        }
+      ]
+    },
+    {
+      "category": "Сэндвичи/роллы",
+      "items": [
+        {
+          "id": 179,
+          "name": "Сэндвич с тунцом",
+          "price": 760,
+          "currency": "RUB",
+          "stock_quantity": 1,
+          "image_url": "",
+          "weight_g": 500,
+          "calories": 379
+        },
+        {
+          "id": 180,
+          "name": "Сэндвич с семгой",
+          "price": 1210,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "weight_g": 600,
+          "calories": 184
+        },
+        {
+          "id": 181,
+          "name": "Лаваш \"Цезарь\"",
+          "price": 380,
+          "currency": "RUB",
+          "stock_quantity": 13,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 394
+        },
+        {
+          "id": 182,
+          "name": "Лаваш \"Чикен\"",
+          "price": 240,
+          "currency": "RUB",
+          "stock_quantity": 8,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 176
+        },
+        {
+          "id": 183,
+          "name": "Тортилья с креветками",
+          "price": 900,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "weight_g": 500,
+          "calories": 374
+        },
+        {
+          "id": 184,
+          "name": "Сэндвич с куриными стрипсами",
+          "price": 280,
+          "currency": "RUB",
+          "stock_quantity": 19,
+          "image_url": "",
+          "weight_g": 1000,
+          "calories": 167
+        },
+        {
+          "id": 185,
+          "name": "Сэндвич с рваной говядиной",
+          "price": 740,
+          "currency": "RUB",
+          "stock_quantity": 13,
+          "image_url": "",
+          "weight_g": 160,
+          "calories": 385
+        },
+        {
+          "id": 186,
+          "name": "Круассан с моцареллой",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 42,
+          "image_url": "",
+          "weight_g": 250,
+          "calories": 421
+        },
+        {
+          "id": 187,
+          "name": "Круассан с ветчиной",
+          "price": 1220,
+          "currency": "RUB",
+          "stock_quantity": 39,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 366
+        },
+        {
+          "id": 188,
+          "name": "Круассан с ветчиной и яйцом пашот",
+          "price": 580,
+          "currency": "RUB",
+          "stock_quantity": 47,
+          "image_url": "",
+          "weight_g": 600,
+          "calories": 482
+        },
+        {
+          "id": 189,
+          "name": "Круассан с курицей",
+          "price": 710,
+          "currency": "RUB",
+          "stock_quantity": 28,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 18
+        },
+        {
+          "id": 190,
+          "name": "Круассан с семгой",
+          "price": 960,
+          "currency": "RUB",
+          "stock_quantity": 12,
+          "image_url": "",
+          "weight_g": 600,
+          "calories": 337
+        },
+        {
+          "id": 191,
+          "name": "Чиабатта с индейкой",
+          "price": 1250,
+          "currency": "RUB",
+          "stock_quantity": 5,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 303
+        },
+        {
+          "id": 192,
+          "name": "Багет с ветчиной",
+          "price": 890,
+          "currency": "RUB",
+          "stock_quantity": 28,
+          "image_url": "",
+          "weight_g": 80,
+          "calories": 262
+        }
+      ]
+    },
+    {
+      "category": "Десерты",
+      "items": [
+        {
+          "id": 193,
+          "name": "Пирожное \"Роше\" в банке",
+          "price": 760,
+          "currency": "RUB",
+          "stock_quantity": 16,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 348
+        },
+        {
+          "id": 194,
+          "name": "Кольцо с творогом",
+          "price": 240,
+          "currency": "RUB",
+          "stock_quantity": 39,
+          "image_url": "",
+          "weight_g": 90,
+          "calories": 27
+        },
+        {
+          "id": 195,
+          "name": "Торт \"Морковный\"",
+          "price": 1330,
+          "currency": "RUB",
+          "stock_quantity": 20,
+          "image_url": "",
+          "weight_g": 130,
+          "calories": 440
+        },
+        {
+          "id": 196,
+          "name": "Трубочка с белковым кремом",
+          "price": 1470,
+          "currency": "RUB",
+          "stock_quantity": 24,
+          "image_url": "",
+          "weight_g": 90,
+          "calories": 53
+        },
+        {
+          "id": 197,
+          "name": "Десерт \"Три шоклада\"",
+          "price": 970,
+          "currency": "RUB",
+          "stock_quantity": 18,
+          "image_url": "",
+          "weight_g": 160,
+          "calories": 310
+        },
+        {
+          "id": 198,
+          "name": "Чизкейк \"Орео\"",
+          "price": 930,
+          "currency": "RUB",
+          "stock_quantity": 12,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 406
+        },
+        {
+          "id": 199,
+          "name": "Пирожное \"Чизкейк черная смородина\"",
+          "price": 1120,
+          "currency": "RUB",
+          "stock_quantity": 11,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 407
+        },
+        {
+          "id": 200,
+          "name": "Макарун \"Ваниль-клубника\"",
+          "price": 190,
+          "currency": "RUB",
+          "stock_quantity": 19,
+          "image_url": "",
+          "weight_g": 90,
+          "calories": 398
+        },
+        {
+          "id": 201,
+          "name": "Макарун \"Сникерс\"",
+          "price": 1380,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 312
+        },
+        {
+          "id": 202,
+          "name": "Макарун \"Фисташка-малина\"",
+          "price": 830,
+          "currency": "RUB",
+          "stock_quantity": 43,
+          "image_url": "",
+          "weight_g": 150,
+          "calories": 396
+        },
+        {
+          "id": 203,
+          "name": "Десерт \"Монастырская изба\"",
+          "price": 1130,
+          "currency": "RUB",
+          "stock_quantity": 5,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 122
+        },
+        {
+          "id": 204,
+          "name": "Десерт \"Кофейное зерно\"",
+          "price": 1570,
+          "currency": "RUB",
+          "stock_quantity": 27,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 146
+        },
+        {
+          "id": 205,
+          "name": "Панна-котта \"Ваниль-смородина\"",
+          "price": 900,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "weight_g": 400,
+          "calories": 383
+        },
+        {
+          "id": 206,
+          "name": "Панна-котта \"Кокос-ананас\"",
+          "price": 1440,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "weight_g": 110,
+          "calories": 287
+        },
+        {
+          "id": 207,
+          "name": "Панна-котта \"Шоколад-тропик\"",
+          "price": 290,
+          "currency": "RUB",
+          "stock_quantity": 32,
+          "image_url": "",
+          "weight_g": 600,
+          "calories": 245
+        },
+        {
+          "id": 208,
+          "name": "Пирожное \"Картошка\"",
+          "price": 460,
+          "currency": "RUB",
+          "stock_quantity": 50,
+          "image_url": "",
+          "weight_g": 300,
+          "calories": 181
+        },
+        {
+          "id": 209,
+          "name": "Пирожное \"Медовик\" в банке",
+          "price": 590,
+          "currency": "RUB",
+          "stock_quantity": 36,
+          "image_url": "",
+          "weight_g": 130,
+          "calories": 203
+        },
+        {
+          "id": 210,
+          "name": "Пирожное \"Чизкейк\"",
+          "price": 1180,
+          "currency": "RUB",
+          "stock_quantity": 24,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 433
+        },
+        {
+          "id": 211,
+          "name": "Пирожное \"Герман\"",
+          "price": 320,
+          "currency": "RUB",
+          "stock_quantity": 16,
+          "image_url": "",
+          "weight_g": 1000,
+          "calories": 218
+        },
+        {
+          "id": 212,
+          "name": "Профитроли",
+          "price": 690,
+          "currency": "RUB",
+          "stock_quantity": 40,
+          "image_url": "",
+          "weight_g": 150,
+          "calories": 84
+        },
+        {
+          "id": 213,
+          "name": "Тарталетка с малиной",
+          "price": 620,
+          "currency": "RUB",
+          "stock_quantity": 48,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 212
+        },
+        {
+          "id": 214,
+          "name": "Тарталетка с голубикой и малиной",
+          "price": 1150,
+          "currency": "RUB",
+          "stock_quantity": 45,
+          "image_url": "",
+          "weight_g": 200,
+          "calories": 65
+        },
+        {
+          "id": 215,
+          "name": "Тарталетка с голубикой",
+          "price": 1290,
+          "currency": "RUB",
+          "stock_quantity": 46,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 255
+        },
+        {
+          "id": 216,
+          "name": "Тарталетка с клубникой",
+          "price": 1270,
+          "currency": "RUB",
+          "stock_quantity": 49,
+          "image_url": "",
+          "weight_g": 250,
+          "calories": 155
+        },
+        {
+          "id": 217,
+          "name": "Тарталетка с белковым кремом",
+          "price": 120,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "weight_g": 200,
+          "calories": 434
+        },
+        {
+          "id": 218,
+          "name": "Пирожное \"Тирамису\" в стакане",
+          "price": 1240,
+          "currency": "RUB",
+          "stock_quantity": 20,
+          "image_url": "",
+          "weight_g": 130,
+          "calories": 165
+        },
+        {
+          "id": 219,
+          "name": "Десерт \"Соленая карамель\"",
+          "price": 830,
+          "currency": "RUB",
+          "stock_quantity": 12,
+          "image_url": "",
+          "weight_g": 450,
+          "calories": 294
+        },
+        {
+          "id": 220,
+          "name": "Десерт \"Манго-мята\" в банке",
+          "price": 520,
+          "currency": "RUB",
+          "stock_quantity": 22,
+          "image_url": "",
+          "weight_g": 180,
+          "calories": 456
+        },
+        {
+          "id": 221,
+          "name": "Фисташковый десерт",
+          "price": 410,
+          "currency": "RUB",
+          "stock_quantity": 31,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 61
+        },
+        {
+          "id": 222,
+          "name": "Пудинг \"Манго-чиа\"",
+          "price": 1460,
+          "currency": "RUB",
+          "stock_quantity": 16,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 35
+        },
+        {
+          "id": 223,
+          "name": "Эклер ванильный",
+          "price": 1420,
+          "currency": "RUB",
+          "stock_quantity": 14,
+          "image_url": "",
+          "weight_g": 130,
+          "calories": 357
+        },
+        {
+          "id": 224,
+          "name": "Эклер шоколадный",
+          "price": 460,
+          "currency": "RUB",
+          "stock_quantity": 31,
+          "image_url": "",
+          "weight_g": 250,
+          "calories": 431
+        },
+        {
+          "id": 225,
+          "name": "Эклер \"Малина\"",
+          "price": 450,
+          "currency": "RUB",
+          "stock_quantity": 27,
+          "image_url": "",
+          "weight_g": 400,
+          "calories": 221
+        },
+        {
+          "id": 226,
+          "name": "Эклер миндальный",
+          "price": 1500,
+          "currency": "RUB",
+          "stock_quantity": 23,
+          "image_url": "",
+          "weight_g": 160,
+          "calories": 457
+        },
+        {
+          "id": 227,
+          "name": "Эклер \"Сникерс\"",
+          "price": 890,
+          "currency": "RUB",
+          "stock_quantity": 41,
+          "image_url": "",
+          "weight_g": 500,
+          "calories": 131
+        },
+        {
+          "id": 228,
+          "name": "Эклер фисташковый",
+          "price": 1250,
+          "currency": "RUB",
+          "stock_quantity": 31,
+          "image_url": "",
+          "weight_g": 300,
+          "calories": 313
+        },
+        {
+          "id": 229,
+          "name": "Набор пирожных \"Дэлис\"",
+          "price": 320,
+          "currency": "RUB",
+          "stock_quantity": 40,
+          "image_url": "",
+          "weight_g": 80,
+          "calories": 449
+        }
+      ]
+    },
+    {
+      "category": "Торты",
+      "items": [
+        {
+          "id": 260,
+          "name": "Пирог вишневый",
+          "price": 910,
+          "currency": "RUB",
+          "stock_quantity": 12,
+          "image_url": "",
+          "weight_g": 1200,
+          "calories": 174
+        },
+        {
+          "id": 261,
+          "name": "Торт \"Фисташковая меренга\"",
+          "price": 560,
+          "currency": "RUB",
+          "stock_quantity": 24,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 97
+        },
+        {
+          "id": 262,
+          "name": "Торт \"Шоколадно-клубничный\"",
+          "price": 700,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "weight_g": 110,
+          "calories": 133
+        },
+        {
+          "id": 263,
+          "name": "Торт \"Наполеон\"",
+          "price": 340,
+          "currency": "RUB",
+          "stock_quantity": 2,
+          "image_url": "",
+          "weight_g": 200,
+          "calories": 404
+        },
+        {
+          "id": 264,
+          "name": "Торт \"Медовик\"",
+          "price": 360,
+          "currency": "RUB",
+          "stock_quantity": 15,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 244
+        },
+        {
+          "id": 265,
+          "name": "Торт \"Красный бархат\"",
+          "price": 1270,
+          "currency": "RUB",
+          "stock_quantity": 34,
+          "image_url": "",
+          "weight_g": 80,
+          "calories": 332
+        },
+        {
+          "id": 266,
+          "name": "Торт \"Фирменный\"",
+          "price": 650,
+          "currency": "RUB",
+          "stock_quantity": 18,
+          "image_url": "",
+          "weight_g": 500,
+          "calories": 481
+        },
+        {
+          "id": 267,
+          "name": "Торт \"Герман\"",
+          "price": 530,
+          "currency": "RUB",
+          "stock_quantity": 38,
+          "image_url": "",
+          "weight_g": 300,
+          "calories": 72
+        }
+      ]
+    },
+    {
+      "category": "Хлеб",
+      "items": [
+        {
+          "id": 268,
+          "name": "Хлеб \"Бородинский\"",
+          "price": 1410,
+          "currency": "RUB",
+          "stock_quantity": 29,
+          "image_url": "",
+          "weight_g": 220,
+          "calories": 142
+        },
+        {
+          "id": 269,
+          "name": "Хлеб \"Бабушкин рецепт\"",
+          "price": 1360,
+          "currency": "RUB",
+          "stock_quantity": 11,
+          "image_url": "",
+          "weight_g": 180,
+          "calories": 158
+        },
+        {
+          "id": 270,
+          "name": "Хлеб \"Ржаной\"",
+          "price": 1340,
+          "currency": "RUB",
+          "stock_quantity": 30,
+          "image_url": "",
+          "weight_g": 250,
+          "calories": 195
+        },
+        {
+          "id": 271,
+          "name": "Хлеб \"Деревенский\"",
+          "price": 1230,
+          "currency": "RUB",
+          "stock_quantity": 45,
+          "image_url": "",
+          "weight_g": 350,
+          "calories": 498
+        },
+        {
+          "id": 272,
+          "name": "Батон \"Нарезной\"",
+          "price": 1510,
+          "currency": "RUB",
+          "stock_quantity": 18,
+          "image_url": "",
+          "weight_g": 100,
+          "calories": 17
+        },
+        {
+          "id": 273,
+          "name": "Хлеб \"Зерновой белый\"",
+          "price": 150,
+          "currency": "RUB",
+          "stock_quantity": 24,
+          "image_url": "",
+          "weight_g": 150,
+          "calories": 307
+        },
+        {
+          "id": 274,
+          "name": "Хлеб \"Зелена гречка\"",
+          "price": 570,
+          "currency": "RUB",
+          "stock_quantity": 19,
+          "image_url": "",
+          "weight_g": 800,
+          "calories": 487
+        },
+        {
+          "id": 275,
+          "name": "Чиабатта",
+          "price": 450,
+          "currency": "RUB",
+          "stock_quantity": 0,
+          "image_url": "",
+          "weight_g": 500,
+          "calories": 465
+        },
+        {
+          "id": 276,
+          "name": "Багет на закваске",
+          "price": 1130,
+          "currency": "RUB",
+          "stock_quantity": 35,
+          "image_url": "",
+          "weight_g": 600,
+          "calories": 403
+        },
+        {
+          "id": 277,
+          "name": "Багет французский",
+          "price": 550,
+          "currency": "RUB",
+          "stock_quantity": 10,
+          "image_url": "",
+          "weight_g": 80,
+          "calories": 278
+        },
+        {
+          "id": 278,
+          "name": "Батон \"8 злаков\"",
+          "price": 720,
+          "currency": "RUB",
+          "stock_quantity": 32,
+          "image_url": "",
+          "weight_g": 180,
+          "calories": 250
+        },
+        {
+          "id": 279,
+          "name": "Хлеб \"Зерновой\"",
+          "price": 580,
+          "currency": "RUB",
+          "stock_quantity": 6,
+          "image_url": "",
+          "weight_g": 120,
+          "calories": 63
+        }
+      ]
+    }
+  ]
+}

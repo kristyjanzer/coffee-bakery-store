@@ -16,7 +16,7 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer id="contacts" className="border-t border-sage-mist/20 bg-black-olive px-6 py-12">
+    <footer id="contacts" className="scroll-mt-20 border-t border-sage-mist/20 bg-black-olive px-6 py-12">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-10 md:flex-row md:justify-between">
         <Link
           href="/"
