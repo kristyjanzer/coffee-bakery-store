@@ -4,10 +4,6 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-export const instant = false;
-
 // Next.js сам управляет CSS — отключаем автовставку стилей Font Awesome,
 // чтобы избежать конфликта и "мигания" неотстилизованных иконок
 config.autoAddCss = false;

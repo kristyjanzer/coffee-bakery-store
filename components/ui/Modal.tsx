@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 interface ModalProps {
@@ -10,14 +10,23 @@ interface ModalProps {
   children: ReactNode;
 }
 
+// "Подписки" на клиент/сервер не существует — subscribe ничего не делает, эффекта
+// монтирования достаточно один раз. useSyncExternalStore вместо useState+useEffect,
+// чтобы не звать setState синхронно внутри эффекта (react-hooks/set-state-in-effect):
+// getServerSnapshot даёт false при SSR, getSnapshot — true на клиенте, React сам
+// синхронно перерисует компонент с true сразу после маунта.
+function subscribe() {
+  return () => {};
+}
+
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   // На сервере document недоступен — портал рендерим только после маунта на клиенте,
   // тот же приём, что и для гидратации корзины (см. docs/architecture.md, раздел 4)
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     if (!isOpen) return;

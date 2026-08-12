@@ -806,3 +806,84 @@ Black Olive `text-caption` (14px — самый мелкий размер в ш�
 `next`, `swiper`) — не связаны с этой задачей (появились не из-за `eslint-plugin-tailwindcss`),
 фикс требует breaking-апгрейдов (`next@16`, `swiper@14`), сознательно не трогал без отдельного
 запроса.
+
+## Задача 19
+
+Апгрейд Next.js 15 → 16 (по запросу пользователя, начат ею вручную через `@next/codemod`, я
+доводил до рабочего состояния и разбирался с поломками). Ветка `chore/upgrade-next-16`.
+`next@16.3.0`, `react`/`react-dom@19.2.8`, `eslint-config-next@16.3.0`.
+
+**1. `npm run typecheck` падал** на автосгенерированных `.next/types/*` — устаревший билд-кэш
+от Next 15, не пересобранный под 16 (после апгрейда `.next/` всегда стоит сносить перед
+`typecheck`/`build`). Фикс: `rm -rf .next`.
+
+**2. `npm run lint` падал** — в Next 16 команда `next lint` полностью удалена (`package.json`
+ещё указывал на неё). Официальный codemod `next-lint-to-eslint-cli` не смог отработать —
+баг самого codemod на Windows: он вызывает `npx @eslint/migrate-config <путь>` без кавычек,
+путь проекта с пробелом (`Javascript + deep AI`) режется на первом пробеле. Смигрировал на
+flat config вручную:
+- `.eslintrc.json` удалён, создан `eslint.config.mjs` — `eslint-config-next@16` теперь сам
+  экспортирует готовые flat-массивы (`eslint-config-next/core-web-vitals`,
+  `eslint-config-next/typescript`), FlatCompat не понадобился. Перенесены все наши правила:
+  `react/forbid-dom-props` на `style`, typed-lint оверрайд с `parserOptions.project` +
+  `@typescript-eslint/no-floating-promises`/`no-misused-promises`, `eslint-plugin-tailwindcss`
+  (`configs['flat/recommended']` — у пакета есть нативная flat-конфигурация).
+- `package.json`: `"lint": "eslint ."` вместо `"lint": "next lint"`.
+- Реальная несовместимость версий: `eslint@10.8.1` (подтянулся апгрейдом) ломает
+  `eslint-plugin-react@7.37.5` (зависимость `eslint-config-next`, последняя существующая
+  версия на момент апгрейда) — тот ещё вызывает удалённый в ESLint 10 `context.getFilename()`.
+  Даунгрейд на `eslint@^9.39.5` (последняя 9.x, формально заявленный минимум
+  `eslint-config-next`) решает проблему без потери flat-config.
+- Само новое правило `react-hooks/set-state-in-effect` (react-hooks v7, часть
+  `eslint-config-next@16`) нашло реальный анти-паттерн: `components/ui/Modal.tsx` вызывал
+  `setIsMounted(true)` синхронно внутри `useEffect` (гейт "клиент замаунтился" для
+  `createPortal`, т.к. `document` недоступен на сервере). Переписано на
+  `useSyncExternalStore(subscribe, () => true, () => false)` — тот же результат
+  (`false` при SSR, `true` после маунта), без `setState` в эффекте.
+
+**3. `npm run build` падал** — codemod `@next/codemod upgrade` (то, что пользователь прогнала
+до меня) вставил `export const instant = false;` в `app/layout.tsx`, `app/(site)/layout.tsx`,
+`app/(site)/page.tsx` с TODO "адаптировать под Cache Components", но не включил сам флаг
+`cacheComponents` в `next.config.js`, без которого поле `instant` невалидно (ошибка сборки).
+Adoption Cache Components — большая архитектурная тема (Suspense-границы, `"use cache"`), не в
+рамках апгрейда; убрал все три вставки, поведение осталось как в Next 15.
+
+**4. `npm run build` затем падал по-другому** (`PageNotFoundError: Cannot find module for page: /`,
+`app-paths-manifest.json` — пустой `{}`, хотя файлы скомпилированы) — воспроизвёл на `next build
+--webpack` (собирается чисто) и убедился, что это баг именно в Turbopack (новый дефолтный бандлер
+в Next 16, включается без флагов). Зафиксировал `--webpack` в `package.json` (`dev`/`build`) —
+официальный флаг отката, пока баг не пофиксят в Next.
+
+**5. При первом же `npm run dev` Next 16 сам дописал в `AGENTS.md`** (наш curated-файл с
+правилами проекта, не генерируемый контент) блок `<!-- BEGIN:nextjs-agent-rules -->` с
+инструкцией для ИИ-агентов читать `node_modules/next/dist/docs/`. Откатил через `git checkout`
+и отключил фичу в `next.config.js` (`agentRules: false`, официальная опция) — перезапустил
+`dev`, повторной вставки нет.
+
+`tsconfig.json` — авто-правки от `next build` (обязательные для Next 16): `jsx: "preserve"` →
+`"react-jsx"` (Next теперь сам управляет JSX-рантаймом), добавлен `.next/dev/types/**/*.ts` в
+`include`, форматирование массивов в несколько строк.
+
+Проверено: `npm run typecheck`, `npm run lint`, `npm run build` — чисто; `npm run dev`
+поднимается и компилируется без ошибок (визуально в браузере не проверял — MCP `chrome-devtools`
+был занят другим процессом с тем же профилем Chrome).
+
+**Изменённые/созданные файлы:**
+- `package.json`, `package-lock.json` — изменены (`next@16.3.0`, `react`/`react-dom@19.2.8`,
+  `eslint@^9.39.5`, `eslint-config-next@16.3.0`; скрипты `lint`/`dev`/`build`)
+- `.eslintrc.json` — удалён, `eslint.config.mjs` — создан (flat config)
+- `next.config.js` — изменён (`agentRules: false`)
+- `tsconfig.json` — изменён (автоправки Next 16, `jsx: react-jsx`)
+- `app/layout.tsx`, `app/(site)/layout.tsx`, `app/(site)/page.tsx` — изменены (убран
+  невалидный `export const instant = false`)
+- `components/ui/Modal.tsx` — изменён (`useSyncExternalStore` вместо `useState`+`useEffect`)
+
+**Новые переменные окружения:** нет.
+
+**Изменения схемы БД:** нет.
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — апгрейд
+тулинга/конфига и рефактор одного клиентского хука, без секретов, аутентификации,
+пользовательского ввода или API. Единственное, что касалось "секретности" по духу — автогенерация
+Next в `AGENTS.md`: содержимое безобидное (просто инструкция читать локальную документацию), но
+отключил как нежелательную незапрошенную модификацию курируемого файла.
