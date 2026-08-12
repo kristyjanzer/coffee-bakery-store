@@ -14,6 +14,9 @@ interface QtyStepperProps {
   // передан) уменьшение до 0 по-прежнему возвращает кнопку "+" — это единственный способ
   // убрать товар оттуда.
   preventRemoveAtOne?: boolean;
+  // "compact" — иконка "+"/"−" (карточка товара, виджет корзины). "cta" — крупная кнопка с
+  // текстом "В корзину" (Filled CTA Button из DESIGN.md) для полноэкранной страницы товара.
+  variant?: "compact" | "cta";
 }
 
 // Общий компонент для карточки товара, страницы товара и виджета корзины
@@ -27,6 +30,7 @@ export function QtyStepper({
   unit,
   max,
   preventRemoveAtOne = false,
+  variant = "compact",
 }: QtyStepperProps) {
   const count = useCartStore(
     (state) => state.items.find((item) => item.productId === productId)?.quantity ?? 0
@@ -35,15 +39,21 @@ export function QtyStepper({
   const incrementQty = useCartStore((state) => state.incrementQty);
   const decrementQty = useCartStore((state) => state.decrementQty);
 
+  const isCta = variant === "cta";
+
   if (max <= 0) {
     return (
       <button
         type="button"
         disabled
         aria-label="Нет в наличии"
-        className="flex size-9 items-center justify-center rounded-sm bg-sage-mist/30 text-lg font-semibold text-black-olive/30"
+        className={
+          isCta
+            ? "w-full rounded-sm bg-sage-mist/30 px-4 py-3 text-center font-venuscom text-body-sm font-semibold uppercase tracking-[0.04em] text-black-olive/30"
+            : "flex size-9 items-center justify-center rounded-sm bg-sage-mist/30 text-lg font-semibold text-black-olive/30"
+        }
       >
-        +
+        {isCta ? "Нет в наличии" : "+"}
       </button>
     );
   }
@@ -54,25 +64,45 @@ export function QtyStepper({
         type="button"
         aria-label="Добавить в корзину"
         onClick={() => addItem({ productId, name, price, imageUrl, unit })}
-        className="flex size-9 items-center justify-center rounded-sm bg-lemon-zest text-lg font-semibold text-black-olive"
+        className={
+          isCta
+            ? "w-full rounded-sm bg-lemon-zest px-4 py-3 text-center font-venuscom text-body-sm font-semibold uppercase tracking-[0.04em] text-black-olive"
+            : "flex size-9 items-center justify-center rounded-sm bg-lemon-zest text-lg font-semibold text-black-olive"
+        }
       >
-        +
+        {isCta ? "В корзину" : "+"}
       </button>
     );
   }
 
   return (
-    <div className="flex h-9 items-center gap-2 rounded-sm bg-lemon-zest px-1 text-black-olive">
+    <div
+      className={
+        isCta
+          ? "flex h-12 items-center justify-between gap-2 rounded-sm bg-lemon-zest px-2 text-black-olive"
+          : "flex h-9 items-center gap-2 rounded-sm bg-lemon-zest px-1 text-black-olive"
+      }
+    >
       <button
         type="button"
         aria-label="Уменьшить количество"
         disabled={preventRemoveAtOne && count === 1}
         onClick={() => decrementQty(productId)}
-        className="flex size-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
+        className={
+          isCta
+            ? "flex size-9 items-center justify-center text-xl font-semibold disabled:opacity-30"
+            : "flex size-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
+        }
       >
         −
       </button>
-      <span className="min-w-[1.5ch] text-center font-venuscom text-body-sm font-semibold">
+      <span
+        className={
+          isCta
+            ? "min-w-[2ch] text-center font-venuscom text-body-lg font-semibold"
+            : "min-w-[1.5ch] text-center font-venuscom text-body-sm font-semibold"
+        }
+      >
         {count}
       </span>
       <button
@@ -80,7 +110,11 @@ export function QtyStepper({
         aria-label="Увеличить количество"
         disabled={count >= max}
         onClick={() => incrementQty(productId)}
-        className="flex size-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
+        className={
+          isCta
+            ? "flex size-9 items-center justify-center text-xl font-semibold disabled:opacity-30"
+            : "flex size-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
+        }
       >
         +
       </button>
