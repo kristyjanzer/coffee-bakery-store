@@ -33,7 +33,7 @@ export function CartWidget() {
                 className="flex items-center gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
               >
                 {item.imageUrl ? (
-                  <div className="relative h-14 w-14 shrink-0">
+                  <div className="relative size-14 shrink-0">
                     <Image
                       src={item.imageUrl}
                       alt={item.name}
@@ -43,8 +43,8 @@ export function CartWidget() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center bg-sage-mist/30">
-                    <FontAwesomeIcon icon={faImage} className="h-5 w-5 text-black-olive/20" />
+                  <div className="flex size-14 shrink-0 items-center justify-center bg-sage-mist/30">
+                    <FontAwesomeIcon icon={faImage} className="size-5 text-black-olive/20" />
                   </div>
                 )}
 
@@ -76,7 +76,7 @@ export function CartWidget() {
                   onClick={() => removeItem(item.productId)}
                   className="text-black-olive/50 hover:text-black-olive"
                 >
-                  <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
+                  <FontAwesomeIcon icon={faTrash} className="size-4" />
                 </button>
               </li>
             ))}

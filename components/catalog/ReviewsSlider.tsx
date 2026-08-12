@@ -48,7 +48,7 @@ export function ReviewsSlider({ reviews }: ReviewsSliderProps) {
                 </div>
               ) : (
                 <div className="flex aspect-square w-full items-center justify-center bg-sage-mist/10">
-                  <FontAwesomeIcon icon={faImage} className="h-8 w-8 text-warm-cream/30" />
+                  <FontAwesomeIcon icon={faImage} className="size-8 text-warm-cream/30" />
                 </div>
               )}
 
@@ -68,17 +68,17 @@ export function ReviewsSlider({ reviews }: ReviewsSliderProps) {
           type="button"
           aria-label="Предыдущий отзыв"
           onClick={() => swiperRef.current?.slidePrev()}
-          className="flex h-10 w-10 items-center justify-center rounded-sm border border-pure-white text-warm-cream transition-colors hover:bg-pure-white/10"
+          className="flex size-10 items-center justify-center rounded-sm border border-pure-white text-warm-cream transition-colors hover:bg-pure-white/10"
         >
-          <FontAwesomeIcon icon={faChevronLeft} className="h-4 w-4" />
+          <FontAwesomeIcon icon={faChevronLeft} className="size-4" />
         </button>
         <button
           type="button"
           aria-label="Следующий отзыв"
           onClick={() => swiperRef.current?.slideNext()}
-          className="flex h-10 w-10 items-center justify-center rounded-sm border border-pure-white text-warm-cream transition-colors hover:bg-pure-white/10"
+          className="flex size-10 items-center justify-center rounded-sm border border-pure-white text-warm-cream transition-colors hover:bg-pure-white/10"
         >
-          <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
+          <FontAwesomeIcon icon={faChevronRight} className="size-4" />
         </button>
       </div>
     </div>

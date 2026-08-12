@@ -32,7 +32,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       ) : (
         <div className="flex aspect-square w-full items-center justify-center bg-sage-mist/30">
-          <FontAwesomeIcon icon={faImage} className="h-8 w-8 text-black-olive/20" />
+          <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
         </div>
       )}
 

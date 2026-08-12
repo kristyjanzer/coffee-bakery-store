@@ -745,3 +745,64 @@ Black Olive `text-caption` (14px — самый мелкий размер в ш�
 
 **Security review:** не применялся по существу — правка статичного текста в коде (не
 пользовательский ввод), без секретов, API или аутентификации.
+
+## Задача 18
+
+По запросу пользователя проведён аудит конфигурации ESLint — держится ли она на «честном слове»
+или правила из `AGENTS.md`/`.agents/rules/code-style.md` реально проверяются линтером. Ветка
+`chore/eslint-strict-rules`.
+
+Нашёл: `.eslintrc.json` подключал только `next/core-web-vitals` — без `next/typescript`. Из-за
+этого правила `@typescript-eslint` (включая запрет `any` из `code-style.md`) физически не
+проверялись, хотя все нужные плагины (`@typescript-eslint`, `eslint-plugin-react`,
+`eslint-plugin-jsx-a11y`, `eslint-plugin-import`) уже стояли как транзитивные зависимости
+`eslint-config-next`. Правило «без инлайновых `style={{}}`» из `code-style.md` тоже не было
+защищено линтером.
+
+- `.eslintrc.json`:
+  - добавлен `next/typescript` (без новых зависимостей) — включает `@typescript-eslint/recommended`.
+  - `react/forbid-dom-props` на `style` — enforce правила "только Tailwind-классы" из
+    `code-style.md`.
+  - `overrides` для `**/*.ts?(x)` с `parserOptions.project: "./tsconfig.json"` (типизированный
+    линт) + `@typescript-eslint/no-floating-promises`/`no-misused-promises` — актуально, так как
+    по `docs/plan.md` (пункты 22-33) впереди много async-кода (Prisma, Telegram API), где забытый
+    `await` легко пропустить. Не стал подключать весь `recommended-type-checked` — слишком шумно
+    для текущего размера проекта, добавил только эти два правила точечно.
+  - `plugin:tailwindcss/recommended` — новая зависимость `eslint-plugin-tailwindcss@3.18.3` (v4
+    требует ESLint 9, в проекте ESLint 8 — поставил последнюю версию под ESLint 8/Tailwind 3).
+    Проверяет классы по реальным токенам из `tailwind.config.ts` и подсказывает шорткаты/порядок
+    классов — поддерживает дисциплину DESIGN.md ("не придумывать значения на глаз").
+- Новый `no-floating-promises` сразу нашёл реальный баг: `components/cart/CartHydration.tsx`
+  вызывал `useCartStore.persist.rehydrate()` (возвращает Promise) без `await`/`void` — не ломало
+  работу (эффект и так fire-and-forget), но исправлено на `void useCartStore.persist.rehydrate()`
+  для явности и тишины линта.
+- `npx next lint --fix` авторешил все предупреждения `tailwindcss/enforces-shorthand` (`h-X w-X` →
+  `size-X`) и `tailwindcss/classnames-order` в `CartIcon`, `CartWidget`, `ProductCard`,
+  `QtyStepper`, `ReviewsSlider`, `Footer`, `Header`, `Nav` — только перестановка/схлопывание
+  классов, поведение не изменилось.
+
+Проверено: `npm run lint` и `npm run typecheck` — чисто (0 ошибок, 0 предупреждений).
+
+**Изменённые/созданные файлы:**
+- `.eslintrc.json` — изменён (`next/typescript`, `plugin:tailwindcss/recommended`,
+  `react/forbid-dom-props`, типизированный линт с `no-floating-promises`/`no-misused-promises`)
+- `package.json`, `package-lock.json` — изменены (добавлен `eslint-plugin-tailwindcss@3.18.3`
+  в `devDependencies`)
+- `components/cart/CartHydration.tsx` — изменён (`void` на `rehydrate()`, реальный баг, найденный
+  новым правилом)
+- `components/cart/CartIcon.tsx`, `components/cart/CartWidget.tsx`,
+  `components/catalog/ProductCard.tsx`, `components/catalog/QtyStepper.tsx`,
+  `components/catalog/ReviewsSlider.tsx`, `components/layout/Footer.tsx`,
+  `components/layout/Header.tsx`, `components/layout/Nav.tsx` — изменены (автофикс классов
+  Tailwind, без изменения поведения)
+
+**Новые переменные окружения:** нет.
+
+**Изменения схемы БД:** нет.
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — задача не
+затрагивает секреты/аутентификацию/пользовательский ввод/API, замечаний нет. `npm audit`
+показал 4 уже существовавшие уязвимости в транзитивных зависимостях (`postcss`/`sharp` через
+`next`, `swiper`) — не связаны с этой задачей (появились не из-за `eslint-plugin-tailwindcss`),
+фикс требует breaking-апгрейдов (`next@16`, `swiper@14`), сознательно не трогал без отдельного
+запроса.

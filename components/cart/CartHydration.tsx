@@ -9,7 +9,7 @@ import { useCartStore } from "@/stores/cartStore";
 // подписанные на useCartStore (QtyStepper, CartIcon, CartWidget), сами перерендерятся.
 export function CartHydration() {
   useEffect(() => {
-    useCartStore.persist.rehydrate();
+    void useCartStore.persist.rehydrate();
   }, []);
 
   return null;
