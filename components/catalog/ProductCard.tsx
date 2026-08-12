@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, saveCatalogScrollPosition } from "@/lib/utils";
 import type { MenuProduct } from "@/lib/menu";
 import { QtyStepper } from "@/components/catalog/QtyStepper";
 
@@ -21,7 +21,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group relative z-0 flex h-full flex-col p-[15px] transition-transform duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:shadow-[0_13px_34px_-20px_rgba(29,11,13,0.45)]">
-      <Link href={`/product/${product.id}`} className="block">
+      <Link
+        href={`/product/${product.id}`}
+        className="block"
+        onClick={saveCatalogScrollPosition}
+      >
         {product.imageUrl ? (
           <div className="relative aspect-square w-full">
             <Image
@@ -42,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* flex-1 + mt-auto на цене — цена и "+" всегда приклеены к низу карточки,
           независимо от того, сколько строк занимает название соседних товаров в ряду. */}
       <div className="mt-[30px] flex flex-1 flex-col">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${product.id}`} onClick={saveCatalogScrollPosition}>
           <h3 className="font-venuscom text-body-lg text-black-olive">{product.name}</h3>
         </Link>
         {weightLabel && (

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { CategoryTabs } from "@/components/catalog/CategoryTabs";
 import { ProductSection } from "@/components/catalog/ProductSection";
+import { CATALOG_SCROLL_KEY } from "@/lib/utils";
 import type { MenuCategory } from "@/lib/menu";
 
 interface CatalogProps {
@@ -45,6 +46,18 @@ export function Catalog({ categories }: CatalogProps) {
       setActiveSlug(stored);
     }
   }
+
+  // Восстановление scrollY браузером/Next.js на кнопку "Назад" оказалось
+  // ненадёжным (страница/product/[id] рендерится динамически — ƒ, не ○ в
+  // выводе `next build`). Сохраняем прокрутку сами перед переходом на товар
+  // (ProductCard) и возвращаем её явно здесь один раз после маунта —
+  // behavior: "instant", чтобы не ловить анимацию scroll-smooth с html.
+  useEffect(() => {
+    const savedScrollY = sessionStorage.getItem(CATALOG_SCROLL_KEY);
+    if (savedScrollY === null) return;
+    sessionStorage.removeItem(CATALOG_SCROLL_KEY);
+    window.scrollTo({ top: Number(savedScrollY), left: 0, behavior: "instant" });
+  }, []);
 
   const handleSelect = (slug: string) => {
     setActiveSlug(slug);

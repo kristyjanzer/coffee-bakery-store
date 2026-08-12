@@ -26,3 +26,13 @@ export function formatPrice(price: number, currency = "RUB"): string {
 export function scrollToId(id: string): void {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+// Восстановление прокрутки браузером/Next.js при возврате со страницы товара
+// на каталог (кнопка "Назад") оказалось ненадёжным (страница /product/[id]
+// рендерится динамически). Сохраняем прокрутку сами прямо перед переходом —
+// вызывается из ProductCard, читается в Catalog.
+export const CATALOG_SCROLL_KEY = "catalog-scroll-y";
+
+export function saveCatalogScrollPosition(): void {
+  sessionStorage.setItem(CATALOG_SCROLL_KEY, String(window.scrollY));
+}
