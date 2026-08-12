@@ -15,7 +15,7 @@ export function CartIcon() {
       onClick={openWidget}
       className="relative text-warm-cream"
     >
-      <FontAwesomeIcon icon={faCartShopping} className="h-5 w-5" />
+      <FontAwesomeIcon icon={faCartShopping} className="size-5" />
       {totalCount > 0 && (
         <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-sm bg-lemon-zest px-1 font-venuscom text-caption font-semibold leading-none text-black-olive">
           {totalCount}

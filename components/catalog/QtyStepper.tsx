@@ -41,7 +41,7 @@ export function QtyStepper({
         type="button"
         disabled
         aria-label="Нет в наличии"
-        className="flex h-9 w-9 items-center justify-center rounded-sm bg-sage-mist/30 text-lg font-semibold text-black-olive/30"
+        className="flex size-9 items-center justify-center rounded-sm bg-sage-mist/30 text-lg font-semibold text-black-olive/30"
       >
         +
       </button>
@@ -54,7 +54,7 @@ export function QtyStepper({
         type="button"
         aria-label="Добавить в корзину"
         onClick={() => addItem({ productId, name, price, imageUrl, unit })}
-        className="flex h-9 w-9 items-center justify-center rounded-sm bg-lemon-zest text-lg font-semibold text-black-olive"
+        className="flex size-9 items-center justify-center rounded-sm bg-lemon-zest text-lg font-semibold text-black-olive"
       >
         +
       </button>
@@ -68,7 +68,7 @@ export function QtyStepper({
         aria-label="Уменьшить количество"
         disabled={preventRemoveAtOne && count === 1}
         onClick={() => decrementQty(productId)}
-        className="flex h-7 w-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
+        className="flex size-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
       >
         −
       </button>
@@ -80,7 +80,7 @@ export function QtyStepper({
         aria-label="Увеличить количество"
         disabled={count >= max}
         onClick={() => incrementQty(productId)}
-        className="flex h-7 w-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
+        className="flex size-7 items-center justify-center text-lg font-semibold disabled:opacity-30"
       >
         +
       </button>

@@ -77,11 +77,11 @@ export function Nav() {
         aria-expanded={isOpen}
         className="text-warm-cream md:hidden"
       >
-        <FontAwesomeIcon icon={isOpen ? faXmark : faBars} className="h-5 w-5" />
+        <FontAwesomeIcon icon={isOpen ? faXmark : faBars} className="size-5" />
       </button>
 
       {isOpen && (
-        <ul className="absolute inset-x-0 top-20 flex flex-col gap-4 border-t border-sage-mist/20 bg-black-olive px-6 py-6 md:hidden">
+        <ul className="absolute inset-x-0 top-20 flex flex-col gap-4 border-t border-sage-mist/20 bg-black-olive p-6 md:hidden">
           {links.map((link) => (
             <li key={link.href}>
               <NavLink

@@ -49,7 +49,7 @@ export function Footer() {
                   aria-label={social.label}
                   className="text-warm-cream hover:opacity-80"
                 >
-                  <FontAwesomeIcon icon={social.icon} className="h-5 w-5" />
+                  <FontAwesomeIcon icon={social.icon} className="size-5" />
                 </a>
               </li>
             ))}
