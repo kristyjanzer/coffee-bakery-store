@@ -4,10 +4,10 @@
   "private": true,
   "packageManager": "npm@10.0.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -25,10 +25,10 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@prisma/client": "^5.20.0",
     "bcryptjs": "^2.4.3",
-    "next": "^15.0.0",
+    "next": "16.3.0",
     "next-auth": "^4.24.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "swiper": "^11.1.0",
     "zod": "^3.23.0",
     "zustand": "^5.0.0"
@@ -36,16 +36,20 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.7.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
     "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^15.0.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.3.0",
     "eslint-plugin-tailwindcss": "^3.18.3",
     "postcss": "^8.4.47",
     "prisma": "^5.20.0",
     "tailwindcss": "^3.4.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0"
+  },
+  "overrides": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4"
   }
 }
