@@ -48,7 +48,11 @@ export function ProductCard({ product }: ProductCardProps) {
         {weightLabel && (
           <p className="mt-1 font-venuscom text-caption text-black-olive/60">{weightLabel}</p>
         )}
-        <div className="mt-auto flex items-center justify-between pt-3">
+        {/* На узких карточках (2 колонки на мобильных) цена + степпер "−/N/+" не
+            помещаются в один ряд — складываем в столбец, прижатый вправо, пока карточка
+            не станет достаточно широкой (sm: тот же брейкпоинт, на котором сетка
+            переходит с 2 на 3 колонки). */}
+        <div className="mt-auto flex flex-col items-end gap-2 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
           <span className="font-venuscom text-body-sm font-semibold text-black-olive">
             {formatPrice(product.price, product.currency)}
           </span>
