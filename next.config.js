@@ -12,11 +12,6 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
       },
     ],
-    // В этой дев-среде DNS для внешних доменов резолвится в адреса из служебного
-    // диапазона 198.18.0.0/15 — новая SSRF-защита Next 16 (dangerouslyAllowLocalIP)
-    // из-за этого блокирует загрузку картинок с Cloudinary в dev. В production
-    // (реальный DNS на Vercel) флаг не включается — защита остаётся.
-    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
   },
 };
 
