@@ -90,56 +90,64 @@ export function CartWidget() {
               return (
                 <li
                   key={item.productId}
-                  className="flex items-center gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
+                  className="flex flex-col gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0 sm:flex-row sm:items-center"
                 >
+                  {/* На мобильных фото — сверху и во всю ширину (было 56px, имя терялось
+                      за truncate); на sm+ возвращается компактная миниатюра как раньше. */}
                   {item.imageUrl ? (
-                    <div className="relative size-14 shrink-0">
+                    <div className="relative h-40 w-full shrink-0 sm:size-14">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
                         fill
-                        sizes="56px"
+                        sizes="(min-width: 640px) 56px, 100vw"
                         className="object-cover"
                       />
                     </div>
                   ) : (
-                    <div className="flex size-14 shrink-0 items-center justify-center bg-sage-mist/30">
-                      <FontAwesomeIcon icon={faImage} className="size-5 text-black-olive/20" />
+                    <div className="flex h-40 w-full shrink-0 items-center justify-center bg-sage-mist/30 sm:size-14">
+                      <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20 sm:size-5" />
                     </div>
                   )}
 
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-venuscom text-body-sm text-black-olive">
-                      {item.name}
-                    </p>
-                    {item.unit && (
-                      <p className="font-venuscom text-caption text-black-olive/60">
-                        {item.unit}
+                  {/* На sm+ становится display:contents — text-блок и controls выходят
+                      прямыми флекс-детьми <li>, воссоздавая прежнюю горизонтальную раскладку. */}
+                  <div className="flex items-center justify-between gap-3 sm:contents">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-venuscom text-body-sm text-black-olive sm:truncate">
+                        {item.name}
                       </p>
-                    )}
-                    <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
-                      {formatPrice(item.price * item.quantity)}
-                    </p>
+                      {item.unit && (
+                        <p className="font-venuscom text-caption text-black-olive/60">
+                          {item.unit}
+                        </p>
+                      )}
+                      <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+                        {formatPrice(item.price * item.quantity)}
+                      </p>
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-3">
+                      <QtyStepper
+                        productId={item.productId}
+                        name={item.name}
+                        price={item.price}
+                        imageUrl={item.imageUrl}
+                        unit={item.unit}
+                        max={product ? product.stockQuantity : 0}
+                        preventRemoveAtOne
+                      />
+
+                      <button
+                        type="button"
+                        aria-label={`Убрать «${item.name}» из корзины`}
+                        onClick={() => removeItem(item.productId)}
+                        className="text-black-olive/50 hover:text-black-olive"
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="size-4" />
+                      </button>
+                    </div>
                   </div>
-
-                  <QtyStepper
-                    productId={item.productId}
-                    name={item.name}
-                    price={item.price}
-                    imageUrl={item.imageUrl}
-                    unit={item.unit}
-                    max={product ? product.stockQuantity : 0}
-                    preventRemoveAtOne
-                  />
-
-                  <button
-                    type="button"
-                    aria-label={`Убрать «${item.name}» из корзины`}
-                    onClick={() => removeItem(item.productId)}
-                    className="text-black-olive/50 hover:text-black-olive"
-                  >
-                    <FontAwesomeIcon icon={faTrash} className="size-4" />
-                  </button>
                 </li>
               );
             })}
