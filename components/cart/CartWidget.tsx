@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useCartStore, selectTotalPrice } from "@/stores/cartStore";
 import { getProductById } from "@/lib/menu";
 import { formatPrice } from "@/lib/utils";
@@ -90,26 +90,28 @@ export function CartWidget() {
               return (
                 <li
                   key={item.productId}
-                  className="flex gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
+                  className="flex items-end gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
                 >
-                  {/* Фото — фиксированный квадрат 96px, как на референсе пользователя;
-                      без скругления (radius-cards: 0 из DESIGN.md, как у ProductCard). */}
+                  {/* Фото — 5rem (80px), как на референсе пользователя; без скругления
+                      (radius-cards: 0 из DESIGN.md, как у ProductCard). */}
                   {item.imageUrl ? (
-                    <div className="relative size-24 shrink-0">
+                    <div className="relative size-20 shrink-0">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
                         fill
-                        sizes="96px"
+                        sizes="80px"
                         className="object-cover"
                       />
                     </div>
                   ) : (
-                    <div className="flex size-24 shrink-0 items-center justify-center bg-sage-mist/30">
+                    <div className="flex size-20 shrink-0 items-center justify-center bg-sage-mist/30">
                       <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
                     </div>
                   )}
 
+                  {/* items-end на <li> прижимает эту колонку к нижнему краю фото — цена и
+                      степпер оказываются на одном уровне с низом фото. */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-venuscom text-body-sm text-black-olive">{item.name}</p>
@@ -117,9 +119,9 @@ export function CartWidget() {
                         type="button"
                         aria-label={`Убрать «${item.name}» из корзины`}
                         onClick={() => removeItem(item.productId)}
-                        className="shrink-0 text-xl leading-none text-black-olive/40 hover:text-black-olive"
+                        className="shrink-0 text-black-olive/40 hover:text-black-olive"
                       >
-                        ×
+                        <FontAwesomeIcon icon={faTrash} className="size-4" />
                       </button>
                     </div>
                     {item.unit && (
