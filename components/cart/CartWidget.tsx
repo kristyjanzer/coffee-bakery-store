@@ -27,59 +27,64 @@ export function CartWidget() {
       ) : (
         <>
           <ul className="flex flex-col gap-4">
-            {items.map((item) => (
-              <li
-                key={item.productId}
-                className="flex items-center gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
-              >
-                {item.imageUrl ? (
-                  <div className="relative size-14 shrink-0">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      fill
-                      sizes="56px"
-                      className="object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex size-14 shrink-0 items-center justify-center bg-sage-mist/30">
-                    <FontAwesomeIcon icon={faImage} className="size-5 text-black-olive/20" />
-                  </div>
-                )}
-
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-venuscom text-body-sm text-black-olive">
-                    {item.name}
-                  </p>
-                  {item.unit && (
-                    <p className="font-venuscom text-caption text-black-olive/60">{item.unit}</p>
-                  )}
-                  <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
-                    {formatPrice(item.price * item.quantity)}
-                  </p>
-                </div>
-
-                <QtyStepper
-                  productId={item.productId}
-                  name={item.name}
-                  price={item.price}
-                  imageUrl={item.imageUrl}
-                  unit={item.unit}
-                  max={getProductById(item.productId)?.stockQuantity ?? 0}
-                  preventRemoveAtOne
-                />
-
-                <button
-                  type="button"
-                  aria-label={`Убрать «${item.name}» из корзины`}
-                  onClick={() => removeItem(item.productId)}
-                  className="text-black-olive/50 hover:text-black-olive"
+            {items.map((item) => {
+              const product = getProductById(item.productId);
+              return (
+                <li
+                  key={item.productId}
+                  className="flex items-center gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
                 >
-                  <FontAwesomeIcon icon={faTrash} className="size-4" />
-                </button>
-              </li>
-            ))}
+                  {item.imageUrl ? (
+                    <div className="relative size-14 shrink-0">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-14 shrink-0 items-center justify-center bg-sage-mist/30">
+                      <FontAwesomeIcon icon={faImage} className="size-5 text-black-olive/20" />
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-venuscom text-body-sm text-black-olive">
+                      {item.name}
+                    </p>
+                    {item.unit && (
+                      <p className="font-venuscom text-caption text-black-olive/60">
+                        {item.unit}
+                      </p>
+                    )}
+                    <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+                      {formatPrice(item.price * item.quantity)}
+                    </p>
+                  </div>
+
+                  <QtyStepper
+                    productId={item.productId}
+                    name={item.name}
+                    price={item.price}
+                    imageUrl={item.imageUrl}
+                    unit={item.unit}
+                    max={product ? product.stockQuantity : 0}
+                    preventRemoveAtOne
+                  />
+
+                  <button
+                    type="button"
+                    aria-label={`Убрать «${item.name}» из корзины`}
+                    onClick={() => removeItem(item.productId)}
+                    className="text-black-olive/50 hover:text-black-olive"
+                  >
+                    <FontAwesomeIcon icon={faTrash} className="size-4" />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="mt-4 flex items-center justify-between border-t border-sage-mist pt-4">

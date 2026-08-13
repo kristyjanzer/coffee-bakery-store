@@ -8,7 +8,8 @@ interface QtyStepperProps {
   price: number;
   imageUrl: string;
   unit: string;
-  max: number;
+  // null — товар без лимита количества (например, напитки)
+  max: number | null;
   // В виджете корзины удаление — отдельная кнопка-корзина (CartWidget), поэтому "−" при
   // count === 1 там должен быть no-op, а не убирать позицию. На карточке товара (проп не
   // передан) уменьшение до 0 по-прежнему возвращает кнопку "+" — это единственный способ
@@ -41,7 +42,7 @@ export function QtyStepper({
 
   const isCta = variant === "cta";
 
-  if (max <= 0) {
+  if (max !== null && max <= 0) {
     return (
       <button
         type="button"
@@ -108,7 +109,7 @@ export function QtyStepper({
       <button
         type="button"
         aria-label="Увеличить количество"
-        disabled={count >= max}
+        disabled={max !== null && count >= max}
         onClick={() => incrementQty(productId)}
         className={
           isCta

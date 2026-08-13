@@ -6,7 +6,8 @@ interface RawMenuItem {
   name: string;
   price: number;
   currency: string;
-  stock_quantity: number;
+  // null — товар без лимита количества (например, напитки: их варят на заказ)
+  stock_quantity: number | null;
   image_url: string;
   volume_ml?: number;
   weight_g?: number;
@@ -28,7 +29,7 @@ export interface MenuProduct {
   name: string;
   price: number;
   currency: string;
-  stockQuantity: number;
+  stockQuantity: number | null;
   imageUrl: string;
   volumeMl?: number;
   weightG?: number;
