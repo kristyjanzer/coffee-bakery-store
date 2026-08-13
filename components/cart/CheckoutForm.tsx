@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { orderFormDefaultValues, orderFormSchema, type OrderFormValues } from "@/lib/validations/order";
-import { formatPrice } from "@/lib/utils";
+import { formatPhoneInput, formatPrice } from "@/lib/utils";
 import type { CartItem } from "@/stores/cartStore";
 
 interface CheckoutFormProps {
@@ -71,8 +71,12 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
         </label>
         <Input
           id="customerContact"
+          type="tel"
+          inputMode="numeric"
           value={values.customerContact}
-          onChange={(event) => handleChange("customerContact", event.target.value)}
+          onChange={(event) =>
+            handleChange("customerContact", formatPhoneInput(event.target.value))
+          }
           placeholder="+7 900 000-00-00"
           className="mt-1"
         />
