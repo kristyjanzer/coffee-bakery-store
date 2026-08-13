@@ -10,7 +10,6 @@ import type { CartItem } from "@/stores/cartStore";
 interface CheckoutFormProps {
   items: CartItem[];
   totalPrice: number;
-  onBack: () => void;
   onSubmit: (values: OrderFormValues) => void | Promise<void>;
   isSubmitting: boolean;
 }
@@ -20,7 +19,7 @@ type FormErrors = Partial<Record<keyof OrderFormValues, string>>;
 // Форма оформления заявки (docs/plan.md, пункт 12): имя, телефон, email (обязателен —
 // на него отправляется чек об оплате), комментарий, дата предзаказа. Валидация — тот же
 // zod-стек, что и в остальном проекте, без react-hook-form (лишняя зависимость не нужна).
-export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting }: CheckoutFormProps) {
+export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: CheckoutFormProps) {
   const [values, setValues] = useState<OrderFormValues>(orderFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -156,15 +155,8 @@ export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting
         </div>
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="font-venuscom text-body-sm text-black-olive/60 hover:text-black-olive hover:underline"
-        >
-          Назад
-        </button>
-        <Button type="submit" disabled={isSubmitting}>
+      <div className="mt-2">
+        <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting ? "Отправляем…" : "Отправить заявку"}
         </Button>
       </div>
