@@ -13,9 +13,9 @@ interface CheckoutFormProps {
 
 type FormErrors = Partial<Record<keyof OrderFormValues, string>>;
 
-// Форма оформления заявки (docs/plan.md, пункт 12): имя, контакт, комментарий,
-// дата предзаказа. Валидация — тот же zod-стек, что и в остальном проекте, без
-// react-hook-form (лишняя зависимость не нужна для четырёх полей).
+// Форма оформления заявки (docs/plan.md, пункт 12): имя, телефон, email (обязателен —
+// на него отправляется чек об оплате), комментарий, дата предзаказа. Валидация — тот же
+// zod-стек, что и в остальном проекте, без react-hook-form (лишняя зависимость не нужна).
 export function CheckoutForm({ onBack, onSubmit, isSubmitting }: CheckoutFormProps) {
   const [values, setValues] = useState<OrderFormValues>(orderFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -64,7 +64,7 @@ export function CheckoutForm({ onBack, onSubmit, isSubmitting }: CheckoutFormPro
 
       <div>
         <label htmlFor="customerContact" className="font-venuscom text-caption text-black-olive/70">
-          Телефон или email
+          Телефон
         </label>
         <Input
           id="customerContact"
@@ -76,6 +76,25 @@ export function CheckoutForm({ onBack, onSubmit, isSubmitting }: CheckoutFormPro
         {errors.customerContact && (
           <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
             {errors.customerContact}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="email" className="font-venuscom text-caption text-black-olive/70">
+          Email (пришлем чек об оплате)
+        </label>
+        <Input
+          id="email"
+          type="email"
+          value={values.email}
+          onChange={(event) => handleChange("email", event.target.value)}
+          placeholder="you@example.com"
+          className="mt-1"
+        />
+        {errors.email && (
+          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+            {errors.email}
           </p>
         )}
       </div>
