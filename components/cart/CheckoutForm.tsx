@@ -24,7 +24,25 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
   const [errors, setErrors] = useState<FormErrors>({});
 
   function handleChange(field: keyof OrderFormValues, value: string) {
-    setValues((prev) => ({ ...prev, [field]: value }));
+    const nextValues = { ...values, [field]: value };
+    setValues(nextValues);
+
+    // Ошибка снимается "на лету", как только поле становится валидным — но только
+    // для полей, где ошибка уже показана (после неудачной попытки отправки).
+    // Полная валидация всех полей при каждом нажатии клавиши не нужна: пока
+    // пользователь просто заполняет форму первый раз, ошибки появляются только
+    // на submit, а не всплывают посреди набора текста.
+    if (errors[field]) {
+      const result = orderFormSchema.safeParse(nextValues);
+      const stillInvalid = !result.success && result.error.issues.some((issue) => issue.path[0] === field);
+      if (!stillInvalid) {
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next[field];
+          return next;
+        });
+      }
+    }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
