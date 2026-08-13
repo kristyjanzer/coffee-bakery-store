@@ -92,20 +92,20 @@ export function CartWidget() {
                   key={item.productId}
                   className="flex items-end gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
                 >
-                  {/* Фото — 5rem (80px), как на референсе пользователя; без скругления
+                  {/* Фото — 4rem (64px), как на референсе пользователя; без скругления
                       (radius-cards: 0 из DESIGN.md, как у ProductCard). */}
                   {item.imageUrl ? (
-                    <div className="relative size-20 shrink-0">
+                    <div className="relative size-16 shrink-0">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
                         fill
-                        sizes="80px"
+                        sizes="64px"
                         className="object-cover"
                       />
                     </div>
                   ) : (
-                    <div className="flex size-20 shrink-0 items-center justify-center bg-sage-mist/30">
+                    <div className="flex size-16 shrink-0 items-center justify-center bg-sage-mist/30">
                       <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
                     </div>
                   )}
