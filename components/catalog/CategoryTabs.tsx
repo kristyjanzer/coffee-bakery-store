@@ -48,7 +48,7 @@ export function CategoryTabs({ categories, activeSlug, onSelect }: CategoryTabsP
     <div
       ref={trackRef}
       role="tablist"
-      className="scrollbar-hide sticky top-20 z-30 flex h-16 cursor-grab select-none items-center gap-3 overflow-x-auto bg-warm-cream active:cursor-grabbing"
+      className="scrollbar-hide sticky top-20 z-30 flex h-16 cursor-grab select-none items-center gap-3 overflow-x-auto border-b border-sage-mist bg-warm-cream active:cursor-grabbing"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={stopDragging}

@@ -1144,3 +1144,7 @@ React-состоянии (`useState`, по умолчанию — первая �
 **Новые переменные окружения:** нет.
 
 **Security review:** не применялся по существу — правка типов/данных без секретов, ввода, API.
+
+## Задача 24
+
+По запросу пользователя: `components/catalog/ProductCard.tsx` — название товара на мобильных `text-[18px]` вместо `text-body-lg` (20px), с `sm:` breakpoint возвращается токен DESIGN.md. `components/catalog/CategoryTabs.tsx` — добавлен `border-b border-sage-mist` под табами (фон табов и товаров совпадал, разделитель убирает слияние).
