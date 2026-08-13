@@ -1,27 +1,83 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useCartStore, selectTotalPrice } from "@/stores/cartStore";
 import { getProductById } from "@/lib/menu";
 import { formatPrice } from "@/lib/utils";
+import { submitOrder } from "@/lib/orders";
+import type { OrderFormValues } from "@/lib/validations/order";
 import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
 import { QtyStepper } from "@/components/catalog/QtyStepper";
+import { CheckoutForm } from "@/components/cart/CheckoutForm";
+
+type WidgetStep = "cart" | "checkout" | "success";
+
+const STEP_TITLES: Record<WidgetStep, string> = {
+  cart: "Корзина",
+  checkout: "Оформление заказа",
+  success: "Заявка принята",
+};
 
 // Открывается по клику на CartIcon (isWidgetOpen в cartStore). Список позиций +
 // итоговая стоимость (docs/plan.md, пункт 10). QtyStepper переиспользуется как есть
 // (docs/architecture.md, раздел 5 — общий для карточки товара, страницы товара и виджета
 // корзины); max берём из lib/menu.ts по productId, так как CartItem остаток не хранит.
+//
+// Шаг "checkout"/"success" (docs/plan.md, пункт 12) — та же модалка переключается на форму
+// заявки без орехов/оплаты. submitOrder() пока заглушка (backend появится в пункте 28) —
+// step хранится локально, а не в cartStore, потому что это чисто UI-состояние виджета.
 export function CartWidget() {
   const isOpen = useCartStore((state) => state.isWidgetOpen);
   const closeWidget = useCartStore((state) => state.closeWidget);
   const items = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
+  const clearCart = useCartStore((state) => state.clearCart);
   const totalPrice = useCartStore(selectTotalPrice);
 
+  const [step, setStep] = useState<WidgetStep>("cart");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function handleClose() {
+    closeWidget();
+    setStep("cart");
+  }
+
+  async function handleCheckoutSubmit(values: OrderFormValues) {
+    setIsSubmitting(true);
+    await submitOrder({ form: values, items, totalPrice });
+    setIsSubmitting(false);
+    clearCart();
+    setStep("success");
+  }
+
+  if (step === "checkout") {
+    return (
+      <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES.checkout}>
+        <CheckoutForm
+          onBack={() => setStep("cart")}
+          onSubmit={handleCheckoutSubmit}
+          isSubmitting={isSubmitting}
+        />
+      </Modal>
+    );
+  }
+
+  if (step === "success") {
+    return (
+      <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES.success}>
+        <p className="font-venuscom text-body-sm text-black-olive">
+          Спасибо! Мы получили вашу заявку и скоро свяжемся с вами, чтобы подтвердить заказ.
+        </p>
+      </Modal>
+    );
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={closeWidget} title="Корзина">
+    <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES.cart}>
       {items.length === 0 ? (
         <p className="font-venuscom text-body-sm text-black-olive/60">Корзина пуста</p>
       ) : (
@@ -95,6 +151,14 @@ export function CartWidget() {
               {formatPrice(totalPrice)}
             </span>
           </div>
+
+          <Button
+            type="button"
+            onClick={() => setStep("checkout")}
+            className="mt-4 w-full"
+          >
+            Оформить заказ
+          </Button>
         </>
       )}
     </Modal>

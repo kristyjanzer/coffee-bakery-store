@@ -1148,3 +1148,26 @@ React-состоянии (`useState`, по умолчанию — первая �
 ## Задача 24
 
 По запросу пользователя: `components/catalog/ProductCard.tsx` — название товара на мобильных `text-[18px]` вместо `text-body-lg` (20px), с `sm:` breakpoint возвращается токен DESIGN.md. `components/catalog/CategoryTabs.tsx` — добавлен `border-b border-sage-mist` под табами (фон табов и товаров совпадал, разделитель убирает слияние).
+
+## Задача 25
+
+Выполнен пункт 12 плана (`docs/plan.md`) — «Оформление заявки без оплаты». Ветка `feature/checkout-order-form`. Backend (`POST /api/orders`) появится только в пунктах 22-36, поэтому по согласованию с пользователем сделана заглушка-успех, как раньше `lib/menu.ts`/`lib/reviews.ts`.
+
+- `lib/validations/order.ts` — создан. Zod-схема `orderFormSchema` (`customerName`, `customerContact`, `comment?`, `preferredDate?`) с именами полей 1-в-1 как в модели `Order`.
+- `lib/orders.ts` — создан. `submitOrder()` — заглушка (имитация сети через `setTimeout`), сигнатура рассчитана на замену на `fetch("/api/orders")` в пункте 28 без переделки компонентов.
+- `components/cart/CheckoutForm.tsx` — создан. Форма (имя, телефон/email, дата предзаказа, комментарий) с клиентской валидацией через `zod` (без `react-hook-form`).
+- `components/cart/CartWidget.tsx` — изменён: добавлен локальный шаг `"cart" | "checkout" | "success"`, кнопка «Оформить заказ» под итогом переключает на форму; успешная отправка очищает `cartStore` и показывает экран благодарности; закрытие модалки сбрасывает шаг на `"cart"`.
+
+Проверено вручную в браузере (Chrome DevTools MCP, desktop 1440×900 и мобильная 390×844): валидация пустой формы показывает ошибки без придуманных цветов (текст `text-black-olive font-semibold`, т.к. в DESIGN.md нет отдельного error-токена); успешная отправка очищает корзину и показывает «Заявка принята»; кнопка «Назад» и закрытие модалки возвращают/сбрасывают на список корзины; ошибок в консоли нет; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые/созданные файлы:**
+- `lib/validations/order.ts` — создан
+- `lib/orders.ts` — создан
+- `components/cart/CheckoutForm.tsx` — создан
+- `components/cart/CartWidget.tsx` — изменён (шаги cart/checkout/success)
+
+**Новые переменные окружения:** нет.
+
+**Изменения схемы БД:** нет (заявка нигде не сохраняется — заглушка до пункта 28).
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — замечаний нет. Форма не отправляет данные на сервер (заглушка, `submitOrder()` ничего не персистит и никуда не шлёт запросы), значения полей нигде не рендерятся через `dangerouslySetInnerHTML`, `zod` валидирует длину/обязательность на клиенте.
