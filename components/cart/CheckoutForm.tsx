@@ -57,9 +57,10 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
           onChange={(event) => handleChange("customerName", event.target.value)}
           placeholder="Как к вам обращаться"
           className="mt-1"
+          error={Boolean(errors.customerName)}
         />
         {errors.customerName && (
-          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+          <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">
             {errors.customerName}
           </p>
         )}
@@ -79,9 +80,10 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
           }
           placeholder="+7 900 000-00-00"
           className="mt-1"
+          error={Boolean(errors.customerContact)}
         />
         {errors.customerContact && (
-          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+          <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">
             {errors.customerContact}
           </p>
         )}
@@ -99,9 +101,10 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
           onChange={(event) => handleChange("email", event.target.value)}
           placeholder="you@example.com"
           className="mt-1"
+          error={Boolean(errors.email)}
         />
         {errors.email && (
-          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+          <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">
             {errors.email}
           </p>
         )}
