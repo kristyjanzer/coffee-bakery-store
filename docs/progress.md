@@ -1119,3 +1119,19 @@ React-состоянии (`useState`, по умолчанию — первая �
 - `app/admin/login/page.tsx` — создан
 
 **Security review:** применялся (чек-лист `.claude/skills/security-review`) — изменений, требующих внимания, не найдено. Пароль вводится в `<input type="password">`, нигде не логируется и не сохраняется (заглушка игнорирует payload); нет `dangerouslySetInnerHTML` — XSS-поверхности нет. Реальная аутентификация, хранение секретов и защита `/admin/*` — отдельные пункты плана (22-32), к этой задаче не относятся.
+
+## Задача 27
+
+Выполнен пункт 14 плана (`docs/plan.md`) — «Layout админ-панели: Sidebar (20%) + область контента». Ветка `feature/admin-sidebar-layout`.
+
+Чтобы сайдбар не оборачивал `/admin/login` (публична, пункт 13), защищённые страницы вынесены в route group `app/admin/(protected)/` — тот же приём, что `app/(site)/` для Header/Footer (задача 4); на URL не влияет. `components/admin/Sidebar.tsx` — клиентский компонент: список из 7 разделов 1-в-1 из `about-project.md` (Dashboard/Заказы/Товары/Клиенты/Отзывы/Управление страницами/Настройки), активный пункт по `usePathname()` в стиле Ghost/Outlined Nav Item из DESIGN.md, на мобильных (`< lg`) сворачивается в верхнюю панель с бургер-меню (брейкпоинт `lg`, не `md` как у публичного `Nav` — админским таблицам нужна большая ширина). Ссылка «Выйти» — заглушка на `/admin/login` (реальный `signOut()` — пункт 31). `app/admin/(protected)/page.tsx` — временная заглушка Dashboard (сама сводка/график — пункт 15), нужна была, чтобы `/admin` не был пустым 404 и сайдбар можно было проверить. Заодно удалены пустые нигде не использовавшиеся заготовки папок `app/admin/{customers,orders,pages,products,reviews,settings}` (не отслеживались git, будут пересозданы уже внутри `(protected)/` в задачах 16-21).
+
+Проверено вручную в браузере (Chrome DevTools MCP): `/admin` — сайдбар 20% ширины, активный пункт «Dashboard» подсвечен; `/admin/login` по-прежнему без сайдбара; мобильная раскладка (390×844) — бургер открывает/закрывает список разделов и «Выйти»; ошибок в консоли нет; `npm run lint`, `npx tsc --noEmit`, `npm run build` — чисто (`/admin` и `/admin/login` пререндерятся статически, `○`).
+
+**Изменённые/созданные файлы:**
+- `components/admin/Sidebar.tsx` — создан
+- `app/admin/(protected)/layout.tsx` — создан
+- `app/admin/(protected)/page.tsx` — создан (заглушка Dashboard)
+- `docs/architecture.md` — изменён (структура `app/admin/` под route group `(protected)`, `Sidebar` в списке клиентских компонентов)
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — изменений, требующих внимания, не найдено. Чистая навигационная вёрстка (`next/link`, `usePathname`), без секретов, пользовательского ввода, API или БД; проверка сессии — отдельная задача `middleware.ts` (пункт 32).
