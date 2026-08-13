@@ -140,9 +140,9 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
           {items.map((item) => (
             <li
               key={item.productId}
-              className="flex items-center justify-between gap-3 font-venuscom text-body-sm text-black-olive"
+              className="flex items-end justify-between gap-3 font-venuscom text-body-sm text-black-olive"
             >
-              <span className="truncate">
+              <span className="min-w-0">
                 {item.name} × {item.quantity}
               </span>
               <span className="shrink-0 font-semibold">
