@@ -90,29 +90,31 @@ export function CartWidget() {
               return (
                 <li
                   key={item.productId}
-                  className="flex flex-col gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0 sm:flex-row sm:items-center"
+                  className="flex items-center gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
                 >
-                  {/* На мобильных фото — сверху и во всю ширину (было 56px, имя терялось
-                      за truncate); на sm+ возвращается компактная миниатюра как раньше. */}
-                  {item.imageUrl ? (
-                    <div className="relative h-40 w-full shrink-0 sm:size-14">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        sizes="(min-width: 640px) 56px, 100vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-40 w-full shrink-0 items-center justify-center bg-sage-mist/30 sm:size-14">
-                      <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20 sm:size-5" />
-                    </div>
-                  )}
+                  {/* Левый потомок: на мобильных фото/название/вес/цена столбиком (было —
+                      фото 56px теснилось в одну строку с текстом и controls, имя обрезалось);
+                      на sm+ возвращается прежняя горизонтальная раскладка (миниатюра слева). */}
+                  <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+                    {/* aspect-square — тот же приём, что в ProductCard, чтобы object-cover не
+                        обрезал фото сверху/снизу (было: фиксированная высота h-40 при
+                        произвольной ширине давала не-квадратный кроп). */}
+                    {item.imageUrl ? (
+                      <div className="relative aspect-square w-full shrink-0 sm:size-14">
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          fill
+                          sizes="(min-width: 640px) 56px, 45vw"
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex aspect-square w-full shrink-0 items-center justify-center bg-sage-mist/30 sm:size-14">
+                        <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20 sm:size-5" />
+                      </div>
+                    )}
 
-                  {/* На sm+ становится display:contents — text-блок и controls выходят
-                      прямыми флекс-детьми <li>, воссоздавая прежнюю горизонтальную раскладку. */}
-                  <div className="flex items-center justify-between gap-3 sm:contents">
                     <div className="min-w-0 flex-1">
                       <p className="font-venuscom text-body-sm text-black-olive sm:truncate">
                         {item.name}
@@ -126,27 +128,28 @@ export function CartWidget() {
                         {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
+                  </div>
 
-                    <div className="flex shrink-0 items-center gap-3">
-                      <QtyStepper
-                        productId={item.productId}
-                        name={item.name}
-                        price={item.price}
-                        imageUrl={item.imageUrl}
-                        unit={item.unit}
-                        max={product ? product.stockQuantity : 0}
-                        preventRemoveAtOne
-                      />
+                  {/* Правый потомок: количество + удаление, без изменений. */}
+                  <div className="flex shrink-0 items-center gap-3">
+                    <QtyStepper
+                      productId={item.productId}
+                      name={item.name}
+                      price={item.price}
+                      imageUrl={item.imageUrl}
+                      unit={item.unit}
+                      max={product ? product.stockQuantity : 0}
+                      preventRemoveAtOne
+                    />
 
-                      <button
-                        type="button"
-                        aria-label={`Убрать «${item.name}» из корзины`}
-                        onClick={() => removeItem(item.productId)}
-                        className="text-black-olive/50 hover:text-black-olive"
-                      >
-                        <FontAwesomeIcon icon={faTrash} className="size-4" />
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      aria-label={`Убрать «${item.name}» из корзины`}
+                      onClick={() => removeItem(item.productId)}
+                      className="text-black-olive/50 hover:text-black-olive"
+                    >
+                      <FontAwesomeIcon icon={faTrash} className="size-4" />
+                    </button>
                   </div>
                 </li>
               );
