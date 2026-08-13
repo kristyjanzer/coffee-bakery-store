@@ -47,7 +47,12 @@ export function ProductCard({ product }: ProductCardProps) {
           независимо от того, сколько строк занимает название соседних товаров в ряду. */}
       <div className="mt-[30px] flex flex-1 flex-col">
         <Link href={`/product/${product.id}`} onClick={saveCatalogScrollPosition}>
-          <h3 className="font-venuscom text-body-lg text-black-olive">{product.name}</h3>
+          {/* На мобильных body-lg (20px) сжимает карточку в 2-колоночной сетке —
+              по запросу пользователя уменьшено до 18px, начиная с sm: (переход на
+              широкую сетку) возвращается токен DESIGN.md. */}
+          <h3 className="font-venuscom text-[18px] text-black-olive sm:text-body-lg">
+            {product.name}
+          </h3>
         </Link>
         {weightLabel && (
           <p className="mt-1 font-venuscom text-caption text-black-olive/60">{weightLabel}</p>
