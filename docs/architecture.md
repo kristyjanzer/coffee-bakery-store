@@ -16,15 +16,16 @@ store/
 │   │   ├── page.tsx                # главная страница (Server Component)
 │   │   └── product/[id]/page.tsx   # страница товара (Server Component)
 │   ├── admin/
-│   │   ├── layout.tsx           # сайдбар (20%) + контент, сессия проверяется в middleware
-│   │   ├── login/page.tsx       # логин админа (НЕ защищён)
-│   │   ├── page.tsx             # Dashboard
-│   │   ├── orders/page.tsx, orders/[id]/page.tsx
-│   │   ├── products/page.tsx, products/new/page.tsx, products/[id]/page.tsx
-│   │   ├── customers/page.tsx
-│   │   ├── reviews/page.tsx
-│   │   ├── pages/page.tsx       # О нас/Контакты/Доставка, SEO, баннеры
-│   │   └── settings/page.tsx    # пользователи админки, уведомления
+│   │   ├── login/page.tsx       # логин админа (НЕ защищён, вне route group ниже)
+│   │   └── (protected)/          # route group — сайдбар (20%) + контент, сессия проверяется в middleware
+│   │       ├── layout.tsx
+│   │       ├── page.tsx             # Dashboard
+│   │       ├── orders/page.tsx, orders/[id]/page.tsx
+│   │       ├── products/page.tsx, products/new/page.tsx, products/[id]/page.tsx
+│   │       ├── customers/page.tsx
+│   │       ├── reviews/page.tsx
+│   │       ├── pages/page.tsx       # О нас/Контакты/Доставка, SEO, баннеры
+│   │       └── settings/page.tsx    # пользователи админки, уведомления
 │   └── api/
 │       ├── auth/[...nextauth]/route.ts
 │       ├── categories/route.ts
@@ -39,7 +40,7 @@ store/
 │   ├── catalog/     # Catalog, CategoryTabs, ProductSection, ProductCard, ReviewsSlider
 │   ├── product/      # ProductDetail
 │   ├── cart/         # CartIcon, CartWidget, QtyStepper
-│   ├── admin/         # Sidebar, OrdersTable, ProductForm...
+│   ├── admin/         # Sidebar (готов), OrdersTable, ProductForm...
 │   └── ui/             # общие примитивы (Button, Modal, Input)
 │
 ├── lib/
@@ -240,8 +241,9 @@ enum AdminRole { ADMIN ORDER_MANAGER }
 страницы товара и виджета корзины), `Catalog` (держит выбранный таб категории — на странице
 рендерится только его `ProductSection`, не все категории подряд) + `CategoryTabs` (переключение
 таба + клик-прокрутка к началу секции, drag-to-scroll мышкой по списку табов),
-`ReviewsSlider` (Swiper/Embla), формы админки (`ProductForm`, смена статуса заказа — запросы
-к API-роутам), обёртка `SessionProvider` вокруг `admin/layout.tsx`.
+`ReviewsSlider` (Swiper/Embla), `Sidebar` (навигация админки, активный пункт по `usePathname`,
+мобильное бургер-меню), формы админки (`ProductForm`, смена статуса заказа — запросы
+к API-роутам), обёртка `SessionProvider` вокруг `admin/(protected)/layout.tsx`.
 
 Правило: данные запрашиваются как можно выше по дереву (Server Component), `"use client"`
 опускается до самого маленького листового компонента, которому реально нужна интерактивность
