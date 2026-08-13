@@ -56,11 +56,15 @@ export function CartWidget() {
 
   if (step === "checkout") {
     return (
-      <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES.checkout}>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        onBack={() => setStep("cart")}
+        title={STEP_TITLES.checkout}
+      >
         <CheckoutForm
           items={items}
           totalPrice={totalPrice}
-          onBack={() => setStep("cart")}
           onSubmit={handleCheckoutSubmit}
           isSubmitting={isSubmitting}
         />
@@ -92,20 +96,21 @@ export function CartWidget() {
                   key={item.productId}
                   className="flex items-end gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
                 >
-                  {/* Фото — 4rem (64px), как на референсе пользователя; без скругления
-                      (radius-cards: 0 из DESIGN.md, как у ProductCard). */}
+                  {/* Фото — 4rem (64px) на мобильных, 6rem (96px) от sm; без скругления
+                      (radius-cards: 0 из DESIGN.md, как у ProductCard). object-contain, а не
+                      object-cover — фото не должно обрезаться ни на одном брейкпоинте. */}
                   {item.imageUrl ? (
-                    <div className="relative size-16 shrink-0">
+                    <div className="relative size-16 shrink-0 sm:size-24">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
                         fill
-                        sizes="64px"
-                        className="object-cover"
+                        sizes="(min-width: 640px) 96px, 64px"
+                        className="object-contain"
                       />
                     </div>
                   ) : (
-                    <div className="flex size-16 shrink-0 items-center justify-center bg-sage-mist/30">
+                    <div className="flex size-16 shrink-0 items-center justify-center bg-sage-mist/30 sm:size-24">
                       <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
                     </div>
                   )}

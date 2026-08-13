@@ -4,13 +4,12 @@ import { useState, type FormEvent } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { orderFormDefaultValues, orderFormSchema, type OrderFormValues } from "@/lib/validations/order";
-import { formatPrice } from "@/lib/utils";
+import { formatPhoneInput, formatPrice } from "@/lib/utils";
 import type { CartItem } from "@/stores/cartStore";
 
 interface CheckoutFormProps {
   items: CartItem[];
   totalPrice: number;
-  onBack: () => void;
   onSubmit: (values: OrderFormValues) => void | Promise<void>;
   isSubmitting: boolean;
 }
@@ -20,12 +19,30 @@ type FormErrors = Partial<Record<keyof OrderFormValues, string>>;
 // Форма оформления заявки (docs/plan.md, пункт 12): имя, телефон, email (обязателен —
 // на него отправляется чек об оплате), комментарий, дата предзаказа. Валидация — тот же
 // zod-стек, что и в остальном проекте, без react-hook-form (лишняя зависимость не нужна).
-export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting }: CheckoutFormProps) {
+export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: CheckoutFormProps) {
   const [values, setValues] = useState<OrderFormValues>(orderFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
 
   function handleChange(field: keyof OrderFormValues, value: string) {
-    setValues((prev) => ({ ...prev, [field]: value }));
+    const nextValues = { ...values, [field]: value };
+    setValues(nextValues);
+
+    // Ошибка снимается "на лету", как только поле становится валидным — но только
+    // для полей, где ошибка уже показана (после неудачной попытки отправки).
+    // Полная валидация всех полей при каждом нажатии клавиши не нужна: пока
+    // пользователь просто заполняет форму первый раз, ошибки появляются только
+    // на submit, а не всплывают посреди набора текста.
+    if (errors[field]) {
+      const result = orderFormSchema.safeParse(nextValues);
+      const stillInvalid = !result.success && result.error.issues.some((issue) => issue.path[0] === field);
+      if (!stillInvalid) {
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next[field];
+          return next;
+        });
+      }
+    }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -58,9 +75,10 @@ export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting
           onChange={(event) => handleChange("customerName", event.target.value)}
           placeholder="Как к вам обращаться"
           className="mt-1"
+          error={Boolean(errors.customerName)}
         />
         {errors.customerName && (
-          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+          <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">
             {errors.customerName}
           </p>
         )}
@@ -72,13 +90,18 @@ export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting
         </label>
         <Input
           id="customerContact"
+          type="tel"
+          inputMode="numeric"
           value={values.customerContact}
-          onChange={(event) => handleChange("customerContact", event.target.value)}
+          onChange={(event) =>
+            handleChange("customerContact", formatPhoneInput(event.target.value))
+          }
           placeholder="+7 900 000-00-00"
           className="mt-1"
+          error={Boolean(errors.customerContact)}
         />
         {errors.customerContact && (
-          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+          <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">
             {errors.customerContact}
           </p>
         )}
@@ -96,9 +119,10 @@ export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting
           onChange={(event) => handleChange("email", event.target.value)}
           placeholder="you@example.com"
           className="mt-1"
+          error={Boolean(errors.email)}
         />
         {errors.email && (
-          <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+          <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">
             {errors.email}
           </p>
         )}
@@ -137,9 +161,9 @@ export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting
           {items.map((item) => (
             <li
               key={item.productId}
-              className="flex items-center justify-between gap-3 font-venuscom text-body-sm text-black-olive"
+              className="flex items-end justify-between gap-3 font-venuscom text-body-sm text-black-olive"
             >
-              <span className="truncate">
+              <span className="min-w-0">
                 {item.name} × {item.quantity}
               </span>
               <span className="shrink-0 font-semibold">
@@ -156,15 +180,8 @@ export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting
         </div>
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="font-venuscom text-body-sm text-black-olive/60 hover:text-black-olive hover:underline"
-        >
-          Назад
-        </button>
-        <Button type="submit" disabled={isSubmitting}>
+      <div className="mt-2">
+        <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting ? "Отправляем…" : "Отправить заявку"}
         </Button>
       </div>
