@@ -1171,3 +1171,19 @@ React-состоянии (`useState`, по умолчанию — первая �
 **Изменения схемы БД:** нет (заявка нигде не сохраняется — заглушка до пункта 28).
 
 **Security review:** применялся (чек-лист `.claude/skills/security-review`) — замечаний нет. Форма не отправляет данные на сервер (заглушка, `submitOrder()` ничего не персистит и никуда не шлёт запросы), значения полей нигде не рендерятся через `dangerouslySetInnerHTML`, `zod` валидирует длину/обязательность на клиенте.
+
+### Правки по запросу пользователя: email отдельным полем + сводка заказа
+
+1. `lib/validations/order.ts` — добавлено обязательное поле `email` (отдельно от `customerContact`, который теперь только телефон). `components/cart/CheckoutForm.tsx` — новое поле с подписью «Email (пришлем чек об оплате)», `autoComplete="email"`; лейбл `customerContact` изменён на «Телефон».
+2. `components/cart/CheckoutForm.tsx` — после поля комментария добавлен блок «Ваш заказ»: список позиций (название × количество, сумма по строке, без изображений) и итог. `components/cart/CartWidget.tsx` — передаёт `items`/`totalPrice` в `CheckoutForm`.
+
+Проверено вручную в браузере (Chrome DevTools MCP, desktop и мобильная 390×844): поля «Телефон»/«Email» валидируются раздельно; сводка заказа корректно отражает состав и сумму корзины на нескольких позициях; ошибок в консоли нет; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `lib/validations/order.ts` — изменён (поле `email`)
+- `components/cart/CheckoutForm.tsx` — изменён (поле email, сводка заказа)
+- `components/cart/CartWidget.tsx` — изменён (передаёт `items`/`totalPrice` в `CheckoutForm`)
+
+**Новые переменные окружения:** нет.
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — замечаний нет. Новое поле email валидируется `zod` (`.email()`), данные по-прежнему никуда не отправляются (заглушка `submitOrder()`), сводка заказа рендерит только доверенные данные из `cartStore`, `dangerouslySetInnerHTML` не используется.
