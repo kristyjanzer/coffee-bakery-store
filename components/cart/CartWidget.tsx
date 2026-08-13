@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { useCartStore, selectTotalPrice } from "@/stores/cartStore";
 import { getProductById } from "@/lib/menu";
 import { formatPrice } from "@/lib/utils";
@@ -90,66 +90,60 @@ export function CartWidget() {
               return (
                 <li
                   key={item.productId}
-                  className="flex items-center gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
+                  className="flex gap-3 border-b border-sage-mist pb-4 last:border-none last:pb-0"
                 >
-                  {/* Левый потомок: на мобильных фото/название/вес/цена столбиком (было —
-                      фото 56px теснилось в одну строку с текстом и controls, имя обрезалось);
-                      на sm+ возвращается прежняя горизонтальная раскладка (миниатюра слева). */}
-                  <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-                    {/* aspect-square — тот же приём, что в ProductCard, чтобы object-cover не
-                        обрезал фото сверху/снизу (было: фиксированная высота h-40 при
-                        произвольной ширине давала не-квадратный кроп). */}
-                    {item.imageUrl ? (
-                      <div className="relative aspect-square w-full shrink-0 sm:size-14">
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.name}
-                          fill
-                          sizes="(min-width: 640px) 56px, 45vw"
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex aspect-square w-full shrink-0 items-center justify-center bg-sage-mist/30 sm:size-14">
-                        <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20 sm:size-5" />
-                      </div>
+                  {/* Фото — фиксированный квадрат 96px, как на референсе пользователя;
+                      без скругления (radius-cards: 0 из DESIGN.md, как у ProductCard). */}
+                  {item.imageUrl ? (
+                    <div className="relative size-24 shrink-0">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-24 shrink-0 items-center justify-center bg-sage-mist/30">
+                      <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-venuscom text-body-sm text-black-olive">{item.name}</p>
+                      <button
+                        type="button"
+                        aria-label={`Убрать «${item.name}» из корзины`}
+                        onClick={() => removeItem(item.productId)}
+                        className="shrink-0 text-xl leading-none text-black-olive/40 hover:text-black-olive"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    {item.unit && (
+                      <p className="mt-1 font-venuscom text-caption text-black-olive/60">
+                        {item.unit}
+                      </p>
                     )}
 
-                    <div className="min-w-0 flex-1">
-                      <p className="font-venuscom text-body-sm text-black-olive sm:truncate">
-                        {item.name}
-                      </p>
-                      {item.unit && (
-                        <p className="font-venuscom text-caption text-black-olive/60">
-                          {item.unit}
-                        </p>
-                      )}
-                      <p className="mt-1 font-venuscom text-caption font-semibold text-black-olive">
+                    {/* Цена — badge на bg-sage-mist/30 (тот же приём, что счётчик на CartIcon,
+                        только нейтральный тон вместо акцентного lemon-zest) + степпер справа. */}
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <span className="rounded-sm bg-sage-mist/30 px-3 py-1.5 font-venuscom text-caption font-semibold text-black-olive">
                         {formatPrice(item.price * item.quantity)}
-                      </p>
+                      </span>
+                      <QtyStepper
+                        productId={item.productId}
+                        name={item.name}
+                        price={item.price}
+                        imageUrl={item.imageUrl}
+                        unit={item.unit}
+                        max={product ? product.stockQuantity : 0}
+                        preventRemoveAtOne
+                      />
                     </div>
-                  </div>
-
-                  {/* Правый потомок: количество + удаление, без изменений. */}
-                  <div className="flex shrink-0 items-center gap-3">
-                    <QtyStepper
-                      productId={item.productId}
-                      name={item.name}
-                      price={item.price}
-                      imageUrl={item.imageUrl}
-                      unit={item.unit}
-                      max={product ? product.stockQuantity : 0}
-                      preventRemoveAtOne
-                    />
-
-                    <button
-                      type="button"
-                      aria-label={`Убрать «${item.name}» из корзины`}
-                      onClick={() => removeItem(item.productId)}
-                      className="text-black-olive/50 hover:text-black-olive"
-                    >
-                      <FontAwesomeIcon icon={faTrash} className="size-4" />
-                    </button>
                   </div>
                 </li>
               );
