@@ -4,8 +4,12 @@ import { useState, type FormEvent } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { orderFormDefaultValues, orderFormSchema, type OrderFormValues } from "@/lib/validations/order";
+import { formatPrice } from "@/lib/utils";
+import type { CartItem } from "@/stores/cartStore";
 
 interface CheckoutFormProps {
+  items: CartItem[];
+  totalPrice: number;
   onBack: () => void;
   onSubmit: (values: OrderFormValues) => void | Promise<void>;
   isSubmitting: boolean;
@@ -16,7 +20,7 @@ type FormErrors = Partial<Record<keyof OrderFormValues, string>>;
 // Форма оформления заявки (docs/plan.md, пункт 12): имя, телефон, email (обязателен —
 // на него отправляется чек об оплате), комментарий, дата предзаказа. Валидация — тот же
 // zod-стек, что и в остальном проекте, без react-hook-form (лишняя зависимость не нужна).
-export function CheckoutForm({ onBack, onSubmit, isSubmitting }: CheckoutFormProps) {
+export function CheckoutForm({ items, totalPrice, onBack, onSubmit, isSubmitting }: CheckoutFormProps) {
   const [values, setValues] = useState<OrderFormValues>(orderFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -87,6 +91,7 @@ export function CheckoutForm({ onBack, onSubmit, isSubmitting }: CheckoutFormPro
         <Input
           id="email"
           type="email"
+          autoComplete="email"
           value={values.email}
           onChange={(event) => handleChange("email", event.target.value)}
           placeholder="you@example.com"
@@ -124,6 +129,31 @@ export function CheckoutForm({ onBack, onSubmit, isSubmitting }: CheckoutFormPro
           rows={3}
           className="mt-1 w-full rounded-sm border border-sage-mist bg-warm-cream px-4 py-3 font-venuscom text-body-sm text-black-olive placeholder:text-black-olive/50 focus:border-lemon-zest focus:outline-none"
         />
+      </div>
+
+      <div className="border-t border-sage-mist pt-4">
+        <p className="font-venuscom text-caption text-black-olive/70">Ваш заказ</p>
+        <ul className="mt-2 flex flex-col gap-1">
+          {items.map((item) => (
+            <li
+              key={item.productId}
+              className="flex items-center justify-between gap-3 font-venuscom text-body-sm text-black-olive"
+            >
+              <span className="truncate">
+                {item.name} × {item.quantity}
+              </span>
+              <span className="shrink-0 font-semibold">
+                {formatPrice(item.price * item.quantity)}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-3 flex items-center justify-between border-t border-sage-mist pt-3">
+          <span className="font-venuscom text-body-sm font-semibold text-forest-ink">Итого</span>
+          <span className="font-venuscom text-body-sm font-semibold text-black-olive">
+            {formatPrice(totalPrice)}
+          </span>
+        </div>
       </div>
 
       <div className="mt-2 flex items-center justify-between gap-3">

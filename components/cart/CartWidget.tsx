@@ -58,6 +58,8 @@ export function CartWidget() {
     return (
       <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES.checkout}>
         <CheckoutForm
+          items={items}
+          totalPrice={totalPrice}
           onBack={() => setStep("cart")}
           onSubmit={handleCheckoutSubmit}
           isSubmitting={isSubmitting}
