@@ -1135,3 +1135,32 @@ React-состоянии (`useState`, по умолчанию — первая �
 - `docs/architecture.md` — изменён (структура `app/admin/` под route group `(protected)`, `Sidebar` в списке клиентских компонентов)
 
 **Security review:** применялся (чек-лист `.claude/skills/security-review`) — изменений, требующих внимания, не найдено. Чистая навигационная вёрстка (`next/link`, `usePathname`), без секретов, пользовательского ввода, API или БД; проверка сессии — отдельная задача `middleware.ts` (пункт 32).
+
+## Задача 28
+
+По запросу пользователя: карточкам товаров (`ProductCard`) добавлена постоянная тень `box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)` — видна в состоянии покоя на десктопе и мобильных (раньше тень появлялась только на `hover`, то есть не показывалась на тач-устройствах вовсе). Ветка `fix/product-card-permanent-shadow`.
+
+`components/catalog/ProductCard.tsx` — на `<article>` добавлен базовый класс `shadow-[0_2px_8px_rgba(0,0,0,0.1)]`; существующий `hover:shadow-[...]` (задача 15, подъём карточки) не трогал — он по-прежнему переопределяет тень при наведении на устройствах с указателем.
+
+Проверено вручную в браузере (Chrome DevTools MCP): тень видна на карточках без наведения на desktop (1440×900) и мобильной (390×844) раскладках; ошибок в консоли нет; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `components/catalog/ProductCard.tsx` — изменён (постоянная тень карточки)
+
+### Правка по запросу пользователя: убрать прежнюю hover-тень
+
+`components/catalog/ProductCard.tsx` — убран `hover:shadow-[0_13px_34px_-20px_rgba(29,11,13,0.45)]` (задача 15). При наведении карточка по-прежнему приподнимается (`hover:-translate-y-1`), но тень больше не меняется — остаётся тем же базовым `0 2px 8px rgba(0,0,0,0.1)`.
+
+Проверено вручную в браузере (Chrome DevTools MCP, `getComputedStyle`): на наведённой карточке `box-shadow` совпадает с базовым значением; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `components/catalog/ProductCard.tsx` — изменён (убрана отдельная hover-тень)
+
+### Правка по запросу пользователя: плавный переход тени/подъёма на hover
+
+`components/catalog/ProductCard.tsx` — вместо утилит `transition-transform duration-200 ease-out` теперь произвольное CSS-свойство `[transition:transform_0.3s_ease,box-shadow_0.3s_ease]` (обе анимируемые характеристики, 0.3s, `ease`, а не дефолтный Tailwind `ease-out`). При наведении снова появляется тень — `hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]` (мягче и заметнее базовой), вместе с прежним подъёмом `hover:-translate-y-1` (уже равнялся ровно `-4px`).
+
+Проверено вручную в браузере (Chrome DevTools MCP, `getComputedStyle` на реальном `:hover`-состоянии, не по снимку): `transitionProperty` = `transform, box-shadow`, `transitionDuration` = `0.3s, 0.3s`, `transitionTimingFunction` = `ease, ease`; на наведённой карточке `transform: matrix(1,0,0,1,0,-4)` и `box-shadow: 0 4px 12px rgba(0,0,0,0.15)`; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `components/catalog/ProductCard.tsx` — изменён (transition на transform+box-shadow 0.3s ease, hover-тень 0 4px 12px rgba(0,0,0,0.15))
