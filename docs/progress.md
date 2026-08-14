@@ -1155,3 +1155,12 @@ React-состоянии (`useState`, по умолчанию — первая �
 
 **Изменённые файлы:**
 - `components/catalog/ProductCard.tsx` — изменён (убрана отдельная hover-тень)
+
+### Правка по запросу пользователя: плавный переход тени/подъёма на hover
+
+`components/catalog/ProductCard.tsx` — вместо утилит `transition-transform duration-200 ease-out` теперь произвольное CSS-свойство `[transition:transform_0.3s_ease,box-shadow_0.3s_ease]` (обе анимируемые характеристики, 0.3s, `ease`, а не дефолтный Tailwind `ease-out`). При наведении снова появляется тень — `hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]` (мягче и заметнее базовой), вместе с прежним подъёмом `hover:-translate-y-1` (уже равнялся ровно `-4px`).
+
+Проверено вручную в браузере (Chrome DevTools MCP, `getComputedStyle` на реальном `:hover`-состоянии, не по снимку): `transitionProperty` = `transform, box-shadow`, `transitionDuration` = `0.3s, 0.3s`, `transitionTimingFunction` = `ease, ease`; на наведённой карточке `transform: matrix(1,0,0,1,0,-4)` и `box-shadow: 0 4px 12px rgba(0,0,0,0.15)`; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `components/catalog/ProductCard.tsx` — изменён (transition на transform+box-shadow 0.3s ease, hover-тень 0 4px 12px rgba(0,0,0,0.15))
