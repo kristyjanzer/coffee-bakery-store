@@ -9,7 +9,12 @@ export default function ProtectedAdminLayout({ children }: { children: ReactNode
   return (
     <div className="lg:flex lg:min-h-screen">
       <Sidebar />
-      <main className="min-h-screen flex-1 bg-warm-cream p-6 lg:p-10">{children}</main>
+      {/* min-w-0 обязателен: флекс-элемент без него не может сжаться уже
+          min-content своих потомков (браузерный дефолт min-width: auto) — с
+          широкой таблицей внутри (например, /admin/customers, все колонки
+          whitespace-nowrap) main раздувался шире отведённого места и скроллилась
+          вся страница вместо внутреннего overflow-x-auto у самой таблицы. */}
+      <main className="min-h-screen min-w-0 flex-1 bg-warm-cream p-6 lg:p-10">{children}</main>
     </div>
   );
 }
