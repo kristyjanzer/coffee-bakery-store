@@ -1,4 +1,5 @@
 import { getProductById } from "@/lib/menu";
+import { getOrders, type OrderStatus } from "@/lib/orders";
 
 // Мок-данные дашборда (docs/plan.md, пункт 15; about-project.md, раздел "Страница
 // административной панели", пункт 1). Order/OrderItem появятся в Prisma только в
@@ -79,7 +80,7 @@ export async function getTopProducts(): Promise<TopProduct[]> {
   });
 }
 
-export type PendingOrderStatus = "NEW" | "IN_PROGRESS";
+export type PendingOrderStatus = Extract<OrderStatus, "NEW" | "IN_PROGRESS">;
 
 export interface PendingOrder {
   id: number;
@@ -90,41 +91,25 @@ export interface PendingOrder {
   minutesAgo: number;
 }
 
+function isPendingStatus(status: OrderStatus): status is PendingOrderStatus {
+  return status === "NEW" || status === "IN_PROGRESS";
+}
+
 // Заказы "требующие обработки" (about-project.md) — только NEW/IN_PROGRESS из полного
-// enum'а OrderStatus (docs/architecture.md), готовые/доставленные/отменённые сюда не попадут.
+// enum'а OrderStatus, готовые/доставленные/отменённые сюда не попадут. Источник —
+// lib/orders.ts (раздел "Заказы", пункт 16 плана) — единый список мок-заказов на всё
+// приложение, чтобы дашборд и раздел "Заказы" не расходились в id/статусах.
 export async function getPendingOrders(): Promise<PendingOrder[]> {
-  return [
-    {
-      id: 1042,
-      customerName: "Анна Смирнова",
-      itemsSummary: "Капучино × 2, Круассан с шоколадом × 1",
-      totalAmount: 1770,
-      status: "NEW",
-      minutesAgo: 5,
-    },
-    {
-      id: 1041,
-      customerName: "Игорь Петров",
-      itemsSummary: "Двойной эспрессо × 1, Штрудель яблочный × 1",
-      totalAmount: 1020,
-      status: "NEW",
-      minutesAgo: 18,
-    },
-    {
-      id: 1040,
-      customerName: "Светлана Антонова",
-      itemsSummary: "Чизкейк \"Орео\" × 1",
-      totalAmount: 930,
-      status: "IN_PROGRESS",
-      minutesAgo: 32,
-    },
-    {
-      id: 1039,
-      customerName: "Дмитрий Волков",
-      itemsSummary: "Капучино × 3",
-      totalAmount: 810,
-      status: "NEW",
-      minutesAgo: 47,
-    },
-  ];
+  const orders = await getOrders();
+  return orders
+    .filter((order) => isPendingStatus(order.status))
+    .slice(0, 4)
+    .map((order) => ({
+      id: order.id,
+      customerName: order.customerName,
+      itemsSummary: order.items.map((item) => `${item.name} × ${item.quantity}`).join(", "),
+      totalAmount: order.totalAmount,
+      status: order.status as PendingOrderStatus,
+      minutesAgo: order.minutesAgo,
+    }));
 }

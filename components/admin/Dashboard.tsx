@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBagShopping, faStar } from "@fortawesome/free-solid-svg-icons";
 import { formatPrice } from "@/lib/utils";
 import { getReviews } from "@/lib/reviews";
+import { ORDER_STATUS_LABELS } from "@/lib/orders";
 import type {
   DashboardSummary,
   PendingOrder,
@@ -15,11 +17,6 @@ interface DashboardProps {
   topProducts: TopProduct[];
   pendingOrders: PendingOrder[];
 }
-
-const STATUS_LABELS: Record<PendingOrder["status"], string> = {
-  NEW: "Новый",
-  IN_PROGRESS: "В работе",
-};
 
 // Классы столбиков/полосок графиков — только литеральные строки, перечисленные прямо
 // здесь (в components/**, которые сканирует Tailwind, см. tailwind.config.ts). Держать
@@ -207,7 +204,9 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders }: D
               {pendingOrders.map((order) => (
                 <tr key={order.id} className="border-b border-sage-mist last:border-0">
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    №{order.id}
+                    <Link href={`/admin/orders/${order.id}`} className="hover:underline">
+                      №{order.id}
+                    </Link>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
                     {order.customerName}
@@ -220,7 +219,7 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders }: D
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3">
                     <span className="rounded-sm bg-sage-mist/30 px-2 py-1 font-venuscom text-caption uppercase text-forest-ink">
-                      {STATUS_LABELS[order.status]}
+                      {ORDER_STATUS_LABELS[order.status]}
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-caption text-black-olive/60">

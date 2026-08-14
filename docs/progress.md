@@ -1197,3 +1197,26 @@ Order/OrderItem появятся в Prisma только в пунктах 22-28,
 
 **Изменённые файлы:**
 - `components/admin/Dashboard.tsx` — изменён (фикс переполнения графика на десктопе, горизонтальные полоски вместо столбцов на мобильных)
+
+## Задача 30
+
+Выполнен пункт 16 плана (`docs/plan.md`) — «Админ: раздел Заказы (список с фильтрами по статусу, карточка заказа, смена статуса, история клиента)». Ветка `feature/admin-orders`.
+
+Order/OrderItem в Prisma появятся только в пунктах 22-28 — по тому же принципу, что и Dashboard (задача 29), `lib/orders.ts` расширен единым мок-источником заказов на всё приложение: 10 заказов, все 6 статусов из `OrderStatus` (`about-project.md` — «новый / в работе / готовится / готов / доставлен / отменён»), несколько заказов намеренно на одного клиента — иначе не на чем проверить «историю заказов клиента». `lib/dashboard.ts` — `getPendingOrders()` теперь читает из `getOrders()` вместо собственного дублирующего мок-массива (id/статусы дашборда и раздела «Заказы» больше не могут разойтись); `Dashboard.tsx` — статус-бейдж через общий `ORDER_STATUS_LABELS`, номер заказа — ссылка на карточку.
+
+- `lib/orders.ts` — добавлены `OrderStatus`/`ORDER_STATUSES`/`ORDER_STATUS_LABELS`, `PaymentStatus`/`PAYMENT_STATUS_LABELS`, `OrderRecord`, `getOrders(status?)`, `getOrderById(id)`, `getCustomerOrderHistory(contact, excludeId)`, `updateOrderStatus(id, status)` — заглушка (`PATCH /api/orders/[id]` — пункт 29 плана), ничего не персистит.
+- `app/admin/(protected)/orders/page.tsx` — создан. Список заказов + фильтр по статусу через `?status=` (обычные ссылки, без клиентского JS — Server Component перечитывает список).
+- `app/admin/(protected)/orders/[id]/page.tsx` — создан. Карточка заказа: состав (таблица позиций + итог), сумма, способ/статус оплаты, комментарий клиента, дата предзаказа (если есть), история заказов клиента (ссылки на другие заказы того же `customerContact`); несуществующий id → `notFound()`.
+- `components/admin/OrderStatusControl.tsx` — создан. Единственный клиентский лист во всей задаче: `<select>` статуса, вызывает `updateOrderStatus()`-заглушку, статус живёт в локальном состоянии компонента (обновление страницы возвращает мок-значение — как и `LoginForm`/`CheckoutForm`).
+
+Проверено вручную в браузере (Chrome DevTools MCP): фильтр `?status=NEW` корректно показывает 3 заказа; карточка заказа №1042 показывает состав/сумму/оплату/комментарий и историю (заказ №1038 той же клиентки); смена статуса на «В работе» через `<select>` — значение и «Статус обновлён (заглушка)» отображаются сразу; `/admin/orders/99999` — 404; desktop (1440×1000) и мобильная (~500/390px, таблицы скроллятся по горизонтали) раскладки; ошибок в консоли нет; `npm run lint`, `npx tsc --noEmit`, `npm run build` — чисто (`/admin/orders` и `/admin/orders/[id]` — динамические маршруты, ожидаемо из-за `searchParams`/`params`).
+
+**Изменённые/созданные файлы:**
+- `lib/orders.ts` — изменён (добавлены типы/статусы и функции раздела «Заказы»)
+- `lib/dashboard.ts` — изменён (`getPendingOrders()` читает из `lib/orders.ts`)
+- `components/admin/Dashboard.tsx` — изменён (`ORDER_STATUS_LABELS` вместо локальной копии, номер заказа — ссылка)
+- `components/admin/OrderStatusControl.tsx` — создан
+- `app/admin/(protected)/orders/page.tsx` — создан
+- `app/admin/(protected)/orders/[id]/page.tsx` — создан
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — изменений, требующих внимания, не найдено. Мок-данные (фейковые клиенты, не реальные ПДн), `status`/`id` из URL валидируются перед использованием (`isOrderStatus()`, `Number.isNaN`), стаб-мутация статуса ничего не сохраняет в реальном хранилище; `dangerouslySetInnerHTML` не используется.
