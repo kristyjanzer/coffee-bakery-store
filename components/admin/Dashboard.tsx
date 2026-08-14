@@ -27,6 +27,8 @@ const STATUS_LABELS: Record<PendingOrder["status"], string> = {
 // нужный CSS — ровно так это и сломалось при первой попытке. Высота/ширина подобраны
 // по рангу значения в наборе, а не проценту (inline style запрещён code-style.md).
 const SALES_BAR_HEIGHT_STEPS = ["h-10", "h-16", "h-20", "h-24", "h-28", "h-32", "h-36"];
+// Мобильный вариант графика продаж (горизонтальные полоски) — 7 шагов под те же 7 точек.
+const SALES_BAR_WIDTH_STEPS = ["w-1/3", "w-2/5", "w-1/2", "w-3/5", "w-2/3", "w-5/6", "w-full"];
 const TOP_PRODUCT_WIDTH_STEPS = ["w-3/5", "w-2/3", "w-5/6", "w-11/12", "w-full"];
 
 function pickStepByRank(steps: string[], value: number, allValues: number[]): string {
@@ -108,7 +110,11 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders }: D
       <section className="flex flex-col gap-4">
         <SectionHeading>График продаж — последние 7 дней</SectionHeading>
         <div className="bg-warm-cream p-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-          <div className="flex h-36 items-end gap-3 sm:gap-6">
+          {/* Десктоп/планшет — вертикальные столбцы. Высота ряда раньше была
+              зафиксирована (h-36) вровень с самым высоким столбиком, но подпись
+              суммы над ним в эту высоту не входила и вылезала за верх карточки —
+              теперь ряд просто растёт по контенту (без фиксированной высоты). */}
+          <div className="hidden sm:flex sm:items-end sm:gap-6">
             {salesChart.map((point) => (
               <div key={point.fullDate} className="flex flex-1 flex-col items-center gap-2">
                 <span className="font-venuscom text-caption text-black-olive/70">
@@ -122,7 +128,7 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders }: D
               </div>
             ))}
           </div>
-          <div className="mt-2 flex gap-3 border-t border-sage-mist pt-2 sm:gap-6">
+          <div className="mt-2 hidden gap-6 border-t border-sage-mist pt-2 sm:flex">
             {salesChart.map((point) => (
               <span
                 key={point.fullDate}
@@ -130,6 +136,29 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders }: D
               >
                 {point.dayLabel}
               </span>
+            ))}
+          </div>
+
+          {/* Мобильные — 7 узких столбцов в ряд не помещались на экран (подписи сумм
+              вроде "38 900 ₽" шире самих столбиков). Вместо этого — горизонтальные
+              полоски (день слева, сумма справа), тот же приём, что у "Топ товаров". */}
+          <div className="flex flex-col gap-4 sm:hidden">
+            {salesChart.map((point) => (
+              <div key={point.fullDate} className="flex flex-col gap-1">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="font-venuscom text-body-sm text-black-olive">{point.dayLabel}</span>
+                  <span className="shrink-0 font-venuscom text-caption text-black-olive/60">
+                    {formatPrice(point.revenue)}
+                  </span>
+                </div>
+                <div className="h-2 w-full bg-sage-mist/30">
+                  <div
+                    title={`${point.fullDate}: ${formatPrice(point.revenue)}`}
+                    tabIndex={0}
+                    className={`h-full rounded-r-[4px] bg-forest-ink transition-colors hover:bg-forest-ink/80 ${pickStepByRank(SALES_BAR_WIDTH_STEPS, point.revenue, revenues)}`}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </div>
