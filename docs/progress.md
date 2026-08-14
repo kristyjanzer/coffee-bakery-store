@@ -1328,3 +1328,15 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 
 **Изменённые файлы:**
 - `app/admin/(protected)/layout.tsx` — изменён (`min-w-0` на `<main>`)
+
+## Задача 36
+
+Выполнен пункт 20 плана — «Админ: Управление страницами». Ветка `feature/admin-pages-management`.
+
+**Изменённые/созданные файлы:**
+- `lib/pages.ts` — создан (мок-данные + заглушки: `getSitePages`/`getSitePageBySlug`/`updateSitePage` для О нас/Контакты/Доставка с SEO title/description; `getBanners`/`saveBanners` для баннеров главной)
+- `components/admin/PageContentForm.tsx` — создан (форма заголовка/текста/SEO одной страницы)
+- `components/admin/BannerManager.tsx` — создан (список баннеров: добавить/удалить/toggle активности, сохранение всем списком)
+- `app/admin/(protected)/pages/page.tsx` — создан (табы `?tab=about|contacts|delivery|banners`)
+
+**Security review:** применялся (`.claude/skills/security-review`) — изменений, требующих внимания, не найдено. `tab` из query-параметра валидируется через `isTab()` (белый список), мутации — заглушки без реального персиста, текст рендерится как обычный React-текст. Проверка сессии `/admin/*` — отдельный пункт плана (32), как и в предыдущих разделах.
