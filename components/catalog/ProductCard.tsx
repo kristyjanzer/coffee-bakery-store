@@ -20,7 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
       : null;
 
   return (
-    <article className="group relative z-0 flex h-full flex-col p-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-transform duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:shadow-[0_13px_34px_-20px_rgba(29,11,13,0.45)]">
+    <article className="group relative z-0 flex h-full flex-col p-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-transform duration-200 ease-out hover:z-10 hover:-translate-y-1">
       <Link
         href={`/product/${product.id}`}
         className="block"

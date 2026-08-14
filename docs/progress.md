@@ -1146,3 +1146,12 @@ React-состоянии (`useState`, по умолчанию — первая �
 
 **Изменённые файлы:**
 - `components/catalog/ProductCard.tsx` — изменён (постоянная тень карточки)
+
+### Правка по запросу пользователя: убрать прежнюю hover-тень
+
+`components/catalog/ProductCard.tsx` — убран `hover:shadow-[0_13px_34px_-20px_rgba(29,11,13,0.45)]` (задача 15). При наведении карточка по-прежнему приподнимается (`hover:-translate-y-1`), но тень больше не меняется — остаётся тем же базовым `0 2px 8px rgba(0,0,0,0.1)`.
+
+Проверено вручную в браузере (Chrome DevTools MCP, `getComputedStyle`): на наведённой карточке `box-shadow` совпадает с базовым значением; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `components/catalog/ProductCard.tsx` — изменён (убрана отдельная hover-тень)
