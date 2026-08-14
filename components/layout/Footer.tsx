@@ -22,7 +22,7 @@ export function Footer() {
         <Link href="/" className="flex items-center gap-3">
           <Image src="/images/logo.svg" alt="" width={40} height={40} className="size-10" />
           <span className="font-venuscom text-body-lg font-semibold uppercase tracking-[0.04em] text-warm-cream">
-            Кофейня-пекарня
+            Coffee Bakery
           </span>
         </Link>
 

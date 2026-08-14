@@ -1,4 +1,4 @@
-# Кофейня-пекарня
+# Coffee Bakery
 Референсы: https://frenchbakery.ru/menu, https://www.bulkabakery.ru/catalog/product/alumette, https://laposte.ru/#aksessuary-sertifikaty, https://lovepirogova.ru/, https://pirogi-skalka.ru/sladkie-pirogi/
 
 ## Главная страница:

@@ -5,7 +5,7 @@ import { getAdminCategories, getAdminProductById } from "@/lib/products";
 import { ProductForm } from "@/components/admin/ProductForm";
 
 export const metadata: Metadata = {
-  title: "Редактирование товара — Кофейня-пекарня",
+  title: "Редактирование товара — Coffee Bakery",
 };
 
 interface EditProductPageProps {

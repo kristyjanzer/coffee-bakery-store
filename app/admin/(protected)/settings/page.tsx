@@ -5,7 +5,7 @@ import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 import { NotificationSettingsForm } from "@/components/admin/NotificationSettingsForm";
 
 export const metadata: Metadata = {
-  title: "Настройки — Кофейня-пекарня",
+  title: "Настройки — Coffee Bakery",
 };
 
 type Tab = "users" | "notifications";

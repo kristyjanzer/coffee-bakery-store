@@ -6,7 +6,7 @@ import { getCustomerById } from "@/lib/customers";
 import { getOrders, ORDER_STATUS_LABELS } from "@/lib/orders";
 
 export const metadata: Metadata = {
-  title: "Клиент — Кофейня-пекарня",
+  title: "Клиент — Coffee Bakery",
 };
 
 interface CustomerPageProps {

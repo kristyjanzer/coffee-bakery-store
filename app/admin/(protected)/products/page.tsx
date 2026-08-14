@@ -5,7 +5,7 @@ import { formatPrice } from "@/lib/utils";
 import { getAdminCategories, getAdminProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
-  title: "Товары — Кофейня-пекарня",
+  title: "Товары — Coffee Bakery",
 };
 
 interface ProductsPageProps {

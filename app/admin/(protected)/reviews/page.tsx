@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAdminReviews } from "@/lib/reviews";
 
 export const metadata: Metadata = {
-  title: "Отзывы — Кофейня-пекарня",
+  title: "Отзывы — Coffee Bakery",
 };
 
 interface ReviewsPageProps {

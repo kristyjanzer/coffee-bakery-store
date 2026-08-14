@@ -77,7 +77,7 @@ export function Sidebar() {
           href="/admin"
           className="font-venuscom text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
         >
-          Кофейня-пекарня
+          Coffee Bakery
         </Link>
         <button
           type="button"
@@ -109,7 +109,7 @@ export function Sidebar() {
             href="/admin"
             className="font-venuscom text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
           >
-            Кофейня-пекарня
+            Coffee Bakery
           </Link>
           <nav className="mt-8">
             <NavList pathname={pathname} />

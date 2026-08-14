@@ -4,7 +4,7 @@ import { formatPrice } from "@/lib/utils";
 import { getOrders, ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/orders";
 
 export const metadata: Metadata = {
-  title: "Заказы — Кофейня-пекарня",
+  title: "Заказы — Coffee Bakery",
 };
 
 interface OrdersPageProps {

@@ -20,7 +20,7 @@ const venuscom = Manrope({
 
 // Next.js сам рендерит эти метаданные в <head>
 export const metadata: Metadata = {
-  title: "Кофейня-пекарня",
+  title: "Coffee Bakery",
   description: "Кофе, выпечка и десерты на заказ",
 };
 
