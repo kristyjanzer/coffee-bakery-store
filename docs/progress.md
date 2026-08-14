@@ -1288,3 +1288,43 @@ Customer в Prisma — задел на будущее (заказы пока н�
 **Изменённые файлы:**
 - `components/catalog/CategoryTabs.tsx` — изменён (`border-transparent` у неактивных табов)
 - `app/admin/(protected)/products/page.tsx` — изменён (`border-transparent` у неактивных табов)
+
+## Задача 34
+
+Выполнен пункт 19 плана (`docs/plan.md`) — «Админ: раздел Отзывы (модерация, ответ от имени магазина)». Ветка `feature/admin-reviews`.
+
+Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (docs/architecture.md, раздел 3) — расширил ими уже существующий мок-источник `lib/reviews.ts` (7 отзывов, задача 10), а не завёл параллельный, как в предыдущих разделах. Публичная `getReviews()` (слайдер на главной) теперь отдаёт только `isApproved: true` — в этом и смысл модерации; 2 отзыва (id 5, 7) иллюстративно помечены «на модерации», иначе не на чем проверить очередь. Новые `getAdminReviews(filter?)`/`getAdminReviewById(id)` видят все 7; `moderateReview(id, {isApproved, shopReply})` — заглушка без персиста.
+
+**Побочная правка:** `Dashboard.tsx` брал уведомления «Новый отзыв» из публичной `getReviews()` — после фильтра на одобренные уведомления перестали бы видеть отзывы, ждущие модерации. Переключил источник на `getAdminReviews()`: `app/admin/(protected)/page.tsx` — добавлен в `Promise.all`, передаётся пропом `reviews` в `Dashboard`, которая раньше сама звала `getReviews()` внутри рендера.
+
+- `lib/reviews.ts` — изменён (поля `isApproved`/`shopReply`, `getAdminReviews()`/`getAdminReviewById()`/`moderateReview()`).
+- `components/admin/ReviewModerationControl.tsx` — создан. Кнопки «Одобрен»/«На модерации» + textarea «Ответ от магазина», сохраняются одной кнопкой (оба поля осмысленны только вместе, в отличие от одиночного `<select>` в `OrderStatusControl`).
+- `app/admin/(protected)/reviews/page.tsx` — создан. Список, фильтр «Все / На модерации / Одобрены» через `?status=`.
+- `app/admin/(protected)/reviews/[id]/page.tsx` — создан. Текст отзыва + `ReviewModerationControl`; несуществующий id → `notFound()`.
+- `docs/architecture.md` — изменён: добавлен `/admin/reviews/[id]` (был задокументирован только список).
+
+Проверено вручную в браузере (Chrome DevTools MCP): список — 7 отзывов, 2 с меткой «На модерации»; фильтр `?status=pending` показывает ровно эти 2; на карточке отзыва переключение «Одобрен»/«На модерации» + текст ответа + «Сохранить» — работает, «Сохранено (заглушка)»; несуществующий id — 404; слайдер на главной (`#reviews`) показывает 5 одобренных отзывов (id 5 и 7 корректно скрыты); уведомления на дашборде не сломались; ошибок в консоли нет; `npm run lint`, `npx tsc --noEmit`, `npm run build` — чисто.
+
+**Изменённые/созданные файлы:**
+- `lib/reviews.ts` — изменён
+- `components/admin/ReviewModerationControl.tsx` — создан
+- `app/admin/(protected)/reviews/page.tsx` — создан
+- `app/admin/(protected)/reviews/[id]/page.tsx` — создан
+- `app/admin/(protected)/page.tsx` — изменён (`getAdminReviews()` в `Promise.all`, проп `reviews`)
+- `components/admin/Dashboard.tsx` — изменён (принимает `reviews` пропом вместо своего вызова `getReviews()`)
+- `docs/architecture.md` — изменён (добавлен маршрут `/admin/reviews/[id]`)
+
+**Security review:** применялся (чек-лист `.claude/skills/security-review`) — изменений, требующих внимания, не найдено. `id`/query-параметр статуса валидируются перед использованием (`Number.isNaN`, сравнение с известными строками `"pending"`/`"approved"`), стаб-мутация `moderateReview()` ничего не сохраняет в реальном хранилище; текст ответа магазина и отзыва рендерятся как обычный текст React, `dangerouslySetInnerHTML` не используется. Публичная `getReviews()` теперь дополнительно фильтрует неодобренные отзывы — это сужение видимой поверхности, а не расширение. Проверка сессии для `/admin/*` — отдельный пункт плана (32, `middleware.ts`), как и в предыдущих админ-разделах.
+
+## Задача 35
+
+По замечанию пользователя: на странице «Клиенты» появился горизонтальный скролл всей страницы (не только у таблицы). Систематический дебаг (`superpowers:systematic-debugging`) — root cause не в самой таблице клиентов.
+
+`app/admin/(protected)/layout.tsx` — `<main>` (флекс-элемент, `flex-1` внутри `lg:flex`) не имел `min-w-0`. У флекс-элементов браузерный дефолт `min-width: auto` — элемент не может сжаться уже min-content своих потомков. Таблица клиентов (все 6 колонок `whitespace-nowrap`, ни одна ячейка не переносится) требует ~1180px, а флекс реально выделяет `<main>` только ~1140-1155px (1440px экран минус сайдбар) — вместо того чтобы сжать `<main>` и отдать скролл внутреннему `overflow-x-auto` у таблицы, браузер раздувал саму `<main>`, и скроллилась вся страница. На «Заказах»/«Товарах» та же уязвимость в layout присутствует, но их таблицы чуть уже и пока укладываются в доступную ширину — баг не проявляется визуально, но актуален на более узких экранах.
+
+Фикс — `min-w-0` на `<main>` в общем layout (не в конкретной таблице): стандартное решение для этого класса flexbox-багов, закрывает проблему сразу для всех разделов админки.
+
+Проверено (Chrome DevTools MCP, `document.documentElement.scrollWidth` vs `clientWidth` до/после фикса на `/admin/customers`, 1440×900): до фикса `scrollWidth` 1465 > `clientWidth` 1425 (скролл всей страницы); после — оба 1440, `overflow-x-auto` у таблицы взял скролл на себя (`scrollWidth` 1100 > `clientWidth` 1072 у самого блока таблицы). Регрессия проверена на Dashboard/Заказах/Товарах/Отзывах и на мобильной раскладке (390×844) — визуально без изменений, `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `app/admin/(protected)/layout.tsx` — изменён (`min-w-0` на `<main>`)

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBagShopping, faStar } from "@fortawesome/free-solid-svg-icons";
 import { formatPrice } from "@/lib/utils";
-import { getReviews } from "@/lib/reviews";
+import type { Review } from "@/lib/reviews";
 import { ORDER_STATUS_LABELS } from "@/lib/orders";
 import type {
   DashboardSummary,
@@ -16,6 +16,7 @@ interface DashboardProps {
   salesChart: SalesChartPoint[];
   topProducts: TopProduct[];
   pendingOrders: PendingOrder[];
+  reviews: Review[];
 }
 
 // Классы столбиков/полосок графиков — только литеральные строки, перечисленные прямо
@@ -54,13 +55,14 @@ function SectionHeading({ children }: { children: string }) {
 // Наполнение дашборда (docs/plan.md, пункт 15; about-project.md, раздел "Страница
 // административной панели", пункт 1) — сводка, график, топ товаров, новые заказы,
 // уведомления. Данные — мок из lib/dashboard.ts (см. комментарий там), кроме
-// уведомлений о новых отзывах — они собираются здесь же из реальных lib/reviews.ts,
-// а не дублируются отдельным мок-массивом.
-export function Dashboard({ summary, salesChart, topProducts, pendingOrders }: DashboardProps) {
+// уведомлений о новых отзывах — они собираются здесь же из lib/reviews.ts (прокинуто
+// пропом из app/admin/(protected)/page.tsx как getAdminReviews() — видит и неодобренные
+// отзывы, задача 19), а не дублируются отдельным мок-массивом.
+export function Dashboard({ summary, salesChart, topProducts, pendingOrders, reviews }: DashboardProps) {
   const revenues = salesChart.map((point) => point.revenue);
   const unitsSoldValues = topProducts.map((product) => product.unitsSold);
   const latestOrder = pendingOrders[0];
-  const reviewNotifications = getReviews()
+  const reviewNotifications = reviews
     .slice(0, 2)
     .map((review, index) => ({
       id: `review-${review.id}`,
