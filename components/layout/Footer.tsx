@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,11 +19,11 @@ export function Footer() {
   return (
     <footer id="contacts" className="scroll-mt-20 border-t border-sage-mist/20 bg-black-olive px-6 py-12">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-10 md:flex-row md:justify-between">
-        <Link
-          href="/"
-          className="font-venuscom text-body-lg font-semibold uppercase tracking-[0.04em] text-warm-cream"
-        >
-          Кофейня-пекарня
+        <Link href="/" className="flex items-center gap-3">
+          <Image src="/images/logo.svg" alt="" width={40} height={40} className="size-10" />
+          <span className="font-venuscom text-body-lg font-semibold uppercase tracking-[0.04em] text-warm-cream">
+            Кофейня-пекарня
+          </span>
         </Link>
 
         <div>
