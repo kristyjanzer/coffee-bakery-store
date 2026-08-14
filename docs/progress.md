@@ -1253,3 +1253,17 @@ Product в Prisma появится только в пунктах 22-25 план
 **Изменённые файлы:**
 - `components/catalog/CategoryTabs.tsx` — изменён (тень на табах)
 - `app/admin/(protected)/products/page.tsx` — изменён (тень на табах категорий)
+
+### Правка по замечанию пользователя: текст в табах прыгал при клике
+
+Причина: активный таб получал `border` (1px), а неактивный — нет. Так как ширина/высота у этих кнопок не заданы явно (`auto`), реальный бокс активного таба оказывался на 2px больше по каждой оси, чем у неактивного (border добавляет к размеру `auto`-элемента независимо от `box-sizing`). При переключении активного таба в горизонтальном ряду это на 2px сдвигало все табы правее — воспринималось как "прыжок" и "не оцентрировано".
+
+Стандартный фикс: неактивным табам добавлен `border border-transparent` — та же толщина рамки, что у активного (`border-black-olive`), только прозрачная. Размер бокса перестал зависеть от состояния.
+
+- `components/catalog/CategoryTabs.tsx`, `app/admin/(protected)/products/page.tsx` — у неактивных табов `border` → `border border-transparent`.
+
+Проверено (Chrome DevTools MCP, `getBoundingClientRect()` до/после переключения таба на обеих страницах): `top`/`height`/`left`/`width` каждого таба совпадают пиксель-в-пиксель до и после клика; `npm run lint` и `npx tsc --noEmit` — чисто.
+
+**Изменённые файлы:**
+- `components/catalog/CategoryTabs.tsx` — изменён (`border-transparent` у неактивных табов)
+- `app/admin/(protected)/products/page.tsx` — изменён (`border-transparent` у неактивных табов)

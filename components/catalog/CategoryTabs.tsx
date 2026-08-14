@@ -74,7 +74,7 @@ export function CategoryTabs({ categories, activeSlug, onSelect }: CategoryTabsP
           className={
             category.slug === activeSlug
               ? "shrink-0 rounded-sm border border-black-olive px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive shadow-[0_2px_8px_rgba(0,0,0,0.1)]"
-              : "shrink-0 rounded-sm px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:text-black-olive"
+              : "shrink-0 rounded-sm border border-transparent px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:text-black-olive"
           }
         >
           {category.name}
