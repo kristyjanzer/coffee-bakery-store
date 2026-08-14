@@ -23,7 +23,7 @@ store/
 │   │       ├── orders/page.tsx, orders/[id]/page.tsx
 │   │       ├── products/page.tsx, products/new/page.tsx, products/[id]/page.tsx
 │   │       ├── customers/page.tsx, customers/[id]/page.tsx
-│   │       ├── reviews/page.tsx
+│   │       ├── reviews/page.tsx, reviews/[id]/page.tsx
 │   │       ├── pages/page.tsx       # О нас/Контакты/Доставка, SEO, баннеры
 │   │       └── settings/page.tsx    # пользователи админки, уведомления
 │   └── api/
@@ -85,7 +85,8 @@ store/
 | `/admin/orders`, `/admin/orders/[id]` | защищено | |
 | `/admin/products`, `/products/new`, `/products/[id]` | защищено | |
 | `/admin/customers`, `/admin/customers/[id]` | защищено | |
-| `/admin/reviews`, `/admin/pages`, `/admin/settings` | защищено | |
+| `/admin/reviews`, `/admin/reviews/[id]` | защищено | |
+| `/admin/pages`, `/admin/settings` | защищено | |
 
 ### API (Route Handlers)
 | Endpoint | Метод | Доступ | Назначение |
