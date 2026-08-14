@@ -4,7 +4,7 @@ import { getAdminCategories } from "@/lib/products";
 import { ProductForm } from "@/components/admin/ProductForm";
 
 export const metadata: Metadata = {
-  title: "Новый товар — Кофейня-пекарня",
+  title: "Новый товар — Coffee Bakery",
 };
 
 // Создание товара (docs/plan.md, пункт 17). ProductForm сама вызывает createProduct()

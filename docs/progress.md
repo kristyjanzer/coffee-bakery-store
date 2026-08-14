@@ -1,4 +1,4 @@
-# Прогресс проекта «Кофейня-пекарня»
+# Прогресс проекта «Coffee Bakery»
 
 ## Задача 1
 
@@ -1394,3 +1394,17 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 
 **Изменённые файлы:**
 - `components/layout/Header.tsx` — изменён (`px-6` перенесён на `<header>`)
+
+## Задача 39
+
+Переименование проекта с «Кофейня-пекарня» на «Coffee Bakery» по запросу пользователя. Ветка `chore/rename-coffee-bakery`.
+
+**Изменённые файлы:**
+- `components/layout/Header.tsx`, `Footer.tsx`, `Hero.tsx`, `components/admin/Sidebar.tsx`, `app/admin/login/page.tsx` — видимое название/заголовок заменены на «Coffee Bakery»
+- `app/layout.tsx` и все `app/admin/(protected)/**/page.tsx`, `lib/pages.ts` — метаданные `title`/`seoTitle` заменены на «Coffee Bakery»
+- `menu.json` (`shop_name`), `package.json`/`package-lock.json` (`name: "coffee-bakery"`) — изменены
+- `AGENTS.md`, `docs/about-project.md`, `docs/architecture.md`, `docs/plan.md`, `docs/technologies.md` — заголовки документов переименованы
+
+Описательные фразы вроде «небольшая кофейня-пекарня в центре города» (тип заведения, не название) оставлены на русском. Проверено вручную в браузере (Chrome DevTools MCP): главная страница, хедер/футер/hero, страница логина админки.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто текстовая (переименование), auth/input/secrets/API не затрагивались, находок нет.

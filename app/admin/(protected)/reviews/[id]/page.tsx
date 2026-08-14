@@ -5,7 +5,7 @@ import { getAdminReviewById } from "@/lib/reviews";
 import { ReviewModerationControl } from "@/components/admin/ReviewModerationControl";
 
 export const metadata: Metadata = {
-  title: "Отзыв — Кофейня-пекарня",
+  title: "Отзыв — Coffee Bakery",
 };
 
 interface ReviewPageProps {

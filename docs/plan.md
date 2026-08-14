@@ -1,4 +1,4 @@
-# План выполнения работ — «Кофейня-пекарня»
+# План выполнения работ — «Coffee Bakery»
 
 Основан на [about-project.md](about-project.md), [architecture.md](architecture.md) и [technologies.md](technologies.md).
 

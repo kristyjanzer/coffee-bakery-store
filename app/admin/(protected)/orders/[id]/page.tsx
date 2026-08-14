@@ -11,7 +11,7 @@ import {
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
 
 export const metadata: Metadata = {
-  title: "Заказ — Кофейня-пекарня",
+  title: "Заказ — Coffee Bakery",
 };
 
 interface OrderPageProps {

@@ -4,7 +4,7 @@ import { getDashboardSummary, getPendingOrders, getSalesChart, getTopProducts } 
 import { getAdminReviews } from "@/lib/reviews";
 
 export const metadata: Metadata = {
-  title: "Дашборд — Кофейня-пекарня",
+  title: "Дашборд — Coffee Bakery",
 };
 
 // Server Component — данные читаются напрямую (пока из lib/dashboard.ts, мок; станет

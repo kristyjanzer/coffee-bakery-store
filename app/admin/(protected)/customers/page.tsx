@@ -4,7 +4,7 @@ import { formatPrice } from "@/lib/utils";
 import { getCustomers } from "@/lib/customers";
 
 export const metadata: Metadata = {
-  title: "Клиенты — Кофейня-пекарня",
+  title: "Клиенты — Coffee Bakery",
 };
 
 // Список клиентов (docs/plan.md, пункт 18; about-project.md, раздел "Клиенты"):

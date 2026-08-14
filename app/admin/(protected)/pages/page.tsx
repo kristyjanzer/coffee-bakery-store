@@ -5,7 +5,7 @@ import { PageContentForm } from "@/components/admin/PageContentForm";
 import { BannerManager } from "@/components/admin/BannerManager";
 
 export const metadata: Metadata = {
-  title: "Управление страницами — Кофейня-пекарня",
+  title: "Управление страницами — Coffee Bakery",
 };
 
 type Tab = PageSlug | "banners";
