@@ -68,6 +68,7 @@ async function PageTab({ slug }: { slug: PageSlug }) {
 
   return (
     <PageContentForm
+      key={page.slug}
       slug={page.slug}
       initialTitle={page.title}
       initialContent={page.content}
