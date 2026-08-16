@@ -1477,3 +1477,14 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки; `npm run lint`, `npx tsc --noEmit` — чисто.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.
+
+### Правка по запросу пользователя: тот же шрифт у подзаголовка Hero
+
+Пользователь просил применить Dela Gothic One везде на главной и страницах товаров (headings, цены, описания, кнопки) — после уточнения объёма (общие с админкой компоненты Button/Input/Modal, viewport-зависимые размеры и т.д.) решил не делать полный охват, слишком много ручной работы за раз. Точечно: подзаголовок Hero («Свежая выпечка и авторский кофе каждый день») переведён на `font-dela-gothic-one` (раньше наследовал дефолтный VenusCom/Manrope) — размер не менялся.
+
+**Изменённые файлы:**
+- `components/layout/Hero.tsx` — изменён (`font-dela-gothic-one` на подзаголовке)
+
+Проверено вручную в браузере (Chrome DevTools MCP); `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.

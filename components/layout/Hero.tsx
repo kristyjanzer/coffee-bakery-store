@@ -24,7 +24,7 @@ export function Hero() {
         <h1 className="max-w-2xl text-balance font-dela-gothic-one text-[30px] font-normal uppercase leading-none text-lemon-zest md:text-[55px]">
           Утро начинается здесь
         </h1>
-        <p className="mt-5 max-w-md text-body-lg text-warm-cream">
+        <p className="mt-5 max-w-md font-dela-gothic-one text-body-lg text-warm-cream">
           Свежая выпечка и авторский кофе каждый день
         </p>
       </div>
