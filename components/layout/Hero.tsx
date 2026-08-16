@@ -21,7 +21,7 @@ export function Hero() {
       </ParallaxLayer>
       <div className="absolute inset-0 bg-gradient-to-t from-black-olive via-black-olive/70 to-black-olive/30" />
       <div className="relative z-10 mx-auto w-full max-w-[1200px]">
-        <h1 className="max-w-2xl text-balance font-lobster text-heading-lg font-normal normal-case leading-none tracking-normal text-lemon-zest md:text-display-xl">
+        <h1 className="max-w-2xl text-balance font-dela-gothic-one text-heading-lg font-normal uppercase leading-none text-lemon-zest md:text-display-xl">
           Утро начинается здесь
         </h1>
         <p className="mt-5 max-w-md text-body-lg text-warm-cream">

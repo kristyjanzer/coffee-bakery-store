@@ -1453,3 +1453,16 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки — кириллица отображается корректно, строки читаемы; `npm run lint`, `npx tsc --noEmit` — чисто.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая (подключение шрифта из Google Fonts), auth/input/secrets/API не затрагивались, находок нет.
+
+### Правка по замечанию пользователя: Lobster выбивался по стилю
+
+Курсивный Lobster визуально не сочетался с остальным сайтом (гротескные шрифты, острые формы без скруглений). Заменён на **Dela Gothic One** (Google Fonts, тоже только вес 400, поддерживает кириллицу) — плотный гротескный дисплейный шрифт, ближе по духу к "неоновой вывеске" из DESIGN.md. На `<h1>` Hero возвращены `uppercase` и стандартный трекинг из токена (`tracking-normal` убран) — блочный шрифт, в отличие от курсива, хорошо читается в капсе с разрядкой.
+
+**Изменённые файлы:**
+- `app/layout.tsx` — изменён (`Lobster` заменён на `Dela_Gothic_One`, переменная `--font-dela-gothic-one`)
+- `tailwind.config.ts` — изменён (`fontFamily.lobster` заменён на `fontFamily["dela-gothic-one"]`)
+- `components/layout/Hero.tsx` — изменён (`font-dela-gothic-one`, возвращены `uppercase` и трекинг по умолчанию)
+
+Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки; `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.
