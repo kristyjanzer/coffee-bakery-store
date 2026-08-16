@@ -13,6 +13,10 @@ const venuscomFontStack = [
   "sans-serif",
 ];
 
+// Шрифт логотипа/названия "Coffee Bakery" — --font-gabriela подключается в
+// app/layout.tsx через next/font/google (см. комментарий там же)
+const gabrielaFontStack = ["var(--font-gabriela)", "serif"];
+
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -35,6 +39,7 @@ const config: Config = {
       fontFamily: {
         sans: venuscomFontStack,
         venuscom: venuscomFontStack,
+        gabriela: gabrielaFontStack,
       },
       // Текстовые роли — DESIGN.md, раздел "Type Scale" (размер/line-height/letter-spacing вместе)
       fontSize: {

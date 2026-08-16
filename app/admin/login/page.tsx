@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black-olive px-4">
       <div className="w-full max-w-[25rem] bg-warm-cream p-[30px] text-black-olive">
-        <p className="font-venuscom text-caption uppercase tracking-[0.04em] text-forest-ink">
+        <p className="font-gabriela text-caption uppercase tracking-[0.04em] text-forest-ink">
           Coffee Bakery
         </p>
         <h1 className="mt-2 font-venuscom text-heading-sm uppercase tracking-[0.03em] text-forest-ink">

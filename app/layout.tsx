@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Gabriela, Manrope } from "next/font/google";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
@@ -18,6 +18,15 @@ const venuscom = Manrope({
   variable: "--font-venuscom",
 });
 
+// Шрифт логотипа/названия "Coffee Bakery" — по запросу пользователя, отдельно от
+// основного VenusCom/Manrope. Gabriela на Google Fonts существует только весом 400
+// (Regular) и без кириллицы — не проблема, так как название теперь на латинице.
+const gabriela = Gabriela({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-gabriela",
+});
+
 // Next.js сам рендерит эти метаданные в <head>
 export const metadata: Metadata = {
   title: "Coffee Bakery",
@@ -31,7 +40,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={`${venuscom.variable} scroll-smooth`} data-scroll-behavior="smooth">
+    <html
+      lang="ru"
+      className={`${venuscom.variable} ${gabriela.variable} scroll-smooth`}
+      data-scroll-behavior="smooth"
+    >
       <body className="bg-black-olive text-warm-cream antialiased">
         {children}
       </body>

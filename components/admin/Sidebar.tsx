@@ -75,7 +75,7 @@ export function Sidebar() {
       <div className="flex items-center justify-between border-b border-sage-mist/20 bg-black-olive px-6 py-4 lg:hidden">
         <Link
           href="/admin"
-          className="font-venuscom text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
+          className="font-gabriela text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
         >
           Coffee Bakery
         </Link>
@@ -107,7 +107,7 @@ export function Sidebar() {
         <div>
           <Link
             href="/admin"
-            className="font-venuscom text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
+            className="font-gabriela text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
           >
             Coffee Bakery
           </Link>
