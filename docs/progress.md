@@ -1438,3 +1438,18 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки — строки визуально сбалансированы на обеих; `npm run lint`, `npx tsc --noEmit` — чисто.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто текстовая, auth/input/secrets/API не затрагивались, находок нет.
+
+### Правка по запросу пользователя: шрифт заголовка Hero
+
+Пользователь попросил шрифт «Schueler XP» — его нет в Google Fonts (найден только на сторонних free-font сайтах с неясной лицензией на скачивание), уточнил у пользователя (AskUserQuestion) — предоставить файл шрифта самостоятельно или выбрать другой. Выбран **Lobster** (Google Fonts, вес только 400/Regular, но, в отличие от Gabriela из задачи 40, поддерживает кириллицу — обязательно для русского текста заголовка).
+
+Подключён тем же паттерном, что VenusCom/Gabriela (`next/font/google`, переменная `--font-lobster`). На `<h1>` Hero: `font-venuscom` заменён на `font-lobster`, `uppercase` → `normal-case`, добавлен `tracking-normal` — курсивный шрифт нечитаем в верхнем регистре и с широким трекингом (тот же, что у токенов `heading-lg`/`display-xl` из DESIGN.md), поэтому это осознанное отклонение только для этого заголовка, у остального текста трекинг/капс не менялись.
+
+**Изменённые файлы:**
+- `app/layout.tsx` — изменён (подключён `Lobster` из `next/font/google`, переменная `--font-lobster`)
+- `tailwind.config.ts` — изменён (добавлен `fontFamily.lobster`)
+- `components/layout/Hero.tsx` — изменён (`font-lobster`, `normal-case`, `tracking-normal` на `<h1>`)
+
+Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки — кириллица отображается корректно, строки читаемы; `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая (подключение шрифта из Google Fonts), auth/input/secrets/API не затрагивались, находок нет.
