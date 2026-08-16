@@ -1466,3 +1466,14 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки; `npm run lint`, `npx tsc --noEmit` — чисто.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.
+
+### Правка по запросу пользователя: конкретный размер шрифта заголовка
+
+Заголовок Hero был на токенах DESIGN.md `heading-lg`/`display-xl` (46px/75px). По запросу заменён на точные значения: 30px на мобильной, 55px от `md`. `text-heading-lg`/`md:text-display-xl` заменены на произвольные значения `text-[30px]`/`md:text-[55px]` (letter-spacing токенов больше не применяется — только у этого заголовка, остальной текст на токенах без изменений).
+
+**Изменённые файлы:**
+- `components/layout/Hero.tsx` — изменён (`text-[30px] md:text-[55px]` вместо токенов `text-heading-lg`/`md:text-display-xl`)
+
+Проверено вручную в браузере (Chrome DevTools MCP): desktop (1440×900) и мобильная (390×844) раскладки; `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.
