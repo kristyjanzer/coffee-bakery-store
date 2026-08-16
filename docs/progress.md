@@ -1408,3 +1408,18 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Описательные фразы вроде «небольшая кофейня-пекарня в центре города» (тип заведения, не название) оставлены на русском. Проверено вручную в браузере (Chrome DevTools MCP): главная страница, хедер/футер/hero, страница логина админки.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто текстовая (переименование), auth/input/secrets/API не затрагивались, находок нет.
+
+## Задача 40
+
+Новый шрифт логотипа/названия «Coffee Bakery» по запросу пользователя — Gabriela (Google Fonts, только вес 400/Regular, без кириллицы, что не проблема — название теперь на латинице). Ветка `chore/logo-font-gabriela`.
+
+Подключён через `next/font/google` тем же паттерном, что и основной VenusCom/Manrope (CSS-переменная `--font-gabriela`), как отдельный, второй шрифт — не заменяет VenusCom для остального текста сайта (осознанное отклонение от DESIGN.md, где типографика единая; подтверждено пользователем через AskUserQuestion, что Hero-заголовок на главной остаётся на VenusCom/Manrope, Gabriela — только у повторяющегося логотипа/названия).
+
+**Изменённые файлы:**
+- `app/layout.tsx` — изменён (подключён `Gabriela` из `next/font/google`, переменная `--font-gabriela` на `<html>`)
+- `tailwind.config.ts` — изменён (добавлен `fontFamily.gabriela`)
+- `components/layout/Header.tsx`, `Footer.tsx`, `components/admin/Sidebar.tsx` (2 места), `app/admin/login/page.tsx` — класс `font-venuscom` на тексте названия заменён на `font-gabriela`
+
+Проверено вручную в браузере (Chrome DevTools MCP): хедер, футер, страница логина админки — название отображается новым засечным шрифтом; `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая (подключение шрифта), auth/input/secrets/API не затрагивались, находок нет.

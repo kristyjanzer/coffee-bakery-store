@@ -10,7 +10,7 @@ export function Header() {
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <Image src="/images/logo.svg" alt="" width={40} height={40} className="size-10" />
-          <span className="font-venuscom text-body-lg font-semibold uppercase tracking-[0.04em] text-warm-cream">
+          <span className="font-gabriela text-body-lg font-semibold uppercase tracking-[0.04em] text-warm-cream">
             Coffee Bakery
           </span>
         </Link>
