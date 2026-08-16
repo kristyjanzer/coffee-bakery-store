@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Gabriela, Manrope } from "next/font/google";
+import { Dela_Gothic_One, Gabriela, Manrope } from "next/font/google";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
@@ -27,6 +27,16 @@ const gabriela = Gabriela({
   variable: "--font-gabriela",
 });
 
+// Шрифт заголовка Hero-блока — по запросу пользователя (сначала пробовали
+// Lobster, но курсив визуально выбивался из стиля сайта). Dela Gothic One —
+// плотный гротескный дисплейный шрифт, тоже только весом 400, поддерживает
+// кириллицу.
+const delaGothicOne = Dela_Gothic_One({
+  subsets: ["latin", "cyrillic"],
+  weight: "400",
+  variable: "--font-dela-gothic-one",
+});
+
 // Next.js сам рендерит эти метаданные в <head>
 export const metadata: Metadata = {
   title: "Coffee Bakery",
@@ -42,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${venuscom.variable} ${gabriela.variable} scroll-smooth`}
+      className={`${venuscom.variable} ${gabriela.variable} ${delaGothicOne.variable} scroll-smooth`}
       data-scroll-behavior="smooth"
     >
       <body className="bg-black-olive text-warm-cream antialiased">

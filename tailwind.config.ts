@@ -17,6 +17,10 @@ const venuscomFontStack = [
 // app/layout.tsx через next/font/google (см. комментарий там же)
 const gabrielaFontStack = ["var(--font-gabriela)", "serif"];
 
+// Шрифт заголовка Hero-блока — --font-dela-gothic-one подключается в
+// app/layout.tsx через next/font/google (см. комментарий там же)
+const delaGothicOneFontStack = ["var(--font-dela-gothic-one)", "sans-serif"];
+
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -40,6 +44,7 @@ const config: Config = {
         sans: venuscomFontStack,
         venuscom: venuscomFontStack,
         gabriela: gabrielaFontStack,
+        "dela-gothic-one": delaGothicOneFontStack,
       },
       // Текстовые роли — DESIGN.md, раздел "Type Scale" (размер/line-height/letter-spacing вместе)
       fontSize: {
