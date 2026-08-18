@@ -16,7 +16,7 @@ export default async function NewProductPage() {
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
         <Link
-          href="/admin/products"
+          href="/pekarnya-control/products"
           className="font-venuscom text-caption text-black-olive/60 hover:text-black-olive hover:underline"
         >
           ← Все товары

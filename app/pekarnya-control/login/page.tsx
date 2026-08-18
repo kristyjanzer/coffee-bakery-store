@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 // Публичная страница (docs/architecture.md, раздел 2): единственная точка входа
-// в /admin/*, которую middleware.ts (пункт 32 плана) не должен защищать.
+// в /pekarnya-control/*, которую middleware.ts (пункт 32 плана) не должен защищать.
 export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black-olive px-4">

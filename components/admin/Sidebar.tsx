@@ -11,17 +11,17 @@ import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 // 16-21 плана — ссылки уже готовы под них (как ссылки на #menu/#reviews в
 // публичном Nav.tsx до появления самих секций).
 const navItems = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/orders", label: "Заказы" },
-  { href: "/admin/products", label: "Товары" },
-  { href: "/admin/customers", label: "Клиенты" },
-  { href: "/admin/reviews", label: "Отзывы" },
-  { href: "/admin/pages", label: "Управление страницами" },
-  { href: "/admin/settings", label: "Настройки" },
+  { href: "/pekarnya-control", label: "Dashboard" },
+  { href: "/pekarnya-control/orders", label: "Заказы" },
+  { href: "/pekarnya-control/products", label: "Товары" },
+  { href: "/pekarnya-control/customers", label: "Клиенты" },
+  { href: "/pekarnya-control/reviews", label: "Отзывы" },
+  { href: "/pekarnya-control/pages", label: "Управление страницами" },
+  { href: "/pekarnya-control/settings", label: "Настройки" },
 ];
 
 function isActiveHref(pathname: string, href: string) {
-  if (href === "/admin") return pathname === "/admin";
+  if (href === "/pekarnya-control") return pathname === "/pekarnya-control";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -63,7 +63,7 @@ function NavList({ pathname, onNavigate }: NavListProps) {
 // что публичный Nav.tsx). Брейкпоинт lg (не md, как у публичного Nav) — админские
 // таблицы/формы нуждаются в большей ширине контента, чем витрина.
 //
-// Ссылка "Выйти" — заглушка (ведёт на /admin/login): реального signOut() пока нет,
+// Ссылка "Выйти" — заглушка (ведёт на /pekarnya-control/login): реального signOut() пока нет,
 // NextAuth появится в пункте 31 плана. Проверка сессии — задача middleware.ts
 // (пункт 32), здесь только структура/навигация.
 export function Sidebar() {
@@ -74,7 +74,7 @@ export function Sidebar() {
     <>
       <div className="flex items-center justify-between border-b border-sage-mist/20 bg-black-olive px-6 py-4 lg:hidden">
         <Link
-          href="/admin"
+          href="/pekarnya-control"
           className="font-gabriela text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
         >
           Coffee Bakery
@@ -94,7 +94,7 @@ export function Sidebar() {
         <div className="flex flex-col gap-6 border-b border-sage-mist/20 bg-black-olive px-6 py-4 lg:hidden">
           <NavList pathname={pathname} onNavigate={() => setIsOpen(false)} />
           <Link
-            href="/admin/login"
+            href="/pekarnya-control/login"
             onClick={() => setIsOpen(false)}
             className="font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
           >
@@ -106,7 +106,7 @@ export function Sidebar() {
       <aside className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-1/5 lg:shrink-0 lg:flex-col lg:justify-between lg:bg-black-olive lg:px-6 lg:py-8">
         <div>
           <Link
-            href="/admin"
+            href="/pekarnya-control"
             className="font-gabriela text-body-sm font-semibold uppercase tracking-[0.04em] text-warm-cream"
           >
             Coffee Bakery
@@ -116,7 +116,7 @@ export function Sidebar() {
           </nav>
         </div>
         <Link
-          href="/admin/login"
+          href="/pekarnya-control/login"
           className="font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
         >
           Выйти

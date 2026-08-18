@@ -56,7 +56,7 @@ function SectionHeading({ children }: { children: string }) {
 // административной панели", пункт 1) — сводка, график, топ товаров, новые заказы,
 // уведомления. Данные — мок из lib/dashboard.ts (см. комментарий там), кроме
 // уведомлений о новых отзывах — они собираются здесь же из lib/reviews.ts (прокинуто
-// пропом из app/admin/(protected)/page.tsx как getAdminReviews() — видит и неодобренные
+// пропом из app/pekarnya-control/(protected)/page.tsx как getAdminReviews() — видит и неодобренные
 // отзывы, задача 19), а не дублируются отдельным мок-массивом.
 export function Dashboard({ summary, salesChart, topProducts, pendingOrders, reviews }: DashboardProps) {
   const revenues = salesChart.map((point) => point.revenue);
@@ -206,7 +206,7 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders, rev
               {pendingOrders.map((order) => (
                 <tr key={order.id} className="border-b border-sage-mist last:border-0">
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    <Link href={`/admin/orders/${order.id}`} className="hover:underline">
+                    <Link href={`/pekarnya-control/orders/${order.id}`} className="hover:underline">
                       №{order.id}
                     </Link>
                   </td>

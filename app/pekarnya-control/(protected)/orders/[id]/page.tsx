@@ -36,7 +36,7 @@ export default async function AdminOrderPage({ params }: OrderPageProps) {
     <div className="flex flex-col gap-8">
       <div>
         <Link
-          href="/admin/orders"
+          href="/pekarnya-control/orders"
           className="font-venuscom text-caption text-black-olive/60 hover:text-black-olive hover:underline"
         >
           ← Все заказы
@@ -139,7 +139,7 @@ export default async function AdminOrderPage({ params }: OrderPageProps) {
             {customerHistory.map((historyOrder) => (
               <li key={historyOrder.id}>
                 <Link
-                  href={`/admin/orders/${historyOrder.id}`}
+                  href={`/pekarnya-control/orders/${historyOrder.id}`}
                   className="flex items-baseline justify-between gap-3 hover:underline"
                 >
                   <span className="font-venuscom text-body-sm text-black-olive">

@@ -12,10 +12,10 @@ store/
 │   ├── layout.tsx              # корневой layout: <html>, шрифты (next/font), Font Awesome config, globals.css
 │   ├── globals.css              # точка входа Tailwind
 │   ├── (site)/                   # route group — публичный сайт, оборачивается Header/Footer
-│   │   ├── layout.tsx             # Header + {children} + Footer (не затрагивает /admin)
+│   │   ├── layout.tsx             # Header + {children} + Footer (не затрагивает /pekarnya-control)
 │   │   ├── page.tsx                # главная страница (Server Component)
 │   │   └── product/[id]/page.tsx   # страница товара (Server Component)
-│   ├── admin/
+│   ├── pekarnya-control/          # URL админки намеренно не /admin — сложнее найти путь
 │   │   ├── login/page.tsx       # логин админа (НЕ защищён, вне route group ниже)
 │   │   └── (protected)/          # route group — сайдбар (20%) + контент, сессия проверяется в middleware
 │   │       ├── layout.tsx
@@ -65,7 +65,7 @@ store/
 │   └── images/                 # логотип, hero-картинка, иконки (НЕ фото товаров)
 │
 ├── menu.json                    # остаётся источником сид-данных
-├── middleware.ts                 # защищает /admin/* (кроме /admin/login)
+├── middleware.ts                 # защищает /pekarnya-control/* (кроме /pekarnya-control/login)
 ├── .env.local / .env.example
 └── next.config.js / tailwind.config.ts / tsconfig.json / package.json
 ```
@@ -80,13 +80,13 @@ store/
 |---|---|---|
 | `/` | Server Component | категории и товары читаются из Prisma напрямую |
 | `/product/[id]` | Server Component | один товар из Prisma |
-| `/admin` | защищено | Dashboard |
-| `/admin/login` | публично | форма входа |
-| `/admin/orders`, `/admin/orders/[id]` | защищено | |
-| `/admin/products`, `/products/new`, `/products/[id]` | защищено | |
-| `/admin/customers`, `/admin/customers/[id]` | защищено | |
-| `/admin/reviews`, `/admin/reviews/[id]` | защищено | |
-| `/admin/pages`, `/admin/settings` | защищено | |
+| `/pekarnya-control` | защищено | Dashboard |
+| `/pekarnya-control/login` | публично | форма входа |
+| `/pekarnya-control/orders`, `/pekarnya-control/orders/[id]` | защищено | |
+| `/pekarnya-control/products`, `/products/new`, `/products/[id]` | защищено | |
+| `/pekarnya-control/customers`, `/pekarnya-control/customers/[id]` | защищено | |
+| `/pekarnya-control/reviews`, `/pekarnya-control/reviews/[id]` | защищено | |
+| `/pekarnya-control/pages`, `/pekarnya-control/settings` | защищено | |
 
 ### API (Route Handlers)
 | Endpoint | Метод | Доступ | Назначение |
@@ -245,7 +245,7 @@ enum AdminRole { ADMIN ORDER_MANAGER }
 таба + клик-прокрутка к началу секции, drag-to-scroll мышкой по списку табов),
 `ReviewsSlider` (Swiper/Embla), `Sidebar` (навигация админки, активный пункт по `usePathname`,
 мобильное бургер-меню), формы админки (`ProductForm`, смена статуса заказа — запросы
-к API-роутам), обёртка `SessionProvider` вокруг `admin/(protected)/layout.tsx`.
+к API-роутам), обёртка `SessionProvider` вокруг `pekarnya-control/(protected)/layout.tsx`.
 
 Правило: данные запрашиваются как можно выше по дереву (Server Component), `"use client"`
 опускается до самого маленького листового компонента, которому реально нужна интерактивность
@@ -276,9 +276,9 @@ Prisma при этом остаётся централизованной в ро
   `AdminUser` (пароль — bcrypt-хэш), JWT-сессии (без таблицы сессий в БД — проще для
   serverless), роль (`ADMIN`/`ORDER_MANAGER`) кладётся в JWT/session callback.
 - `app/api/auth/[...nextauth]/route.ts` — экспортирует хендлеры.
-- **Основная защита** — `middleware.ts` матчит `/admin/:path*` (кроме `/admin/login`) и
-  редиректит неавторизованных на страницу логина.
-- API-роуты не попадают под матчер middleware (они под `/api`, не `/admin`), поэтому каждый
+- **Основная защита** — `middleware.ts` матчит `/pekarnya-control/:path*` (кроме
+  `/pekarnya-control/login`) и редиректит неавторизованных на страницу логина.
+- API-роуты не попадают под матчер middleware (они под `/api`, не `/pekarnya-control`), поэтому каждый
   мутирующий хендлер (`POST/PATCH/DELETE /api/products`, `GET/PATCH /api/orders`) сам
   проверяет `getServerSession(authOptions)` и роль перед обращением к Prisma. Публичные GET
   и `POST /api/orders` (гостевой чекаут) остаются открытыми.

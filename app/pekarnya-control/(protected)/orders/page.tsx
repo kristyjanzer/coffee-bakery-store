@@ -31,7 +31,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
 
       <div className="flex flex-wrap gap-3" role="tablist">
         <Link
-          href="/admin/orders"
+          href="/pekarnya-control/orders"
           role="tab"
           aria-selected={!activeStatus}
           className={
@@ -45,7 +45,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
         {ORDER_STATUSES.map((status) => (
           <Link
             key={status}
-            href={`/admin/orders?status=${status}`}
+            href={`/pekarnya-control/orders?status=${status}`}
             role="tab"
             aria-selected={activeStatus === status}
             className={
@@ -82,7 +82,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
               {orders.map((order) => (
                 <tr key={order.id} className="border-b border-sage-mist last:border-0">
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    <Link href={`/admin/orders/${order.id}`} className="hover:underline">
+                    <Link href={`/pekarnya-control/orders/${order.id}`} className="hover:underline">
                       №{order.id}
                     </Link>
                   </td>
