@@ -1505,3 +1505,20 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено: `npm run lint`, `npx tsc --noEmit`, `npm run build` — чисто (после чистки стейл-кэша `.next`, который ещё указывал на старый путь); вручную через `curl` — `/admin` отдаёт 404, `/pekarnya-control`, `/pekarnya-control/login`, `/pekarnya-control/orders` открываются.
 
 **Security review:** применялся (`.claude/skills/security-review`) — переименование пути не заменяет реальный контроль доступа: `middleware.ts` (защита `/pekarnya-control/*`) и NextAuth ещё не реализованы (пункты 31-32 плана), сейчас это только «security through obscurity». Секретов, ввода пользователя и API-эндпоинтов задача не затрагивала.
+
+## Задача 43
+
+По замечанию пользователя: в `<select>` админки стрелка визуально прилипала к правому краю поля. Ветка `fix/select-arrow-padding`.
+
+**Первая попытка была неверной** (увеличить `padding-right` у нативного select) — в headless Chrome (Chrome DevTools MCP) на глаз казалось, что стрелка сдвигается вместе с отступом, но пользователь показал скриншот из реального браузера на Windows: стрелка осталась прижатой к краю. Причина — на Windows нативный `<select>` часто рисуется темой ОС, и позиция самой стрелки не зависит от `padding` элемента (сдвигается только текст). Коммит с этой неверной правкой удалён (`git reset --hard` + `git push --force-with-lease` на ветке, PR не был открыт).
+
+**Правильное решение:** `appearance-none` убирает нативную стрелку полностью, вместо неё — своя иконка `faChevronDown` (уже использовалась в проекте для `ReviewsSlider`/`ProductDetail`) абсолютным позиционированием поверх `<select>` (`right-2.5` = 10px от края, как просил пользователь). Так стрелка рендерится одинаково в любом браузере/ОС, а не зависит от нативной темы. Для select'ов с `disabled` (роль пользователя в таблице, статус заказа) — `peer`/`peer-disabled:opacity-60`, чтобы иконка тоже тускнела вместе с полем.
+
+**Изменённые файлы:**
+- `components/admin/ProductForm.tsx` — select категории обёрнут в `relative`-контейнер, `appearance-none` + иконка
+- `components/admin/AdminUsersManager.tsx` — оба select'а роли (в таблице — с `peer-disabled`, в форме добавления — без)
+- `components/admin/OrderStatusControl.tsx` — select статуса заказа, `peer-disabled`
+
+Проверено вручную в браузере (Chrome DevTools MCP) на `/pekarnya-control/settings`, `/pekarnya-control/products/new`, `/pekarnya-control/orders/[id]` — отступ стрелки одинаковый везде, клик по select по-прежнему открывает нативный список опций; `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.

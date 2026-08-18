@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, updateOrderStatus, type OrderStatus } from "@/lib/orders";
 
 interface OrderStatusControlProps {
@@ -34,19 +36,25 @@ export function OrderStatusControl({ orderId, initialStatus }: OrderStatusContro
       <label htmlFor="order-status" className="font-venuscom text-caption text-black-olive/60">
         Статус заказа
       </label>
-      <select
-        id="order-status"
-        value={status}
-        disabled={isSaving}
-        onChange={(event) => void handleChange(event.target.value as OrderStatus)}
-        className="mt-1 rounded-sm border border-sage-mist bg-warm-cream px-4 py-2 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none disabled:opacity-60"
-      >
-        {ORDER_STATUSES.map((value) => (
-          <option key={value} value={value}>
-            {ORDER_STATUS_LABELS[value]}
-          </option>
-        ))}
-      </select>
+      <div className="relative mt-1 inline-block">
+        <select
+          id="order-status"
+          value={status}
+          disabled={isSaving}
+          onChange={(event) => void handleChange(event.target.value as OrderStatus)}
+          className="peer appearance-none rounded-sm border border-sage-mist bg-warm-cream py-2 pl-4 pr-8 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none disabled:opacity-60"
+        >
+          {ORDER_STATUSES.map((value) => (
+            <option key={value} value={value}>
+              {ORDER_STATUS_LABELS[value]}
+            </option>
+          ))}
+        </select>
+        <FontAwesomeIcon
+          icon={faChevronDown}
+          className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-black-olive/60 peer-disabled:opacity-60"
+        />
+      </div>
       {isSaving && (
         <p className="mt-1 font-venuscom text-caption text-black-olive/60">Сохраняем…</p>
       )}

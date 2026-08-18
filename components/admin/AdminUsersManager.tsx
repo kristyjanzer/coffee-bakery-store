@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import {
@@ -108,18 +110,24 @@ export function AdminUsersManager({ users: initialUsers }: AdminUsersManagerProp
                     {user.email}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3">
-                    <select
-                      value={user.role}
-                      disabled={savingId === user.id}
-                      onChange={(event) => void handleRoleChange(user.id, event.target.value as AdminRole)}
-                      className="rounded-sm border border-sage-mist bg-warm-cream px-3 py-2 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none disabled:opacity-60"
-                    >
-                      {ADMIN_ROLES.map((role) => (
-                        <option key={role} value={role}>
-                          {ADMIN_ROLE_LABELS[role]}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative inline-block">
+                      <select
+                        value={user.role}
+                        disabled={savingId === user.id}
+                        onChange={(event) => void handleRoleChange(user.id, event.target.value as AdminRole)}
+                        className="peer appearance-none rounded-sm border border-sage-mist bg-warm-cream py-2 pl-3 pr-8 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none disabled:opacity-60"
+                      >
+                        {ADMIN_ROLES.map((role) => (
+                          <option key={role} value={role}>
+                            {ADMIN_ROLE_LABELS[role]}
+                          </option>
+                        ))}
+                      </select>
+                      <FontAwesomeIcon
+                        icon={faChevronDown}
+                        className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-black-olive/60 peer-disabled:opacity-60"
+                      />
+                    </div>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3">
                     <button
@@ -179,18 +187,24 @@ export function AdminUsersManager({ users: initialUsers }: AdminUsersManagerProp
             <label htmlFor="newUserRole" className="font-venuscom text-caption text-black-olive/70">
               Роль
             </label>
-            <select
-              id="newUserRole"
-              value={newUser.role}
-              onChange={(event) => setNewUser((prev) => ({ ...prev, role: event.target.value as AdminRole }))}
-              className="mt-1 w-full rounded-sm border border-sage-mist bg-warm-cream px-4 py-3 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none"
-            >
-              {ADMIN_ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {ADMIN_ROLE_LABELS[role]}
-                </option>
-              ))}
-            </select>
+            <div className="relative mt-1">
+              <select
+                id="newUserRole"
+                value={newUser.role}
+                onChange={(event) => setNewUser((prev) => ({ ...prev, role: event.target.value as AdminRole }))}
+                className="w-full appearance-none rounded-sm border border-sage-mist bg-warm-cream py-3 pl-4 pr-8 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none"
+              >
+                {ADMIN_ROLES.map((role) => (
+                  <option key={role} value={role}>
+                    {ADMIN_ROLE_LABELS[role]}
+                  </option>
+                ))}
+              </select>
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-black-olive/60"
+              />
+            </div>
           </div>
         </div>
 
