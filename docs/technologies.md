@@ -72,3 +72,13 @@
 **Telegram Bot API** — приём заявок
 **Cloudinary/Supabase Storage** — хранение изображений товаров
 **Vercel + Neon/Supabase** — деплой
+
+## Тестирование
+
+**Vitest + React Testing Library** — добавлены по запросу пользователя для покрытия
+существующего функционала юнит- и component-тестами: `stores/cartStore.ts`, слой
+валидации/бизнес-логики (`lib/validations/*.ts`, `lib/orders.ts`, `lib/menu.ts`) и ключевые
+компоненты каталога/корзины (`ProductCard`, `QtyStepper`, `CartWidget`). Vitest выбран вместо
+Jest — нативно работает с Vite-подобной ESM/TS сборкой без отдельного babel-конфига и
+запускается заметно быстрее. Тесты лежат рядом с тестируемым файлом (`cartStore.ts` →
+`cartStore.test.ts`), без отдельной папки `__tests__`.
