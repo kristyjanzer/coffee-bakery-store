@@ -1522,3 +1522,33 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено вручную в браузере (Chrome DevTools MCP) на `/pekarnya-control/settings`, `/pekarnya-control/products/new`, `/pekarnya-control/orders/[id]` — отступ стрелки одинаковый везде, клик по select по-прежнему открывает нативный список опций; `npm run lint`, `npx tsc --noEmit` — чисто.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.
+
+## Задача 44
+
+По запросу пользователя добавлен тестовый контур (Vitest + React Testing Library) для уже
+реализованного функционала — без изменения бизнес-логики. Приоритет 1 (cartStore) и приоритет 3
+(ProductCard/QtyStepper/CartWidget) покрыты как в запросе. Приоритет 2 из запроса был
+сформулирован как «API routes» — по факту `app/api/**` состоит из пустых директорий (роуты
+ещё не реализованы, Prisma-схема без моделей), поэтому вместо них покрыт фактический
+слой валидации/бизнес-логики, который эти роуты будут оборачивать: `lib/validations/*.ts`
+(Zod-схемы), `lib/orders.ts`, `lib/menu.ts`.
+
+**Изменённые/созданные файлы:**
+- `vitest.config.mts`, `vitest.setup.ts` — созданы (конфиг Vitest, jsdom, alias `@`, IntersectionObserver-заглушка для next/link)
+- `package.json` — добавлены devDependencies (vitest, @vitejs/plugin-react, jsdom, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, @vitest/coverage-v8) и скрипты `test`/`test:coverage`
+- `.gitignore`, `eslint.config.mjs` — игнорирование сгенерированной папки `coverage/`
+- `stores/cartStore.test.ts` — создан
+- `lib/validations/order.test.ts`, `lib/validations/product.test.ts`, `lib/validations/auth.test.ts` — созданы
+- `lib/orders.test.ts`, `lib/menu.test.ts` — созданы
+- `components/catalog/ProductCard.test.tsx`, `components/catalog/QtyStepper.test.tsx`, `components/cart/CartWidget.test.tsx` — созданы
+- `docs/technologies.md` — добавлен раздел «Тестирование»
+- `docs/architecture.md` — добавлен подраздел «Тестирование» (конвенция расположения файлов)
+
+Проверено: `npm run test` (76 тестов, 9 файлов), `npm run test:coverage`, `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — задача добавляет только
+тесты для уже существующего кода, auth/секреты/новые API-эндпоинты не затрагивались. При
+установке зависимостей `npm audit` показал 1 critical-уязвимость в `swiper` (prototype
+pollution) — она не связана с этой задачей (существовала до неё, `swiper` не тестировался
+и не менялся), фикс требует breaking-change апгрейда до `swiper@14` и вне рамок этой задачи;
+стоит завести отдельно.
