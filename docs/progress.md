@@ -1488,3 +1488,20 @@ Prisma-модель `Review` уже содержит `isApproved`/`shopReply` (d
 Проверено вручную в браузере (Chrome DevTools MCP); `npm run lint`, `npx tsc --noEmit` — чисто.
 
 **Security review:** применялся (`.claude/skills/security-review`) — задача чисто стилевая, auth/input/secrets/API не затрагивались, находок нет.
+
+## Задача 42
+
+По запросу пользователя URL админки изменён с `/admin` на `/pekarnya-control`, чтобы путь было сложнее угадать. Ветка `refactor/rename-admin-route`.
+
+`app/admin/` → `app/pekarnya-control/` (`git mv`, структура `login/` + `(protected)/` не менялась), все ссылки `href="/admin..."`/`router.push` в `components/admin/Sidebar.tsx`, `ProductForm.tsx`, `Dashboard.tsx` и страницах `app/pekarnya-control/**` заменены на `/pekarnya-control...`; папка компонентов `components/admin/` и внутренние имена (`AdminUser`, `ADMIN`-роль и т.д.) не переименовывались — это не часть URL. Обновлены пути в `docs/architecture.md` (структура папок, таблица роутинга, раздел про middleware/авторизацию) и `docs/plan.md` (пункты 13, 32); `docs/about-project.md`/`docs/technologies.md` не трогал — это исходное ТЗ.
+
+**Изменённые/созданные файлы:**
+- `app/admin/**` → перемещён в `app/pekarnya-control/**`
+- `components/admin/Sidebar.tsx`, `ProductForm.tsx`, `Dashboard.tsx` — изменены (ссылки на новый путь)
+- `app/(site)/layout.tsx` — изменён (комментарий)
+- `docs/architecture.md` — изменён (пути `/pekarnya-control` вместо `/admin`)
+- `docs/plan.md` — изменён (пункты 13, 32)
+
+Проверено: `npm run lint`, `npx tsc --noEmit`, `npm run build` — чисто (после чистки стейл-кэша `.next`, который ещё указывал на старый путь); вручную через `curl` — `/admin` отдаёт 404, `/pekarnya-control`, `/pekarnya-control/login`, `/pekarnya-control/orders` открываются.
+
+**Security review:** применялся (`.claude/skills/security-review`) — переименование пути не заменяет реальный контроль доступа: `middleware.ts` (защита `/pekarnya-control/*`) и NextAuth ещё не реализованы (пункты 31-32 плана), сейчас это только «security through obscurity». Секретов, ввода пользователя и API-эндпоинтов задача не затрагивала.

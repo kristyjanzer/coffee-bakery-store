@@ -169,7 +169,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     }
     setIsSubmitting(false);
     setSavedMessage("Сохранено (заглушка) — переходим к списку…");
-    router.push("/admin/products");
+    router.push("/pekarnya-control/products");
   }
 
   async function handleDelete() {
@@ -179,7 +179,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     setIsDeleting(true);
     await deleteProduct(product.id);
     setIsDeleting(false);
-    router.push("/admin/products");
+    router.push("/pekarnya-control/products");
   }
 
   return (

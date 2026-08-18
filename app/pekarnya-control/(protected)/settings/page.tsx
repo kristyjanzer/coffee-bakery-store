@@ -25,8 +25,8 @@ function isTab(value: string | undefined): value is Tab {
 
 // Раздел «Настройки» (docs/plan.md, пункт 21; about-project.md, раздел "Настройки"):
 // пользователи админки и роли + настройки уведомлений. Табы — обычные ссылки с
-// query-параметром (?tab=...), тот же приём, что в /admin/pages и /admin/reviews.
-// В отличие от /admin/pages (задача 36), здесь каждая вкладка рендерит свой тип
+// query-параметром (?tab=...), тот же приём, что в /pekarnya-control/pages и /pekarnya-control/reviews.
+// В отличие от /pekarnya-control/pages (задача 36), здесь каждая вкладка рендерит свой тип
 // компонента (AdminUsersManager/NotificationSettingsForm), а не один и тот же с
 // разными пропами — React и так пересоздаёт состояние при смене типа, доп. key не нужен.
 export default async function AdminSettingsPage({ searchParams }: SettingsPageProps) {
@@ -41,7 +41,7 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
         {TABS.map((item) => (
           <Link
             key={item.tab}
-            href={item.tab === "users" ? "/admin/settings" : `/admin/settings?tab=${item.tab}`}
+            href={item.tab === "users" ? "/pekarnya-control/settings" : `/pekarnya-control/settings?tab=${item.tab}`}
             role="tab"
             aria-selected={tab === item.tab}
             className={

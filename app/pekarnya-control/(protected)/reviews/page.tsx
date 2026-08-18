@@ -12,7 +12,7 @@ interface ReviewsPageProps {
 
 // Список отзывов с фильтром по статусу модерации (docs/plan.md, пункт 19;
 // about-project.md, раздел "Отзывы"). Фильтр — обычные ссылки с query-параметром
-// (?status=pending), без клиентского JS — тот же приём, что в /admin/orders.
+// (?status=pending), без клиентского JS — тот же приём, что в /pekarnya-control/orders.
 export default async function AdminReviewsPage({ searchParams }: ReviewsPageProps) {
   const { status } = await searchParams;
   const isApproved = status === "pending" ? false : status === "approved" ? true : undefined;
@@ -26,7 +26,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
 
       <div className="flex flex-wrap gap-3" role="tablist">
         <Link
-          href="/admin/reviews"
+          href="/pekarnya-control/reviews"
           role="tab"
           aria-selected={!status}
           className={
@@ -38,7 +38,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
           Все
         </Link>
         <Link
-          href="/admin/reviews?status=pending"
+          href="/pekarnya-control/reviews?status=pending"
           role="tab"
           aria-selected={status === "pending"}
           className={
@@ -50,7 +50,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
           На модерации
         </Link>
         <Link
-          href="/admin/reviews?status=approved"
+          href="/pekarnya-control/reviews?status=approved"
           role="tab"
           aria-selected={status === "approved"}
           className={
@@ -84,7 +84,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
               {reviews.map((review) => (
                 <tr key={review.id} className="border-b border-sage-mist last:border-0">
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    <Link href={`/admin/reviews/${review.id}`} className="hover:underline">
+                    <Link href={`/pekarnya-control/reviews/${review.id}`} className="hover:underline">
                       {review.authorName}
                     </Link>
                   </td>

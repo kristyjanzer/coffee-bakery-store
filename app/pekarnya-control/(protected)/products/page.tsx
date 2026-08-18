@@ -17,13 +17,13 @@ function buildHref(category: string | undefined, seasonalOnly: boolean) {
   if (category) params.set("category", category);
   if (seasonalOnly) params.set("seasonal", "1");
   const query = params.toString();
-  return query ? `/admin/products?${query}` : "/admin/products";
+  return query ? `/pekarnya-control/products?${query}` : "/pekarnya-control/products";
 }
 
 // Список товаров с фильтрами по категории и сезонности (docs/plan.md, пункт 17;
 // about-project.md, раздел "Товары"). Фильтры — обычные ссылки с query-параметрами,
 // без клиентского JS: Server Component сам перечитывает список (тот же приём, что
-// ?status= в /admin/orders).
+// ?status= в /pekarnya-control/orders).
 export default async function AdminProductsPage({ searchParams }: ProductsPageProps) {
   const { category: activeCategory, seasonal } = await searchParams;
   const seasonalOnly = seasonal === "1";
@@ -39,7 +39,7 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
           Товары
         </h1>
         <Link
-          href="/admin/products/new"
+          href="/pekarnya-control/products/new"
           className="rounded-sm bg-lemon-zest px-4 py-3 font-venuscom text-body-sm font-semibold uppercase text-black-olive hover:opacity-90"
         >
           + Добавить товар
@@ -118,7 +118,7 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
                     </div>
                   </td>
                   <td className="px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    <Link href={`/admin/products/${product.id}`} className="hover:underline">
+                    <Link href={`/pekarnya-control/products/${product.id}`} className="hover:underline">
                       {product.name}
                     </Link>
                   </td>

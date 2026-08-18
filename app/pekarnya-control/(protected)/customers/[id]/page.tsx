@@ -30,7 +30,7 @@ export default async function AdminCustomerPage({ params }: CustomerPageProps) {
     <div className="flex flex-col gap-8">
       <div>
         <Link
-          href="/admin/customers"
+          href="/pekarnya-control/customers"
           className="font-venuscom text-caption text-black-olive/60 hover:text-black-olive hover:underline"
         >
           ← Все клиенты
@@ -87,7 +87,7 @@ export default async function AdminCustomerPage({ params }: CustomerPageProps) {
               {orders.map((order) => (
                 <tr key={order.id} className="border-b border-sage-mist last:border-0">
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    <Link href={`/admin/orders/${order.id}`} className="hover:underline">
+                    <Link href={`/pekarnya-control/orders/${order.id}`} className="hover:underline">
                       №{order.id}
                     </Link>
                   </td>

@@ -27,7 +27,7 @@ export default async function AdminReviewPage({ params }: ReviewPageProps) {
     <div className="flex max-w-2xl flex-col gap-8">
       <div>
         <Link
-          href="/admin/reviews"
+          href="/pekarnya-control/reviews"
           className="font-venuscom text-caption text-black-olive/60 hover:text-black-olive hover:underline"
         >
           ← Все отзывы

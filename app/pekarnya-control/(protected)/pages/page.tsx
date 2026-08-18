@@ -28,7 +28,7 @@ function isTab(value: string | undefined): value is Tab {
 // Раздел «Управление страницами» (docs/plan.md, пункт 20; about-project.md, раздел
 // "Управление страницами"): контент трёх фиксированных страниц + SEO title/description,
 // плюс баннеры/слайдер на главной. Табы — обычные ссылки с query-параметром (?tab=...),
-// без клиентского JS — тот же приём, что фильтр статуса в /admin/reviews.
+// без клиентского JS — тот же приём, что фильтр статуса в /pekarnya-control/reviews.
 export default async function AdminPagesPage({ searchParams }: PagesPageProps) {
   const { tab: rawTab } = await searchParams;
   const tab: Tab = isTab(rawTab) ? rawTab : "about";
@@ -43,7 +43,7 @@ export default async function AdminPagesPage({ searchParams }: PagesPageProps) {
         {TABS.map((item) => (
           <Link
             key={item.tab}
-            href={item.tab === "about" ? "/admin/pages" : `/admin/pages?tab=${item.tab}`}
+            href={item.tab === "about" ? "/pekarnya-control/pages" : `/pekarnya-control/pages?tab=${item.tab}`}
             role="tab"
             aria-selected={tab === item.tab}
             className={

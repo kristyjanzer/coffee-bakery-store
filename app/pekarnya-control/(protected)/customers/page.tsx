@@ -41,7 +41,7 @@ export default async function AdminCustomersPage() {
               {customers.map((customer) => (
                 <tr key={customer.id} className="border-b border-sage-mist last:border-0">
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    <Link href={`/admin/customers/${customer.id}`} className="hover:underline">
+                    <Link href={`/pekarnya-control/customers/${customer.id}`} className="hover:underline">
                       {customer.name}
                     </Link>
                   </td>
