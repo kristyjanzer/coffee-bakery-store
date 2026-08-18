@@ -4,7 +4,10 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
-  reporter: "list",
+  // В CI дополнительно пишем html-отчёт на диск (playwright-report/) — сам workflow
+  // (.github/workflows/ci.yml) прикладывает его как артефакт для отладки упавшего прогона.
+  // Локально — только компактный list-вывод в терминал.
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
