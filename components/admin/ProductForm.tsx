@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { productFormSchema } from "@/lib/validations/product";
@@ -204,18 +206,24 @@ export function ProductForm({ categories, product }: ProductFormProps) {
           <label htmlFor="categorySlug" className="font-venuscom text-caption text-black-olive/70">
             Категория
           </label>
-          <select
-            id="categorySlug"
-            value={values.categorySlug}
-            onChange={(event) => handleChange("categorySlug", event.target.value)}
-            className="mt-1 w-full rounded-sm border border-sage-mist bg-warm-cream px-4 py-3 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none"
-          >
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+          <div className="relative mt-1">
+            <select
+              id="categorySlug"
+              value={values.categorySlug}
+              onChange={(event) => handleChange("categorySlug", event.target.value)}
+              className="w-full appearance-none rounded-sm border border-sage-mist bg-warm-cream py-3 pl-4 pr-8 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none"
+            >
+              {categories.map((category) => (
+                <option key={category.slug} value={category.slug}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-black-olive/60"
+            />
+          </div>
           {errors.categorySlug && (
             <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">{errors.categorySlug}</p>
           )}
