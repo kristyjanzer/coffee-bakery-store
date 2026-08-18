@@ -25,6 +25,9 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# tests
+/coverage
+
 # IDE
 .vscode/*
 !.vscode/extensions.json

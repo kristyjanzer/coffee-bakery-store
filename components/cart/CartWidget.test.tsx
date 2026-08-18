@@ -6,6 +6,7 @@ import { useCartStore } from "@/stores/cartStore";
 import type { MenuProduct } from "@/lib/menu";
 
 vi.mock("next/image", () => ({
+  // eslint-disable-next-line @next/next/no-img-element -- заглушка next/image только для теста
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 

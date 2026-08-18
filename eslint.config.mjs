@@ -3,6 +3,7 @@ import nextTypescript from "eslint-config-next/typescript";
 import tailwind from "eslint-plugin-tailwindcss";
 
 const eslintConfig = [
+  { ignores: ["coverage/**"] },
   ...nextCoreWebVitals,
   ...nextTypescript,
   ...tailwind.configs["flat/recommended"],
