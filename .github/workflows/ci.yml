@@ -9,6 +9,7 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -27,6 +28,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +39,11 @@ jobs:
 
       - run: npm ci
 
-      - run: npx playwright install --with-deps chromium
+      # Без --with-deps: ubuntu-latest-раннеры GitHub Actions уже несут нужные системные
+      # библиотеки для Chromium. --with-deps дёргает apt-get, который однажды завис на 6
+      # часов на зеркале noble-security и был убит только дефолтным лимитом job (см.
+      # docs/progress.md, задача 47) — apt тут не нужен и небезопасен по времени выполнения.
+      - run: npx playwright install chromium
 
       - run: npm run test:e2e
 
