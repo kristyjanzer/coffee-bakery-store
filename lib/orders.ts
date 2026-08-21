@@ -95,7 +95,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     paymentStatus: "UNPAID",
     items: [
       { productId: 6, name: "Капучино", price: 270, quantity: 2 },
-      { productId: 112, name: "Круассан с шоколадом", price: 1230, quantity: 1 },
+      { productId: 46, name: "Круассан с шоколадом", price: 260, quantity: 1 },
     ],
     minutesAgo: 5,
   },
@@ -109,8 +109,8 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     paymentMethod: "Картой при получении",
     paymentStatus: "UNPAID",
     items: [
-      { productId: 1, name: "Двойной эспрессо", price: 350, quantity: 1 },
-      { productId: 97, name: "Штрудель яблочный", price: 670, quantity: 1 },
+      { productId: 1, name: "Двойной эспрессо", price: 200, quantity: 1 },
+      { productId: 39, name: "Штрудель яблочный", price: 200, quantity: 1 },
     ],
     minutesAgo: 18,
   },
@@ -123,7 +123,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     preferredDate: null,
     paymentMethod: "Картой при получении",
     paymentStatus: "PAID",
-    items: [{ productId: 128, name: 'Чизкейк "Орео"', price: 930, quantity: 1 }],
+    items: [{ productId: 64, name: 'Десерт "Соленая карамель"', price: 250, quantity: 1 }],
     minutesAgo: 32,
   },
   {
@@ -148,8 +148,8 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     paymentMethod: "Картой при получении",
     paymentStatus: "PAID",
     items: [
-      { productId: 11, name: "Латте", price: 430, quantity: 1 },
-      { productId: 79, name: 'Печенье "Бискотти"', price: 140, quantity: 2 },
+      { productId: 8, name: "Латте", price: 270, quantity: 1 },
+      { productId: 32, name: 'Печенье "Бискотти"', price: 220, quantity: 2 },
     ],
     minutesAgo: 130,
   },
@@ -162,7 +162,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     preferredDate: null,
     paymentMethod: "Наличными при получении",
     paymentStatus: "UNPAID",
-    items: [{ productId: 97, name: "Штрудель яблочный", price: 670, quantity: 2 }],
+    items: [{ productId: 39, name: "Штрудель яблочный", price: 200, quantity: 2 }],
     minutesAgo: 200,
   },
   {
@@ -174,7 +174,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     preferredDate: null,
     paymentMethod: "Картой при получении",
     paymentStatus: "PAID",
-    items: [{ productId: 132, name: 'Пирожное "Медовик" в банке', price: 590, quantity: 1 }],
+    items: [{ productId: 70, name: 'Торт "Медовик"', price: 1300, quantity: 1 }],
     minutesAgo: 500,
   },
   {
@@ -186,7 +186,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     preferredDate: null,
     paymentMethod: "Картой при получении",
     paymentStatus: "UNPAID",
-    items: [{ productId: 15, name: "Раф", price: 400, quantity: 1 }],
+    items: [{ productId: 9, name: "Раф", price: 300, quantity: 1 }],
     minutesAgo: 600,
   },
   {
@@ -200,7 +200,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     paymentStatus: "PAID",
     items: [
       { productId: 6, name: "Капучино", price: 270, quantity: 1 },
-      { productId: 97, name: "Штрудель яблочный", price: 670, quantity: 1 },
+      { productId: 39, name: "Штрудель яблочный", price: 200, quantity: 1 },
     ],
     minutesAgo: 1300,
   },
@@ -213,7 +213,7 @@ const MOCK_ORDERS_INPUT: MockOrderInput[] = [
     preferredDate: "2026-08-20",
     paymentMethod: "Картой при получении",
     paymentStatus: "PAID",
-    items: [{ productId: 128, name: 'Чизкейк "Орео"', price: 930, quantity: 2 }],
+    items: [{ productId: 64, name: 'Десерт "Соленая карамель"', price: 250, quantity: 2 }],
     minutesAgo: 2000,
   },
 ];

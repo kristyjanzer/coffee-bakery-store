@@ -67,10 +67,10 @@ export interface TopProduct {
 // Реальные товары из menu.json (id сверены отдельно) — фейково только количество продаж.
 const TOP_PRODUCT_SALES: Array<{ id: number; unitsSold: number }> = [
   { id: 6, unitsSold: 84 },
-  { id: 112, unitsSold: 76 },
+  { id: 46, unitsSold: 76 },
   { id: 1, unitsSold: 68 },
-  { id: 128, unitsSold: 54 },
-  { id: 97, unitsSold: 47 },
+  { id: 70, unitsSold: 54 },
+  { id: 39, unitsSold: 47 },
 ];
 
 export async function getTopProducts(): Promise<TopProduct[]> {
