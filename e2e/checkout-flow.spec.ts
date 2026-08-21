@@ -15,7 +15,7 @@ function formatPrice(price: number): string {
 
 const CATEGORY_NAME = "Выпечка";
 const PRODUCT_NAME = "Грилата с брынзой и зеленью";
-const PRODUCT_PRICE = 540;
+const PRODUCT_PRICE = 180;
 
 test("каталог → добавление в корзину → изменение количества → оформление заявки", async ({
   page,
