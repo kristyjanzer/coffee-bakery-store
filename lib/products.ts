@@ -41,7 +41,7 @@ export type ProductInput = Omit<AdminProduct, "id" | "categoryName">;
 // Иллюстративный набор "сезонных" товаров — в menu.json признака сезонности нет ни
 // у одного товара (это будущее поле Prisma-схемы), нужен хотя бы один пример, чтобы
 // фильтр "Сезонные" на списке было на чём проверить.
-const SEASONAL_PRODUCT_IDS = new Set([76, 126, 128]);
+const SEASONAL_PRODUCT_IDS = new Set([30, 56, 68]);
 
 function buildAdminProducts(): AdminProduct[] {
   const products: AdminProduct[] = [];
