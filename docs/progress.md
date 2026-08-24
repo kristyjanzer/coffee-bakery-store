@@ -1664,3 +1664,15 @@ CI (таймауты, флаг установки браузера), секре�
 **Security review:** применялся (`.claude/skills/security-review`) — секреты не хардкожены, `.env`
 подтверждён отсутствующим в git-истории и в `.gitignore`, `lib/prisma.ts` читает URL только через
 `process.env`.
+
+## Задача 50
+
+Выполнен пункт 23 плана — Prisma-схема (Category, Product, Order, OrderItem, Customer, Review,
+AdminUser). Ветка `feature/prisma-schema-models`.
+
+- `prisma/schema.prisma` — модели перенесены из наброска в `docs/architecture.md` (раздел 3) без
+  изменений полей/связей; `npx prisma validate`/`generate` прошли чисто. Миграция на реальную БД —
+  отдельный пункт 24 плана, здесь только определение схемы.
+
+**Security review:** применялся (`.claude/skills/security-review`) — новых эндпоинтов/секретов/
+пользовательского ввода нет, только определение структуры данных.
