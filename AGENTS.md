@@ -26,6 +26,7 @@ Zustand 5 (только корзина), Tailwind CSS, Zod. Единое при�
 | [.agents/rules/server.md](.agents/rules/server.md) | Задачи с запуском/сборкой сервера (`dev`/`build`/`start`), маршрутизацией App Router, серверными vs клиентскими компонентами, запросами к внешним API, env-переменными и секретами |
 | [.agents/rules/code-style.md](.agents/rules/code-style.md) | Любая правка кода на TypeScript/React/Tailwind — перед написанием кода и перед тем, как считать задачу готовой (прогнать lint/tsc) |
 | [.agents/rules/mcp.md](.agents/rules/mcp.md) | Использование MCP-инструментов: `chrome-devtools` (отладка в браузере, DOM/network/скриншоты) и `context7` (актуальная документация по React/библиотекам) |
+| [.agents/rules/db.md](.agents/rules/db.md) | Правки `prisma/schema.prisma`, миграции, `prisma/seed.ts`, сложные Prisma-запросы или `$queryRaw`/`$executeRaw` |
 
 Общее правило: если задача не попадает ни в одну из тем таблицы — можно
 не открывать ни один из файлов правил.
