@@ -1676,3 +1676,16 @@ AdminUser). Ветка `feature/prisma-schema-models`.
 
 **Security review:** применялся (`.claude/skills/security-review`) — новых эндпоинтов/секретов/
 пользовательского ввода нет, только определение структуры данных.
+
+## Задача 51
+
+Выполнен пункт 24 плана — миграция БД (`prisma migrate dev`). Ветка `feature/prisma-migrate-init`.
+
+- `prisma/migrations/20260824174118_init_schema/` — первая миграция, сгенерирована и применена к
+  рабочей Neon-БД пользователя; `prisma migrate status` подтверждает синхронизацию схемы с БД.
+  Созданы все таблицы под модели из задачи 50 (Category, Product, Order, OrderItem, Customer,
+  Review, AdminUser) с FK и уникальными индексами.
+- `prisma/migrations/migration_lock.toml` — служебный файл Prisma (провайдер `postgresql`).
+
+**Security review:** применялся (`.claude/skills/security-review`) — миграция чистый DDL, без
+секретов и пользовательских данных; RLS сознательно не используется (см. `.agents/rules/db.md`).
