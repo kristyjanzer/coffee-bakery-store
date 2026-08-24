@@ -1646,3 +1646,21 @@ CI (таймауты, флаг установки браузера), секре�
 **Security review:** применялся (`.claude/skills/security-review`) — изменения только в
 статических данных каталога и моковых константах, новых эндпоинтов/секретов/пользовательского
 ввода нет.
+
+## Задача 49
+
+Выполнен пункт 22 плана — настройка PostgreSQL + Prisma и переменных окружения. Ветка
+`chore/prisma-postgres-setup`.
+
+- `lib/prisma.ts` — создан singleton PrismaClient через `globalThis` (не хватало для hot-reload).
+- `prisma/schema.prisma` (datasource DATABASE_URL/DIRECT_URL) и `.env.example` уже были готовы
+  ранее — правок не потребовалось.
+- Подключение к реальной БД пользователя (Neon) проверено вручную (`prisma db execute`, `SELECT 1`)
+  — работает.
+
+**Новые переменные окружения:** `DATABASE_URL`, `DIRECT_URL` — заданы локально в `.env`
+(в .gitignore, не в репозитории); значения — connection-строки Neon от пользователя.
+
+**Security review:** применялся (`.claude/skills/security-review`) — секреты не хардкожены, `.env`
+подтверждён отсутствующим в git-истории и в `.gitignore`, `lib/prisma.ts` читает URL только через
+`process.env`.
