@@ -8,5 +8,112 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Модели (Category, Product, Order, OrderItem, Customer, Review, AdminUser)
-// добавляются отдельным шагом — см. architecture.md, раздел 3.
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique // "Кофе", "Выпечка", ...
+  slug      String    @unique // для якорной прокрутки/id таба
+  sortOrder Int // порядок как в menu.json
+  products  Product[]
+}
+
+model Product {
+  id            Int         @id @default(autoincrement()) // можно взять id из menu.json
+  name          String
+  price         Int
+  currency      String      @default("RUB")
+  stockQuantity Int
+  imageUrl      String?
+  volumeMl      Int? // напитки
+  weightG       Int? // выпечка/еда
+  calories      Int?
+  // поля "на вырост" под будущую админку — nullable, чтобы не переделывать схему:
+  description   String?
+  composition   String?
+  allergens     String?
+  protein       Float?
+  fat           Float?
+  carbs         Float?
+  expiryInfo    String?
+  isSeasonal    Boolean     @default(false)
+  isActive      Boolean     @default(true)
+  categoryId    Int
+  category      Category    @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  reviews       Review[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Order {
+  id                 Int         @id @default(autoincrement())
+  status             OrderStatus @default(NEW)
+  customerName       String
+  customerContact    String // телефон/email — оформление без регистрации
+  comment            String? // "без орехов", "к 18:00"
+  preferredDate      DateTime? // дата для предзаказа
+  totalAmount        Int
+  paymentMethod      String? // задел на будущее
+  paymentStatus      String      @default("UNPAID")
+  customerId         Int? // задел на будущее — связь с Customer
+  telegramNotifiedAt DateTime?
+  items              OrderItem[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+}
+
+enum OrderStatus {
+  NEW
+  IN_PROGRESS
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id                  Int     @id @default(autoincrement())
+  orderId             Int
+  order               Order   @relation(fields: [orderId], references: [id])
+  productId           Int
+  product             Product @relation(fields: [productId], references: [id])
+  productNameSnapshot String // сохраняем имя на момент заказа
+  priceSnapshot       Int // и цену — на случай если товар изменится/удалится
+  quantity            Int
+}
+
+// --- заделы под будущее, чтобы не переделывать схему при росте проекта ---
+
+model Customer {
+  id              Int      @id @default(autoincrement())
+  name            String?
+  phone           String?  @unique
+  email           String?  @unique
+  deliveryAddress String?
+  createdAt       DateTime @default(now())
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  productId  Int?
+  product    Product? @relation(fields: [productId], references: [id])
+  authorName String
+  quoteText  String
+  rating     Int?
+  imageUrl   String?
+  isApproved Boolean  @default(true)
+  shopReply  String?
+  createdAt  DateTime @default(now())
+}
+
+model AdminUser {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime  @default(now())
+}
+
+enum AdminRole {
+  ADMIN
+  ORDER_MANAGER
+}
