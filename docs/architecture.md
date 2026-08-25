@@ -44,7 +44,7 @@ store/
 │   └── ui/             # общие примитивы (Button, Modal, Input)
 │
 ├── lib/
-│   ├── prisma.ts       # singleton PrismaClient (безопасно для serverless)
+│   ├── prisma.ts       # singleton PrismaClient (@prisma/adapter-pg, безопасно для serverless)
 │   ├── auth.ts          # NextAuth authOptions, проверка роли
 │   ├── telegram.ts      # notifyNewOrder() — только на сервере
 │   ├── storage.ts        # хелпер Cloudinary/Supabase Storage
@@ -60,13 +60,15 @@ store/
 │   ├── schema.prisma
 │   ├── seed.ts               # читает ../menu.json, наполняет БД
 │   └── migrations/
+├── generated/prisma/          # клиент Prisma 7 (не node_modules), в .gitignore
 │
 ├── public/
 │   └── images/                 # логотип, hero-картинка, иконки (НЕ фото товаров)
 │
 ├── menu.json                    # остаётся источником сид-данных
 ├── middleware.ts                 # защищает /pekarnya-control/* (кроме /pekarnya-control/login)
-├── .env.local / .env.example
+├── prisma.config.ts               # путь схемы/миграций, seed, DIRECT_URL для CLI (Prisma 7)
+├── .env / .env.example
 └── next.config.js / tailwind.config.ts / tsconfig.json / package.json
 ```
 
@@ -128,7 +130,7 @@ model Product {
   name          String
   price         Int
   currency      String   @default("RUB")
-  stockQuantity Int
+  stockQuantity Int?    // null — без лимита (готовится на заказ, напитки из menu.json)
   imageUrl      String?
   volumeMl      Int?     // напитки
   weightG       Int?     // выпечка/еда
@@ -310,12 +312,20 @@ Facebook, восстановление через Telegram): `providers` в `lib
 - **Локальная БД для разработки:** проще всего — вторая бесплатная БД/ветка на Neon/Supabase
   только для дев-окружения (не нужно ставить Postgres локально). Альтернатива — Postgres в
   Docker-compose, если важна полностью офлайн-разработка.
+- **Prisma 7 + driver adapters:** клиент генерируется без нативного Rust query engine
+  (`prisma-client-js` → `provider = "prisma-client"` в `schema.prisma`, вывод в `generated/prisma/`
+  вместо `node_modules`, добавлен в `.gitignore`). Рантайм-клиент (`lib/prisma.ts`) подключается
+  через `@prisma/adapter-pg` (`PrismaPg` + `pg`) на `DATABASE_URL`. `url`/`directUrl` из
+  `datasource` в `schema.prisma` убраны — оба читаются из `prisma.config.ts` (CLI/миграции) и
+  `lib/prisma.ts` (рантайм) через `process.env`, `.env` грузится явно (`dotenv/config`), Prisma CLI
+  сам `.env`/`.env.local` не подхватывает.
 - **Singleton Prisma Client** (`lib/prisma.ts`, стандартный паттерн через `globalThis.prisma`) —
   критично для serverless и hot-reload в деве, чтобы не исчерпать лимит подключений к БД.
 - **Pooled vs direct-соединение:** `DATABASE_URL` — pooled/pgbouncer строка (её использует
-  приложение в рантайме), `DIRECT_URL` — прямое соединение (поле `directUrl` в Prisma,
-  используется только при миграциях). Это главный подводный камень при связке
-  serverless + managed Postgres, стоит сразу закладывать обе переменные.
+  приложение в рантайме через `@prisma/adapter-pg`), `DIRECT_URL` — прямое соединение
+  (`prisma.config.ts` → `datasource.url`, используется CLI: миграции, `db seed`, `generate`). Это
+  главный подводный камень при связке serverless + managed Postgres, стоит сразу закладывать обе
+  переменные.
 - **Миграции:** `prisma migrate dev` локально генерирует файлы миграций (коммитятся в
   `prisma/migrations/`), `prisma migrate deploy` применяет их на проде. Для масштаба
   учебного проекта достаточно запускать `npx prisma migrate deploy` вручную со своей машины
