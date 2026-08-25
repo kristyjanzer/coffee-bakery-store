@@ -15,6 +15,7 @@
 
 # prisma
 /prisma/*.db
+/generated/
 
 # misc
 .DS_Store

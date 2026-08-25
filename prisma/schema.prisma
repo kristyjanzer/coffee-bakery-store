@@ -1,11 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  // url/directUrl больше не здесь — Prisma 7 читает их из prisma.config.ts.
+  // Рантайм-клиент (lib/prisma.ts) сам передаёт DATABASE_URL через @prisma/adapter-pg.
 }
 
 model Category {
@@ -21,7 +22,7 @@ model Product {
   name          String
   price         Int
   currency      String      @default("RUB")
-  stockQuantity Int
+  stockQuantity Int? // null — без лимита (готовится на заказ, напитки из menu.json)
   imageUrl      String?
   volumeMl      Int? // напитки
   weightG       Int? // выпечка/еда
