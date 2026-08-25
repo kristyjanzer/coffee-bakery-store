@@ -1689,3 +1689,49 @@ AdminUser). Ветка `feature/prisma-schema-models`.
 
 **Security review:** применялся (`.claude/skills/security-review`) — миграция чистый DDL, без
 секретов и пользовательских данных; RLS сознательно не используется (см. `.agents/rules/db.md`).
+
+## Задача 52
+
+Выполнен пункт 25 плана — seed-скрипт `menu.json` → БД. Ветка `feature/prisma-seed-script`.
+
+**Два блокера, обнаруженных по ходу:**
+
+1. Реальный запрос через `@prisma/client` падал на этой машине (Windows ARM64) — нативный query
+   engine Prisma 5.x собран только под `windows` (x64), в процесс arm64-Node не грузится. По
+   согласованию с пользователем — апгрейд `prisma`/`@prisma/client` 5→7 с переходом на driver
+   adapters (`@prisma/adapter-pg` + `pg`): в Prisma 7 нативного Rust-движка для запросов больше нет
+   (WASM/JS), архитектура машины не имеет значения. Без этого не заработал бы не только сид, но и
+   весь бэкенд (пункты 26+).
+2. `menu.json` хранит `stock_quantity: null` у 29 из 71 товара (готовятся на заказ) — схема из
+   задачи 50 требовала обязательный `Int`. Добавлена миграция `make_stock_quantity_nullable`
+   (`stockQuantity` → `Int?`).
+
+**Изменённые/созданные файлы:**
+- `prisma/seed.ts` — создан: upsert `Category` (по `slug`) → `Product` (по `id` из `menu.json`,
+  включая `description`/`composition`/КБЖУ), `setval()` на сиквенс `Product.id` после сида (id
+  проставлены вручную).
+- `prisma/migrations/20260825064613_make_stock_quantity_nullable/` — создана и применена.
+- `prisma/schema.prisma` — `generator client` (`provider = "prisma-client"`, обязательный
+  `output`), `datasource` без `url`/`directUrl` (переехали в конфиг).
+- `prisma.config.ts` — создан: путь схемы/миграций, `seed`, `datasource.url` = `DIRECT_URL` (CLI и
+  миграции), `dotenv/config`.
+- `lib/prisma.ts` — `PrismaPg`-адаптер на `DATABASE_URL` вместо голого `new PrismaClient()`.
+- `package.json`/`package-lock.json` — `prisma`/`@prisma/client` 5→7, новые зависимости
+  `@prisma/adapter-pg`, `pg`, `dotenv` (dev), `@types/pg` (dev); `prisma:migrate`/`prisma:deploy`
+  теперь с `&& prisma generate` (в v7 клиент не генерируется автоматически после миграции); блок
+  `"prisma": { "seed": ... }` убран из `package.json` (переехал в `prisma.config.ts`).
+- `.gitignore` — добавлен `/generated/` (новый путь генерации клиента, больше не в `node_modules`).
+
+**Новые переменные окружения:** нет — использованы уже существующие `DATABASE_URL`/`DIRECT_URL`
+(сменилось только то, какой инструмент какую из них читает).
+
+Проверено на реальной БД (Neon): `npx prisma db seed` — 9 категорий, 71 товар, 29 с `null`-
+остатком; повторный запуск не создал дублей (upsert идемпотентен); `npx tsc --noEmit`,
+`npm run lint`, `npx vitest run` (76/76) — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок в новом коде нет
+(секреты не хардкожены, единственный `$executeRaw` — статический SQL без пользовательского ввода).
+`npm audit` показал 2 новых dev-only уязвимости, пришедшие транзитивно с самим Prisma 7
+(`deepmerge-ts` через `@prisma/config`, апстрим, без даунгрейда не чинится) и подтвердил уже
+существовавшую до этой задачи критическую уязвимость в `swiper` (prototype pollution, не связана
+с Prisma/сидом) — вне охвата этой задачи, не трогал.
