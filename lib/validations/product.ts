@@ -50,3 +50,35 @@ export const productFormSchema = z.object({
 });
 
 export type ProductFormParsed = z.infer<typeof productFormSchema>;
+
+// Тело запроса POST/PATCH /api/products (пункт 27 плана) — JSON, значения уже
+// нужного типа (числа/булевы), в отличие от productFormSchema, которая парсит
+// строки из <input>. null у необязательных полей означает "явно очистить",
+// undefined (поле отсутствует в PATCH) — "не менять" (semantics Prisma .update()).
+export const createProductInputSchema = z.object({
+  name: z.string().trim().min(2, "Укажите название").max(200),
+  categorySlug: z.string().trim().min(1, "Укажите категорию"),
+  price: z.number().int().positive("Цена должна быть больше 0"),
+  currency: z.string().trim().min(1).max(10).optional(),
+  stockQuantity: z.number().int().min(0, "Не может быть отрицательным").nullable().optional(),
+  imageUrl: z.string().trim().max(500).nullable().optional(),
+  volumeMl: z.number().int().positive("Введите положительное число").nullable().optional(),
+  weightG: z.number().int().positive("Введите положительное число").nullable().optional(),
+  calories: z.number().int().min(0, "Не может быть отрицательным").nullable().optional(),
+  description: z.string().trim().max(2000).nullable().optional(),
+  composition: z.string().trim().max(1000).nullable().optional(),
+  allergens: z.string().trim().max(500).nullable().optional(),
+  protein: z.number().min(0, "Введите неотрицательное число").nullable().optional(),
+  fat: z.number().min(0, "Введите неотрицательное число").nullable().optional(),
+  carbs: z.number().min(0, "Введите неотрицательное число").nullable().optional(),
+  expiryInfo: z.string().trim().max(200).nullable().optional(),
+  isSeasonal: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type CreateProductApiInput = z.infer<typeof createProductInputSchema>;
+
+// PATCH — частичное обновление, все поля необязательны.
+export const updateProductInputSchema = createProductInputSchema.partial();
+
+export type UpdateProductApiInput = z.infer<typeof updateProductInputSchema>;
