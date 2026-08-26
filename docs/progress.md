@@ -1735,3 +1735,21 @@ AdminUser). Ветка `feature/prisma-schema-models`.
 (`deepmerge-ts` через `@prisma/config`, апстрим, без даунгрейда не чинится) и подтвердил уже
 существовавшую до этой задачи критическую уязвимость в `swiper` (prototype pollution, не связана
 с Prisma/сидом) — вне охвата этой задачи, не трогал.
+
+## Задача 53
+
+Выполнен пункт 26 плана — публичный `GET /api/categories`, первый роут-хендлер, читающий
+категории напрямую из Prisma. Ветка `feature/categories-api`.
+
+**Изменённые/созданные файлы:**
+- `lib/categories.ts` — создан: `getCategories()` — `prisma.category.findMany` с сортировкой по
+  `sortOrder`.
+- `app/api/categories/route.ts` — создан: `GET`, try/catch → 500 с общим сообщением при ошибке БД.
+- `lib/categories.test.ts`, `app/api/categories/route.test.ts` — созданы: юнит-тест на
+  `getCategories` и интеграционный тест роута (моки `@/lib/prisma`/`@/lib/categories`).
+
+Проверено: `npx vitest run` (79/79), `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: роут публичный
+read-only, без пользовательского ввода, ошибки БД в ответ клиенту не пробрасываются (только
+`console.error` на сервере).
