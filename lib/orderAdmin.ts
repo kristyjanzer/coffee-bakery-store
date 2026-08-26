@@ -27,26 +27,49 @@ export interface AdminOrder {
   items: AdminOrderItem[];
 }
 
+const adminOrderSelect = {
+  id: true,
+  status: true,
+  customerName: true,
+  customerContact: true,
+  customerEmail: true,
+  comment: true,
+  preferredDate: true,
+  totalAmount: true,
+  paymentMethod: true,
+  paymentStatus: true,
+  createdAt: true,
+  updatedAt: true,
+  items: {
+    select: { productId: true, productNameSnapshot: true, priceSnapshot: true, quantity: true },
+  },
+} as const;
+
 export async function getOrders(status?: OrderStatus): Promise<AdminOrder[]> {
   return prisma.order.findMany({
     where: status ? { status } : undefined,
     orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      status: true,
-      customerName: true,
-      customerContact: true,
-      customerEmail: true,
-      comment: true,
-      preferredDate: true,
-      totalAmount: true,
-      paymentMethod: true,
-      paymentStatus: true,
-      createdAt: true,
-      updatedAt: true,
-      items: {
-        select: { productId: true, productNameSnapshot: true, priceSnapshot: true, quantity: true },
-      },
-    },
+    select: adminOrderSelect,
+  });
+}
+
+// GET/PATCH /api/orders/[id] (docs/plan.md, пункт 29) — детали и смена статуса.
+export async function getOrderById(id: number): Promise<AdminOrder | null> {
+  return prisma.order.findUnique({
+    where: { id },
+    select: adminOrderSelect,
+  });
+}
+
+export async function updateOrderStatus(id: number, status: OrderStatus): Promise<AdminOrder | null> {
+  const existing = await prisma.order.findUnique({ where: { id } });
+  if (!existing) {
+    return null;
+  }
+
+  return prisma.order.update({
+    where: { id },
+    data: { status },
+    select: adminOrderSelect,
   });
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OrderStatus } from "@/generated/prisma/client";
 
 // Имена полей совпадают с моделью Order (docs/architecture.md, раздел 3) —
 // когда появится POST /api/orders (пункт 28 плана), схема и форма подключатся
@@ -48,3 +49,11 @@ export const createOrderSchema = orderFormSchema
   });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+
+// Тело запроса PATCH /api/orders/[id] (пункт 29 плана) — только смена статуса
+// (docs/architecture.md, раздел "Роутинг": "GET/PATCH — детали и смена статуса").
+export const updateOrderStatusSchema = z.object({
+  status: z.enum(Object.values(OrderStatus) as [OrderStatus, ...OrderStatus[]]),
+});
+
+export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
