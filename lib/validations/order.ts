@@ -29,3 +29,22 @@ export const orderFormDefaultValues: OrderFormValues = {
   comment: "",
   preferredDate: "",
 };
+
+// Тело запроса POST /api/orders (пункт 28 плана): те же поля формы + состав корзины.
+// Цену и название товара с клиента не берём — сервер сам смотрит их в Prisma по
+// productId (lib/orderCreation.ts), чтобы нельзя было подделать сумму заказа.
+export const orderItemInputSchema = z.object({
+  productId: z.number().int().positive(),
+  quantity: z.number().int().positive(),
+});
+
+export const createOrderSchema = orderFormSchema
+  .extend({
+    items: z.array(orderItemInputSchema).min(1, "Корзина пуста"),
+  })
+  .refine((values) => !values.preferredDate || !Number.isNaN(Date.parse(values.preferredDate)), {
+    message: "Некорректная дата предзаказа",
+    path: ["preferredDate"],
+  });
+
+export type CreateOrderInput = z.infer<typeof createOrderSchema>;

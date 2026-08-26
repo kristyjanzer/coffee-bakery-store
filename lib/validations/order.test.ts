@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { orderFormSchema, orderFormDefaultValues } from "@/lib/validations/order";
+import { orderFormSchema, orderFormDefaultValues, createOrderSchema } from "@/lib/validations/order";
 
 const validPayload = {
   customerName: "Анна Смирнова",
@@ -57,5 +57,35 @@ describe("orderFormDefaultValues", () => {
 
   it("все значения по умолчанию — пустые строки", () => {
     expect(Object.values(orderFormDefaultValues).every((value) => value === "")).toBe(true);
+  });
+});
+
+describe("createOrderSchema", () => {
+  const validOrder = { ...validPayload, items: [{ productId: 1, quantity: 2 }] };
+
+  it("принимает валидный payload с товарами", () => {
+    expect(createOrderSchema.safeParse(validOrder).success).toBe(true);
+  });
+
+  it("отклоняет пустую корзину", () => {
+    expect(createOrderSchema.safeParse({ ...validOrder, items: [] }).success).toBe(false);
+  });
+
+  it("отклоняет нецелое/неположительное количество", () => {
+    expect(
+      createOrderSchema.safeParse({ ...validOrder, items: [{ productId: 1, quantity: 0 }] }).success
+    ).toBe(false);
+  });
+
+  it("отклоняет некорректную дату предзаказа", () => {
+    expect(
+      createOrderSchema.safeParse({ ...validOrder, preferredDate: "не дата" }).success
+    ).toBe(false);
+  });
+
+  it("принимает корректную дату предзаказа", () => {
+    expect(
+      createOrderSchema.safeParse({ ...validOrder, preferredDate: "2026-09-01" }).success
+    ).toBe(true);
   });
 });
