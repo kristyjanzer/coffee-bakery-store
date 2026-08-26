@@ -1753,3 +1753,29 @@ AdminUser). Ветка `feature/prisma-schema-models`.
 **Security review:** применялся (`.claude/skills/security-review`) — находок нет: роут публичный
 read-only, без пользовательского ввода, ошибки БД в ответ клиенту не пробрасываются (только
 `console.error` на сервере).
+
+## Задача 54
+
+Выполнен пункт 27 плана (частично) — публичные `GET /api/products`, `GET /api/products/[id]`.
+Ветка `feature/products-api`.
+
+**Отклонение от плана (согласовано с пользователем):** `POST/PATCH/DELETE` требуют проверки сессии
+администратора (`.agents/rules/db.md`), а NextAuth (пункт 31) ещё не реализован — мутирующие
+методы отложены до появления `lib/auth.ts`, реализован только публичный `GET`.
+
+**Изменённые/созданные файлы:**
+- `lib/productCatalog.ts` — создан: `getProducts()`/`getProductById()` — Prisma-запросы к
+  `Product` (не путать с `lib/products.ts` — мок-данные админки, пункт 17).
+- `app/api/products/route.ts` — создан: `GET`, try/catch → 500 при ошибке БД.
+- `app/api/products/[id]/route.ts` — создан: `GET`, 400 при нечисловом id, 404 если не найден.
+- `lib/productCatalog.test.ts`, `app/api/products/route.test.ts`,
+  `app/api/products/[id]/route.test.ts` — созданы: юнит- и интеграционные тесты (моки
+  `@/lib/prisma`/`@/lib/productCatalog`).
+
+Проверено: `npx vitest run` (88/88), `npm run lint`, `npx tsc --noEmit` — чисто; вручную против
+реальной Neon-БД (`curl /api/products`, `/api/products/1` → 200, `/999999` → 404, `/abc` → 400).
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок в новом коде нет
+(публичный read-only роут, id парсится и валидируется `Number.isInteger` перед запросом к Prisma,
+ошибки БД клиенту не пробрасываются). `npm audit` подтвердил уже известные до этой задачи
+уязвимости (`deepmerge-ts` транзитивно через Prisma 7, `swiper`) — не связаны с этой задачей.
