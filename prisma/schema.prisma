@@ -49,7 +49,8 @@ model Order {
   id                 Int         @id @default(autoincrement())
   status             OrderStatus @default(NEW)
   customerName       String
-  customerContact    String // телефон/email — оформление без регистрации
+  customerContact    String // телефон — оформление без регистрации
+  customerEmail      String // на него отправляется чек об оплате (CheckoutForm, пункт 12)
   comment            String? // "без орехов", "к 18:00"
   preferredDate      DateTime? // дата для предзаказа
   totalAmount        Int
