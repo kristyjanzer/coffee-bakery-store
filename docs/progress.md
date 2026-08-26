@@ -1827,3 +1827,47 @@ Prisma-клиент (`npx prisma generate`) и перезапустить зав
 товара всегда берутся из Prisma (не из тела запроса) — заказ нельзя удешевить подделкой payload;
 входные данные валидируются `zod` на границе; ошибки БД клиенту не пробрасываются. `npm audit`
 подтвердил уже известные уязвимости (`deepmerge-ts`, `swiper`) — не связаны с этой задачей.
+
+## Задача 56
+
+Выполнен пункт 31 плана — NextAuth (`authOptions`, Credentials-провайдер, JWT-сессии, роли
+ADMIN/ORDER_MANAGER). Ветка `feature/nextauth-setup`. Взято вне очереди по просьбе пользователя:
+пункты 29/30 плана целиком (не частично, как 27/28) упирались в отсутствие NextAuth — ни один
+метод `/api/orders/[id]`, `/api/reviews/[id]` не публичный.
+
+**Изменённые/созданные файлы:**
+- `lib/auth.ts` — создан: `authOptions` (Credentials-провайдер, JWT-сессии, `pages.signIn`) +
+  `verifyAdminCredentials()` — вынесена из `authorize()` отдельной функцией для юнит-теста, как
+  `createOrder()` в задаче 55. Сверяет пароль через `bcrypt.compare` всегда (даже если email не
+  найден — сравнение с фиктивным хэшем), чтобы не давать таймингом понять, существует ли аккаунт.
+- `types/next-auth.d.ts` — создан: модульное расширение `next-auth`/`next-auth/jwt` полем `role`
+  (иначе `session.user.role` не типизировался бы в strict-режиме).
+- `app/api/auth/[...nextauth]/route.ts` — создан: катч-олл роут NextAuth v4.
+- `lib/auth.test.ts` — создан: юнит-тесты `verifyAdminCredentials` (верный/неверный
+  пароль, несуществующий email, нормализация email).
+- `prisma/seed.ts` — добавлен `seedAdminUser()`: создаёт первого администратора из
+  `ADMIN_EMAIL`/`ADMIN_PASSWORD` (bcrypt-хэш), пропускается без ошибки, если переменные не заданы
+  (не роняет сид в CI). Без этого шага войти в `/pekarnya-control/*` было бы некому.
+- `.env.example` — добавлены `ADMIN_EMAIL`/`ADMIN_PASSWORD` (только для `prisma/seed.ts`).
+
+**Не сделано осознанно (по просьбе пользователя — отдельными ветками):** `middleware.ts` (пункт
+32, защита `/pekarnya-control/*`), подключение `SessionProvider`/реального `signIn()` в
+`LoginForm.tsx` (сейчас всё ещё заглушка `lib/login.ts`), `GET/PATCH /api/orders/[id]` (пункт 29),
+`/api/reviews`, `/api/reviews/[id]` (пункт 30).
+
+Проверено: `npx vitest run` (106/106), `npm run lint`, `npx tsc --noEmit` — чисто; вручную сквозь
+реальный NextAuth-флоу на реальной Neon-БД (временный тестовый `AdminUser`, удалён после
+проверки): `csrf` → `callback/credentials` с неверным паролем → 401, пустая сессия; с верным
+паролем → 200, `GET /api/auth/session` вернул `{"user":{"email":"...","role":"ADMIN"},"expires":...}`.
+По пути обнаружила и исправила пустой `NEXTAUTH_SECRET` в локальном `.env` (без него NextAuth падал
+с `"ikm" must be at least one byte in length`) — без него JWT-сессии в принципе не могли бы
+работать ни у меня, ни в дальнейшем у пользователя.
+
+**Новые переменные окружения:** `ADMIN_EMAIL`, `ADMIN_PASSWORD` (только для `prisma/seed.ts`,
+создание первого администратора).
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: пароль хранится
+только как bcrypt-хэш, сравнение через `bcrypt.compare` с фиктивным хэшем при отсутствии
+пользователя (защита от timing-атаки на перебор email), JWT-сессии шифруются `NEXTAUTH_SECRET`
+(не хранят пароль/хэш), публичного эндпоинта регистрации админа нет — только `prisma/seed.ts`
+на сервере. `npm audit` — без изменений (уже известные `deepmerge-ts`/`swiper`).

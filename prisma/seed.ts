@@ -1,4 +1,5 @@
 import "dotenv/config";
+import bcrypt from "bcryptjs";
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import rawMenu from "@/menu.json";
@@ -74,6 +75,28 @@ async function main() {
   // Postgres не сдвигается сама — без этого следующий INSERT без явного id (например, из будущей
   // формы добавления товара в админке) столкнётся с уже занятым id и упадёт на уникальном ключе.
   await prisma.$executeRaw`SELECT setval(pg_get_serial_sequence('"Product"', 'id'), COALESCE((SELECT MAX(id) FROM "Product"), 1))`;
+
+  await seedAdminUser();
+}
+
+// Первый аккаунт администратора (docs/plan.md, пункт 31) — без этого войти в
+// /pekarnya-control/* было бы некем. Не хардкодим пароль в коде: если переменные
+// не заданы, сид просто пропускает этот шаг (не роняет весь seed, например в CI).
+async function seedAdminUser() {
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    console.warn("ADMIN_EMAIL/ADMIN_PASSWORD не заданы — пропускаю сид админа");
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  await prisma.adminUser.upsert({
+    where: { email: email.trim().toLowerCase() },
+    update: { passwordHash },
+    create: { email: email.trim().toLowerCase(), passwordHash },
+  });
 }
 
 main()
