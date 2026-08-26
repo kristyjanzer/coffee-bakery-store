@@ -1,4 +1,4 @@
-import type { NextAuthOptions } from "next-auth";
+import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -69,3 +69,26 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+export type RequireAdminResult =
+  | { ok: true; role: AdminRole }
+  | { ok: false; status: 401 | 403 };
+
+// Общая проверка сессии администратора для мутирующих /api/* (docs/architecture.md,
+// раздел 7 — "проверка сессии до запроса к БД, не после"). allowedRoles по умолчанию
+// только ADMIN — ORDER_MANAGER (about-project.md: "менеджер заказов") получит доступ
+// там, где это явно нужно (например, будущий /api/orders/[id], пункт 29).
+export async function requireAdminSession(
+  allowedRoles: AdminRole[] = ["ADMIN"]
+): Promise<RequireAdminResult> {
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.role;
+
+  if (!role) {
+    return { ok: false, status: 401 };
+  }
+  if (!allowedRoles.includes(role)) {
+    return { ok: false, status: 403 };
+  }
+  return { ok: true, role };
+}

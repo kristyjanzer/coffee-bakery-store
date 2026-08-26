@@ -1871,3 +1871,44 @@ ADMIN/ORDER_MANAGER). Ветка `feature/nextauth-setup`. Взято вне о�
 пользователя (защита от timing-атаки на перебор email), JWT-сессии шифруются `NEXTAUTH_SECRET`
 (не хранят пароль/хэш), публичного эндпоинта регистрации админа нет — только `prisma/seed.ts`
 на сервере. `npm audit` — без изменений (уже известные `deepmerge-ts`/`swiper`).
+
+## Задача 57
+
+Доделан пункт 27 плана — `POST/PATCH/DELETE /api/products`, только `ADMIN` (стало возможно после
+NextAuth, задача 56). Ветка `feature/products-mutations`.
+
+**Осознанно не сделано (согласовано с пользователем):** `ProductForm.tsx` (админка) к этим
+эндпоинтам не подключена — список/карточка товара в админке всё ещё читают мок-данные из
+`menu.json` (`lib/products.ts`, пункт 17), подключение реального API дало бы нестыковку
+(создание/удаление пишет в Prisma, а список этого не увидит) до миграции списка на Prisma
+(пункт 35).
+
+**Изменённые/созданные файлы:**
+- `lib/auth.ts` — добавлена `requireAdminSession(allowedRoles = ["ADMIN"])`: общая проверка
+  сессии для мутирующих `/api/*`, переиспользуется и для будущих `/api/orders/[id]` (пункт 29,
+  там нужно будет разрешить и `ORDER_MANAGER`).
+- `lib/validations/product.ts` — добавлены `createProductInputSchema`/`updateProductInputSchema`
+  (JSON-тело запроса, значения уже нужного типа — в отличие от `productFormSchema`, которая
+  парсит строки из `<input>`; `updateProductInputSchema` — `.partial()` для PATCH).
+- `lib/productCatalog.ts` — добавлены `createProduct()` (резолвит `categorySlug` → `categoryId`),
+  `updateProduct()` (частичное обновление — Prisma игнорирует `undefined`-поля, `null` явно
+  очищает колонку), `deleteProduct()` (409 при нарушении внешнего ключа — товар есть в
+  заказах/отзывах, `Prisma.PrismaClientKnownRequestError` код `P2003`).
+- `app/api/products/route.ts` — добавлен `POST` (401/403 по сессии, 400 при невалидном
+  теле/несуществующей категории, 201 при успехе).
+- `app/api/products/[id]/route.ts` — добавлены `PATCH`/`DELETE` (401/403/400/404/409/500).
+- Тесты дополнены: `lib/auth.test.ts` (`requireAdminSession`), `lib/productCatalog.test.ts`
+  (`createProduct`/`updateProduct`/`deleteProduct`), `app/api/products/route.test.ts` (`POST`),
+  `app/api/products/[id]/route.test.ts` (`PATCH`/`DELETE`).
+
+Проверено: `npx vitest run` (131/131), `npm run lint`, `npx tsc --noEmit` — чисто; вручную против
+реальной Neon-БД через реальный NextAuth-логин (временные `AdminUser` с ролями `ADMIN`/
+`ORDER_MANAGER`, удалены после проверки): без сессии → 401; `ORDER_MANAGER` → 403; `ADMIN` →
+`POST` создал реальный товар, `PATCH` изменил цену, `DELETE` удалил (204), повторный `GET` → 404.
+Заодно удалила забытый тестовый заказ (id=1) из задачи 55, который мешал бы проверке `DELETE`
+(внешний ключ `OrderItem.productId`).
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: проверка сессии
+и роли — до любого обращения к Prisma; тело запроса валидируется `zod`; id из URL парсится и
+проверяется `Number.isInteger`; ошибки БД клиенту не пробрасываются; удаление с внешним ключом
+не роняет процесс 500-й, а возвращает понятный 409. `npm audit` — без изменений.
