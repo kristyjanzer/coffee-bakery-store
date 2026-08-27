@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatPrice } from "@/lib/utils";
-import {
-  getCustomerOrderHistory,
-  getOrderById,
-  ORDER_STATUS_LABELS,
-  PAYMENT_STATUS_LABELS,
-} from "@/lib/orders";
+import { formatPrice, formatTimeAgo } from "@/lib/utils";
+import { getCustomerOrderHistory, getOrderById } from "@/lib/orderAdmin";
+import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type PaymentStatus } from "@/lib/orderStatus";
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
+
+function paymentStatusLabel(status: string): string {
+  return PAYMENT_STATUS_LABELS[status as PaymentStatus] ?? status;
+}
 
 export const metadata: Metadata = {
   title: "Заказ — Coffee Bakery",
@@ -45,8 +45,9 @@ export default async function AdminOrderPage({ params }: OrderPageProps) {
           Заказ №{order.id}
         </h1>
         <p className="mt-1 font-venuscom text-caption text-black-olive/60">
-          {order.minutesAgo} мин назад
-          {order.preferredDate && ` · предзаказ на ${order.preferredDate}`}
+          {formatTimeAgo(order.createdAt)}
+          {order.preferredDate &&
+            ` · предзаказ на ${order.preferredDate.toLocaleDateString("ru-RU")}`}
         </p>
       </div>
 
@@ -54,12 +55,14 @@ export default async function AdminOrderPage({ params }: OrderPageProps) {
         <OrderStatusControl orderId={order.id} initialStatus={order.status} />
         <div>
           <p className="font-venuscom text-caption text-black-olive/60">Способ оплаты</p>
-          <p className="mt-1 font-venuscom text-body-sm text-black-olive">{order.paymentMethod}</p>
+          <p className="mt-1 font-venuscom text-body-sm text-black-olive">
+            {order.paymentMethod ?? "—"}
+          </p>
         </div>
         <div>
           <p className="font-venuscom text-caption text-black-olive/60">Статус оплаты</p>
           <p className="mt-1 font-venuscom text-body-sm text-black-olive">
-            {PAYMENT_STATUS_LABELS[order.paymentStatus]}
+            {paymentStatusLabel(order.paymentStatus)}
           </p>
         </div>
         <div>
@@ -98,16 +101,16 @@ export default async function AdminOrderPage({ params }: OrderPageProps) {
               {order.items.map((item) => (
                 <tr key={item.productId} className="border-b border-sage-mist last:border-0">
                   <td className="px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    {item.name}
+                    {item.productNameSnapshot}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    {formatPrice(item.price)}
+                    {formatPrice(item.priceSnapshot)}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
                     × {item.quantity}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm font-semibold text-black-olive">
-                    {formatPrice(item.price * item.quantity)}
+                    {formatPrice(item.priceSnapshot * item.quantity)}
                   </td>
                 </tr>
               ))}
@@ -146,7 +149,7 @@ export default async function AdminOrderPage({ params }: OrderPageProps) {
                     №{historyOrder.id} · {ORDER_STATUS_LABELS[historyOrder.status]}
                   </span>
                   <span className="shrink-0 font-venuscom text-caption text-black-olive/60">
-                    {formatPrice(historyOrder.totalAmount)} · {historyOrder.minutesAgo} мин назад
+                    {formatPrice(historyOrder.totalAmount)} · {formatTimeAgo(historyOrder.createdAt)}
                   </span>
                 </Link>
               </li>

@@ -20,6 +20,20 @@ export function formatPrice(price: number, currency = "RUB"): string {
   return `${price.toLocaleString("ru-RU")} ${symbol}`;
 }
 
+// "N минут/часов/дней назад" от даты создания заказа — заменяет мок-поле
+// minutesAgo, которого нет в Prisma-модели Order (там createdAt). Считается на
+// сервере при рендере списка/карточки заказа в админке.
+export function formatTimeAgo(date: Date, now: Date = new Date()): string {
+  const minutes = Math.max(0, Math.round((now.getTime() - date.getTime()) / 60000));
+  if (minutes < 60) return `${minutes} мин назад`;
+
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} ч назад`;
+
+  const days = Math.round(hours / 24);
+  return `${days} дн назад`;
+}
+
 // next/link не всегда доводит скролл до конца при переходе по якорю в пределах
 // той же страницы (известная особенность Next.js App Router) — прокручиваем сами.
 // scroll-margin-top (утилита scroll-mt-*) на целевом элементе учитывается автоматически.

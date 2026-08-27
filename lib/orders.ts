@@ -1,5 +1,6 @@
 import type { OrderFormValues } from "@/lib/validations/order";
 import type { CartItem } from "@/stores/cartStore";
+import type { OrderStatus, PaymentStatus } from "@/lib/orderStatus";
 
 export interface SubmitOrderPayload {
   form: OrderFormValues;
@@ -63,34 +64,12 @@ export async function submitOrder(payload: SubmitOrderPayload): Promise<SubmitOr
 // свой список — иначе id/статусы в дашборде и в разделе "Заказы" могли бы разойтись).
 // Сигнатуры уже async — тихая замена на Prisma-запросы без переделки страниц/компонентов.
 
-export type OrderStatus = "NEW" | "IN_PROGRESS" | "PREPARING" | "READY" | "DELIVERED" | "CANCELLED";
-
-// Порядок и формулировки — 1-в-1 из about-project.md ("новый / в работе / готовится /
-// готов / доставлен / отменён").
-export const ORDER_STATUSES: OrderStatus[] = [
-  "NEW",
-  "IN_PROGRESS",
-  "PREPARING",
-  "READY",
-  "DELIVERED",
-  "CANCELLED",
-];
-
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  NEW: "Новый",
-  IN_PROGRESS: "В работе",
-  PREPARING: "Готовится",
-  READY: "Готов",
-  DELIVERED: "Доставлен",
-  CANCELLED: "Отменён",
-};
-
-export type PaymentStatus = "PAID" | "UNPAID";
-
-export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  PAID: "Оплачен",
-  UNPAID: "Не оплачен",
-};
+// Статусы и подписи переехали в lib/orderStatus.ts (чистые константы, отдельно от
+// мок-данных ниже) — чтобы их могли тянуть и Server Components списков заказов на
+// Prisma (lib/orderAdmin.ts), и клиентский OrderStatusControl. Ре-экспорт — чтобы
+// не ломать существующие импорты из "@/lib/orders".
+export type { OrderStatus, PaymentStatus } from "@/lib/orderStatus";
+export { ORDER_STATUSES, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/orderStatus";
 
 export interface OrderItemRecord {
   productId: number;

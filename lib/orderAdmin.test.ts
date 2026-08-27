@@ -59,6 +59,22 @@ describe("getOrderById", () => {
   });
 });
 
+describe("getCustomerOrderHistory", () => {
+  it("запрашивает заказы того же контакта, исключая текущий, от новых к старым", async () => {
+    findManyMock.mockResolvedValueOnce([]);
+
+    const { getCustomerOrderHistory } = await import("@/lib/orderAdmin");
+    await getCustomerOrderHistory("+7 900 123-45-01", 42);
+
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { customerContact: "+7 900 123-45-01", id: { not: 42 } },
+        orderBy: { createdAt: "desc" },
+      })
+    );
+  });
+});
+
 describe("updateOrderStatus", () => {
   it("возвращает null и не вызывает update, если заказ не найден", async () => {
     findUniqueMock.mockResolvedValueOnce(null);
