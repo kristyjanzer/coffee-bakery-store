@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { moderateReview } from "@/lib/reviews";
+import { moderateReview } from "@/lib/reviewAdminApi";
 
 interface ReviewModerationControlProps {
   reviewId: number;
@@ -10,21 +11,22 @@ interface ReviewModerationControlProps {
   initialShopReply: string | null;
 }
 
-// Модерация отзыва + ответ от магазина (docs/plan.md, пункт 19). moderateReview() —
-// заглушка (PATCH /api/reviews/[id] появится в пункте 30 плана), ничего не сохраняет
-// по-настоящему — статус и ответ живут только в локальном состоянии этого компонента,
-// как в OrderStatusControl. Оба поля сохраняются одной кнопкой (в отличие от
-// OrderStatusControl, где единственное поле применяется сразу на onChange) — статус и
-// текст ответа осмысленны только вместе.
+// Модерация отзыва + ответ от магазина (docs/plan.md, пункты 19/35). Пишет через
+// PATCH /api/reviews/[id] (lib/reviewAdminApi). Оба поля сохраняются одной кнопкой
+// (в отличие от OrderStatusControl, где единственное поле применяется сразу на
+// onChange) — статус и текст ответа осмысленны только вместе. После успеха
+// router.refresh() перечитывает Server Component страницы с актуальными данными.
 export function ReviewModerationControl({
   reviewId,
   initialIsApproved,
   initialShopReply,
 }: ReviewModerationControlProps) {
+  const router = useRouter();
   const [isApproved, setIsApproved] = useState(initialIsApproved);
   const [shopReply, setShopReply] = useState(initialShopReply ?? "");
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,9 +36,18 @@ export function ReviewModerationControl({
   async function submitModeration() {
     setIsSaving(true);
     setSavedAt(null);
-    await moderateReview(reviewId, { isApproved, shopReply: shopReply.trim() || null });
+    setError(null);
+    const result = await moderateReview(reviewId, {
+      isApproved,
+      shopReply: shopReply.trim() || null,
+    });
     setIsSaving(false);
-    setSavedAt(Date.now());
+    if (result.ok) {
+      setSavedAt(Date.now());
+      router.refresh();
+    } else {
+      setError(result.error);
+    }
   }
 
   return (
@@ -96,9 +107,10 @@ export function ReviewModerationControl({
         <Button type="submit" disabled={isSaving}>
           {isSaving ? "Сохраняем…" : "Сохранить"}
         </Button>
-        {!isSaving && savedAt && (
-          <p className="font-venuscom text-caption text-forest-ink">Сохранено (заглушка)</p>
+        {!isSaving && savedAt && !error && (
+          <p className="font-venuscom text-caption text-forest-ink">Сохранено</p>
         )}
+        {error && <p className="font-venuscom text-caption font-semibold text-red-600">{error}</p>}
       </div>
     </form>
   );

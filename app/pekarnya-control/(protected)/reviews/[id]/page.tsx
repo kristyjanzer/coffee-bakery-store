@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAdminReviewById } from "@/lib/reviews";
+import { getAdminReviewById } from "@/lib/reviewsApi";
 import { ReviewModerationControl } from "@/components/admin/ReviewModerationControl";
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default async function AdminReviewPage({ params }: ReviewPageProps) {
         <h1 className="mt-2 font-venuscom text-heading-sm uppercase tracking-[0.03em] text-forest-ink">
           Отзыв от {review.authorName}
         </h1>
-        <p className="mt-1 font-venuscom text-caption text-black-olive/60">Товар: {review.productName}</p>
+        <p className="mt-1 font-venuscom text-caption text-black-olive/60">Товар: {review.productName ?? "—"}</p>
       </div>
 
       <section className="bg-warm-cream p-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.1)]">

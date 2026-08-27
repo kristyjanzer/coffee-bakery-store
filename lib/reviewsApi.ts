@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { ModerateReviewInput } from "@/lib/validations/review";
+import type { Review } from "@/lib/reviews";
 
 // Prisma-запросы для /api/reviews и /api/reviews/[id] (docs/plan.md, пункт 30) — не
 // путать с lib/reviews.ts (мок-данные слайдера на главной и раздела админки "Отзывы",
@@ -62,6 +63,47 @@ export async function getApprovedReviews(): Promise<ApiReview[]> {
     select: apiReviewSelect,
   });
   return rows.map(toApiReview);
+}
+
+// Отзывы для слайдера на главной (docs/plan.md, пункт 7) — только одобренные,
+// приведённые к форме Review, которую ждёт клиентский ReviewsSlider (productName/
+// imageUrl — строки, не nullable). Server Component главной вызывает это напрямую,
+// без похода в /api/reviews (docs/plan.md, пункт 35).
+export async function getSliderReviews(): Promise<Review[]> {
+  const rows = await getApprovedReviews();
+  return rows.map((row) => ({
+    id: row.id,
+    authorName: row.authorName,
+    quoteText: row.quoteText,
+    productName: row.productName ?? "",
+    imageUrl: row.imageUrl ?? "",
+    isApproved: row.isApproved,
+    shopReply: row.shopReply,
+  }));
+}
+
+// --- Админка: раздел "Отзывы" (docs/plan.md, пункт 19) ---
+//
+// В отличие от публичной getApprovedReviews(), админке нужны все отзывы (включая
+// неодобренные) — иначе их не промодерировать. Server Component списковой/детальной
+// страницы вызывает это напрямую (docs/plan.md, пункт 35), мутация (модерация) —
+// через PATCH /api/reviews/[id] из клиентского ReviewModerationControl.
+export interface AdminReviewFilters {
+  isApproved?: boolean;
+}
+
+export async function getAdminReviews(filters: AdminReviewFilters = {}): Promise<ApiReview[]> {
+  const rows = await prisma.review.findMany({
+    where: filters.isApproved === undefined ? undefined : { isApproved: filters.isApproved },
+    orderBy: { createdAt: "desc" },
+    select: apiReviewSelect,
+  });
+  return rows.map(toApiReview);
+}
+
+export async function getAdminReviewById(id: number): Promise<ApiReview | null> {
+  const row = await prisma.review.findUnique({ where: { id }, select: apiReviewSelect });
+  return row ? toApiReview(row) : null;
 }
 
 // PATCH /api/reviews/[id] — модерация + ответ магазина, только ADMIN. Проверка сессии

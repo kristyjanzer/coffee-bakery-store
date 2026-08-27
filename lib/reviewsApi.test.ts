@@ -39,6 +39,60 @@ describe("getApprovedReviews", () => {
   });
 });
 
+describe("getSliderReviews", () => {
+  it("приводит одобренные отзывы к форме Review (productName/imageUrl — строки, не null)", async () => {
+    findManyMock.mockResolvedValueOnce([
+      { id: 2, productId: null, authorName: "Игорь П.", quoteText: "Отлично", rating: null, imageUrl: null, isApproved: true, shopReply: null, createdAt: new Date(0), product: null },
+    ]);
+
+    const { getSliderReviews } = await import("@/lib/reviewsApi");
+    const reviews = await getSliderReviews();
+
+    expect(reviews[0]).toEqual({
+      id: 2,
+      authorName: "Игорь П.",
+      quoteText: "Отлично",
+      productName: "",
+      imageUrl: "",
+      isApproved: true,
+      shopReply: null,
+    });
+  });
+});
+
+describe("getAdminReviews", () => {
+  it("без фильтра запрашивает все отзывы (where: undefined)", async () => {
+    findManyMock.mockResolvedValueOnce([]);
+
+    const { getAdminReviews } = await import("@/lib/reviewsApi");
+    await getAdminReviews();
+
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({ where: undefined, orderBy: { createdAt: "desc" } })
+    );
+  });
+
+  it("с фильтром isApproved:false запрашивает только отзывы на модерации", async () => {
+    findManyMock.mockResolvedValueOnce([]);
+
+    const { getAdminReviews } = await import("@/lib/reviewsApi");
+    await getAdminReviews({ isApproved: false });
+
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { isApproved: false } })
+    );
+  });
+});
+
+describe("getAdminReviewById", () => {
+  it("возвращает null, если отзыв не найден", async () => {
+    findUniqueMock.mockResolvedValueOnce(null);
+
+    const { getAdminReviewById } = await import("@/lib/reviewsApi");
+    expect(await getAdminReviewById(999999)).toBeNull();
+  });
+});
+
 describe("moderateReview", () => {
   it("возвращает null, если отзыв не найден, и не вызывает update", async () => {
     findUniqueMock.mockResolvedValueOnce(null);
