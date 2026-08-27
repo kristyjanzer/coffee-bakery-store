@@ -4,10 +4,11 @@ import { getCatalog, type MenuProduct } from "@/lib/menu";
 //
 // Product в Prisma появится только в пунктах 22-25 плана, поэтому источник — тот же
 // getCatalog() (lib/menu.ts, реальные товары/фото/остатки из menu.json), дополненный
-// полями из Prisma-схемы Product (docs/architecture.md, раздел 3), которых пока нет
-// в menu.json: description/composition/allergens/protein/fat/carbs/expiryInfo.
-// Как и на странице товара (задача 20), не выдумываем факты о еде — эти поля
-// стартуют пустыми/null, админ заполняет их сам через форму. isActive/isSeasonal —
+// полями из Prisma-схемы Product (docs/architecture.md, раздел 3): allergens/expiryInfo
+// в menu.json всё ещё нет — они стартуют пустыми, админ заполняет их сам через форму
+// (description/composition/protein/fat/carbs в menu.json уже есть и читаются страницей
+// товара, но этот мок админки их пока не подхватывает — будет вместе с пунктом 35).
+// isActive/isSeasonal —
 // не факты о товаре, а операционные флаги витрины, поэтому по аналогии с
 // getTopProducts() в lib/dashboard.ts (задача 29, мок unitsSold поверх реальных
 // товаров) для них допустимы иллюстративные значения по умолчанию.
@@ -20,7 +21,10 @@ export interface AdminCategory {
   name: string;
 }
 
-export interface AdminProduct extends MenuProduct {
+// Omit — эти поля в MenuProduct необязательные (number | undefined / string | undefined),
+// а форме товара нужны строгие string / number | null; переопределяем без конфликта.
+export interface AdminProduct
+  extends Omit<MenuProduct, "description" | "composition" | "protein" | "fat" | "carbs"> {
   categorySlug: string;
   categoryName: string;
   description: string;

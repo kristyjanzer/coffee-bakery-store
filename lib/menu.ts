@@ -12,6 +12,11 @@ interface RawMenuItem {
   volume_ml?: number;
   weight_g?: number;
   calories?: number;
+  description?: string;
+  composition?: string;
+  protein_g?: number;
+  fat_g?: number;
+  carbs_g?: number;
 }
 
 interface RawMenuCategory {
@@ -34,6 +39,11 @@ export interface MenuProduct {
   volumeMl?: number;
   weightG?: number;
   calories?: number;
+  description?: string;
+  composition?: string;
+  protein?: number;
+  fat?: number;
+  carbs?: number;
 }
 
 export interface MenuCategory {
@@ -44,6 +54,27 @@ export interface MenuCategory {
 
 const menu = rawMenu as RawMenu;
 
+// Одно место, где snake_case из menu.json приводится к camelCase MenuProduct —
+// чтобы getCatalog и getProductById не расходились по набору полей.
+function toMenuProduct(item: RawMenuItem): MenuProduct {
+  return {
+    id: item.id,
+    name: item.name,
+    price: item.price,
+    currency: item.currency,
+    stockQuantity: item.stock_quantity,
+    imageUrl: item.image_url,
+    volumeMl: item.volume_ml,
+    weightG: item.weight_g,
+    calories: item.calories,
+    description: item.description,
+    composition: item.composition,
+    protein: item.protein_g,
+    fat: item.fat_g,
+    carbs: item.carbs_g,
+  };
+}
+
 // Временный источник каталога до подключения Prisma/БД (docs/plan.md, пункты 22-25).
 // Та же структура категорий/товаров, что и в menu.json, который позже станет сидом для БД —
 // когда появятся Prisma-запросы, эта функция заменяется ими без изменения формы данных.
@@ -51,17 +82,7 @@ export function getCatalog(): MenuCategory[] {
   return menu.categories.map((category) => ({
     slug: slugify(category.category),
     name: category.category,
-    products: category.items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      currency: item.currency,
-      stockQuantity: item.stock_quantity,
-      imageUrl: item.image_url,
-      volumeMl: item.volume_ml,
-      weightG: item.weight_g,
-      calories: item.calories,
-    })),
+    products: category.items.map(toMenuProduct),
   }));
 }
 
@@ -72,17 +93,7 @@ export function getProductById(id: number): MenuProduct | undefined {
   for (const category of menu.categories) {
     const item = category.items.find((product) => product.id === id);
     if (item) {
-      return {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        currency: item.currency,
-        stockQuantity: item.stock_quantity,
-        imageUrl: item.image_url,
-        volumeMl: item.volume_ml,
-        weightG: item.weight_g,
-        calories: item.calories,
-      };
+      return toMenuProduct(item);
     }
   }
   return undefined;
