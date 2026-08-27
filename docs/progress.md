@@ -2210,3 +2210,10 @@ Server Components; тексты рендерятся как React-текст. `n
 - `components/admin/OrderStatusControl.tsx` — на карточке заказа селект статуса больше не липнет
   сбоку от лейбла «Статус заказа»: лейбл `block`, обёртка селекта `block w-full` на мобильных и
   `sm:inline-block sm:w-auto` на десктопе; паддинг `py-2` → `py-3` (как у полей формы товара).
+
+## Задача 70
+
+Обновлён `swiper` 11 → 14 (`package.json`, `package-lock.json`) — закрыта критическая уязвимость
+`npm audit` (prototype pollution, GHSA-hmx5-qpq5-p643). API `swiper/react` без изменений,
+`components/catalog/ReviewsSlider.tsx` не тронут. Осталось 3 «high» в audit (`@prisma/config`/
+`deepmerge-ts`) — их «фикс» откатывает Prisma 7→6, не применяем (дев-тулинг, не рантайм).
