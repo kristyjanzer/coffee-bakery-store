@@ -3,6 +3,7 @@ import { OrderStatus } from "@/generated/prisma/client";
 import { createOrderSchema } from "@/lib/validations/order";
 import { createOrder } from "@/lib/orderCreation";
 import { getOrders } from "@/lib/orderAdmin";
+import { notifyNewOrder } from "@/lib/telegram";
 import { requireAdminSession } from "@/lib/auth";
 
 const ORDER_STATUS_VALUES = Object.values(OrderStatus) as OrderStatus[];
@@ -55,6 +56,15 @@ export async function POST(request: Request) {
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
+
+    // Уведомление в Telegram (пункт 33) — после успешной записи заказа, отдельным
+    // try/catch: сбой Telegram не должен превращать созданный заказ в ошибку 500.
+    try {
+      await notifyNewOrder(result.orderId);
+    } catch (error) {
+      console.error("POST /api/orders → notifyNewOrder:", error);
+    }
+
     return NextResponse.json({ orderId: result.orderId }, { status: 201 });
   } catch (error) {
     console.error("POST /api/orders:", error);
