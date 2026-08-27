@@ -46,16 +46,18 @@ export function OrderStatusControl({ orderId, initialStatus }: OrderStatusContro
 
   return (
     <div>
-      <label htmlFor="order-status" className="font-venuscom text-caption text-black-olive/60">
+      <label htmlFor="order-status" className="block font-venuscom text-caption text-black-olive/60">
         Статус заказа
       </label>
-      <div className="relative mt-1 inline-block">
+      {/* Селект под лейблом (block), на мобильных — во всю ширину колонки; с sm:
+          возвращается к авто-ширине по контенту, как у остальных полей секции. */}
+      <div className="relative mt-1 block w-full sm:inline-block sm:w-auto">
         <select
           id="order-status"
           value={status}
           disabled={isSaving}
           onChange={(event) => void handleChange(event.target.value as OrderStatus)}
-          className="peer appearance-none rounded-sm border border-sage-mist bg-warm-cream py-2 pl-4 pr-8 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none disabled:opacity-60"
+          className="peer w-full appearance-none rounded-sm border border-sage-mist bg-warm-cream py-3 pl-4 pr-9 font-venuscom text-body-sm text-black-olive focus:border-lemon-zest focus:outline-none disabled:opacity-60 sm:w-auto"
         >
           {ORDER_STATUSES.map((value) => (
             <option key={value} value={value}>
@@ -65,7 +67,7 @@ export function OrderStatusControl({ orderId, initialStatus }: OrderStatusContro
         </select>
         <FontAwesomeIcon
           icon={faChevronDown}
-          className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-black-olive/60 peer-disabled:opacity-60"
+          className="pointer-events-none absolute right-3 top-1/2 size-3 -translate-y-1/2 text-black-olive/60 peer-disabled:opacity-60"
         />
       </div>
       {isSaving && (
