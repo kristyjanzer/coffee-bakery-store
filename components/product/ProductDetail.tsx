@@ -10,15 +10,21 @@ interface ProductDetailProps {
   product: MenuProduct;
 }
 
-// Состав и БЖУ появятся вместе с Prisma-моделью Product (docs/architecture.md, раздел 3,
-// поля composition/protein/fat/carbs) — в текущем источнике данных (menu.json) их нет,
-// показываем только реально существующие поля.
 export function ProductDetail({ product }: ProductDetailProps) {
   const weightLabel = product.volumeMl
     ? `${product.volumeMl} мл`
     : product.weightG
       ? `${product.weightG} г`
       : null;
+
+  // КБЖУ (docs/plan.md, пункт 11) — из menu.json (calories/protein_g/fat_g/carbs_g).
+  // Показываем только те значения, что реально заданы у товара.
+  const nutrition = [
+    product.calories != null ? { label: "Ккал", value: String(product.calories) } : null,
+    product.protein != null ? { label: "Белки", value: `${product.protein} г` } : null,
+    product.fat != null ? { label: "Жиры", value: `${product.fat} г` } : null,
+    product.carbs != null ? { label: "Углеводы", value: `${product.carbs} г` } : null,
+  ].filter((entry): entry is { label: string; value: string } => entry !== null);
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-[30px]">
@@ -56,6 +62,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {product.name}
           </h1>
 
+          {product.description && (
+            <p className="mt-4 font-venuscom text-body-sm text-black-olive/80">
+              {product.description}
+            </p>
+          )}
+
           <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
             {weightLabel && (
               <div>
@@ -65,17 +77,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <dd className="font-venuscom text-body-sm text-black-olive">{weightLabel}</dd>
               </div>
             )}
-            {product.calories && (
-              <div>
+            {nutrition.map((entry) => (
+              <div key={entry.label}>
                 <dt className="font-venuscom text-caption uppercase tracking-[0.04em] text-black-olive/60">
-                  Калории
+                  {entry.label}
                 </dt>
-                <dd className="font-venuscom text-body-sm text-black-olive">
-                  {product.calories} ккал
-                </dd>
+                <dd className="font-venuscom text-body-sm text-black-olive">{entry.value}</dd>
               </div>
-            )}
+            ))}
           </dl>
+
+          {product.composition && (
+            <div className="mt-6">
+              <p className="font-venuscom text-caption uppercase tracking-[0.04em] text-black-olive/60">
+                Состав
+              </p>
+              <p className="mt-1 font-venuscom text-body-sm text-black-olive">{product.composition}</p>
+            </div>
+          )}
 
           <p className="mt-8 font-venuscom text-heading-sm font-semibold text-black-olive">
             {formatPrice(product.price, product.currency)}

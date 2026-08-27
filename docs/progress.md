@@ -2077,3 +2077,23 @@ dev-сервер против реальной Neon-БД (админ `admin@test
 кликабельной ссылкой (`next/link` на `/`, hover `opacity-70`) — быстрый выход на витрину без
 адресной строки. Ветка `feature/login-logo-home-link`. Проверено в браузере (Chrome DevTools MCP):
 клик уводит на главную; `npx vitest run` (176/176), `npm run lint`, `npx tsc --noEmit` — чисто.
+
+## Задача 64
+
+На странице товара (`components/product/ProductDetail.tsx`) добавлены Состав, КБЖУ (Белки/Жиры/
+Углеводы к уже бывшим Калориям) и краткое описание — раньше не показывались, хотя задуманы
+(docs/plan.md, пункт 11) и есть в `menu.json`. Ветка `feature/product-detail-composition-nutrition`.
+
+**Изменённые/созданные файлы:**
+- `lib/menu.ts` — в `RawMenuItem`/`MenuProduct` добавлены `description`/`composition`/`protein`/
+  `fat`/`carbs`; дублирующий инлайн-маппинг вынесен в `toMenuProduct()`.
+- `components/product/ProductDetail.tsx` — блок «Состав», позиции КБЖУ в спецификации (рендерятся
+  только при наличии данных), описание под названием; убран устаревший комментарий.
+- `lib/products.ts` — `AdminProduct` теперь `extends Omit<MenuProduct, ...>` (новые поля в
+  `MenuProduct` необязательные, а форме товара нужны строгие типы) — конфликт типов, поведение
+  мока не менялось.
+- `components/product/ProductDetail.test.tsx` — создан.
+
+Проверено: `npx vitest run` (178/178), `npm run lint`, `npx tsc --noEmit` — чисто; в браузере
+(Chrome DevTools MCP) на напитке, сэндвиче (часть КБЖУ/состава нет — блоки не рендерятся) и
+выпечке с длинным составом, desktop + 390px.
