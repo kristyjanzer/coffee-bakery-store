@@ -2097,3 +2097,33 @@ dev-сервер против реальной Neon-БД (админ `admin@test
 Проверено: `npx vitest run` (178/178), `npm run lint`, `npx tsc --noEmit` — чисто; в браузере
 (Chrome DevTools MCP) на напитке, сэндвиче (часть КБЖУ/состава нет — блоки не рендерятся) и
 выпечке с длинным составом, desktop + 390px.
+
+## Задача 65
+
+Выполнен пункт 33 плана — уведомление о новой заявке в Telegram. Ветка
+`feature/telegram-order-notification`.
+
+**Изменённые/созданные файлы:**
+- `lib/telegram.ts` — создан: `notifyNewOrder(orderId)` — тянет заказ с составом из Prisma,
+  шлёт `sendMessage` на Bot API (обычный текст, без parse_mode — ввод клиента не ломает
+  разметку), при успехе ставит `Order.telegramNotifiedAt`. Строго best-effort: нет токена /
+  сеть / не-2xx — только `console`, ошибка не пробрасывается. Таймаут запроса 4 с.
+- `app/api/orders/route.ts` — после успешного `createOrder` зовёт `notifyNewOrder` в
+  отдельном try/catch (сбой Telegram не превращает созданный заказ в 500).
+- `lib/telegram.test.ts` — создан: no-op без токена, успех + отметка, не-2xx, ошибка сети,
+  заказ не найден.
+
+Переменные окружения: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` (уже были в `.env.example`,
+раздел 6 architecture.md) — сейчас в `.env` пустые, поэтому уведомление корректно
+пропускается.
+
+Проверено: `npx vitest run` (183/183), `npm run lint`, `npx tsc --noEmit` — чисто; через
+dev-сервер `POST /api/orders` → 201, заказ в БД, в логе `notifyNewOrder: ... не заданы —
+пропускаю` (создание заказа не сломано). Живая отправка в Telegram не проверялась — нужен
+реальный бот-токен.
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: токен/чат
+только из `process.env` на сервере (в `lib/telegram.ts`, не в клиентском коде, без
+`NEXT_PUBLIC_`), сообщение — plain text (нет HTML/Markdown-инъекции через имя/комментарий
+клиента), ошибки Telegram не пробрасываются и не текут в ответ клиенту. `npm audit` — без
+изменений.
