@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAdminReviews } from "@/lib/reviews";
+import { getAdminReviews } from "@/lib/reviewsApi";
 
 export const metadata: Metadata = {
   title: "Отзывы — Coffee Bakery",
@@ -89,7 +89,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
                     </Link>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm text-black-olive/70">
-                    {review.productName}
+                    {review.productName ?? "—"}
                   </td>
                   <td className="max-w-md px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
                     <span className="line-clamp-2">«{review.quoteText}»</span>

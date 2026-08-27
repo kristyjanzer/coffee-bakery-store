@@ -76,7 +76,106 @@ async function main() {
   // формы добавления товара в админке) столкнётся с уже занятым id и упадёт на уникальном ключе.
   await prisma.$executeRaw`SELECT setval(pg_get_serial_sequence('"Product"', 'id'), COALESCE((SELECT MAX(id) FROM "Product"), 1))`;
 
+  await seedReviews();
   await seedAdminUser();
+}
+
+// Отзывы для слайдера на главной и раздела "Отзывы" в админке (docs/plan.md,
+// пункты 7/19). Раньше это был мок lib/reviews.ts; по docs/architecture.md
+// ("Сидирование") Review в menu.json не хранится и наполняется отдельной
+// фикстурой — вот она. productId резолвится по имени товара из уже засиженного
+// каталога (у части товаров кавычки в названии — прямые "...", как в menu.json).
+// Отзывы 5 и 7 намеренно "на модерации" (isApproved: false) — иначе очередь
+// модерации в админке не на чем проверить.
+const REVIEW_FIXTURES: Array<{
+  id: number;
+  authorName: string;
+  quoteText: string;
+  productName: string;
+  isApproved: boolean;
+}> = [
+  {
+    id: 1,
+    authorName: "Марина К.",
+    quoteText:
+      "Круассан с шоколадом — просто восторг: слоёное тесто хрустит, а начинка не приторная. Беру каждые выходные.",
+    productName: "Круассан с шоколадом",
+    isApproved: true,
+  },
+  {
+    id: 2,
+    authorName: "Игорь П.",
+    quoteText:
+      "Двойной эспрессо здесь варят как надо — плотная крема, никакой кислинки. Лучший кофе в округе.",
+    productName: "Двойной эспрессо",
+    isApproved: true,
+  },
+  {
+    id: 3,
+    authorName: "Светлана А.",
+    quoteText:
+      'Десерт "Соленая карамель" — отдельный вид искусства. Карамель в меру солёная, не приторная, орехи чувствуются в каждой ложке.',
+    productName: 'Десерт "Соленая карамель"',
+    isApproved: true,
+  },
+  {
+    id: 4,
+    authorName: "Дмитрий В.",
+    quoteText:
+      "Раф здесь топят, а не просто взбивают — вкус ванили чувствуется, но в меру. Стал брать вместо капучино.",
+    productName: "Раф",
+    isApproved: true,
+  },
+  {
+    id: 5,
+    authorName: "Ольга Т.",
+    quoteText:
+      "Штрудель яблочный — как у бабушки, только без очереди на кухне. Яблоко не разваливается, корица не забивает вкус.",
+    productName: "Штрудель яблочный",
+    isApproved: false,
+  },
+  {
+    id: 6,
+    authorName: "Анна С.",
+    quoteText:
+      'Медовик здесь — эталон: коржи тонкие, пропитка щедрая, крем не приторный. Берём целый торт на семейные посиделки уже не первый раз.',
+    productName: 'Торт "Медовик"',
+    isApproved: true,
+  },
+  {
+    id: 7,
+    authorName: "Николай Р.",
+    quoteText:
+      'Бискотти здесь именно такое, каким должно быть — плотное, в меру сладкое, отлично идёт с кофе. Беру домой пачками.',
+    productName: 'Печенье "Бискотти"',
+    isApproved: false,
+  },
+];
+
+async function seedReviews() {
+  for (const fixture of REVIEW_FIXTURES) {
+    const product = await prisma.product.findFirst({
+      where: { name: fixture.productName },
+      select: { id: true },
+    });
+
+    const data = {
+      authorName: fixture.authorName,
+      quoteText: fixture.quoteText,
+      isApproved: fixture.isApproved,
+      productId: product?.id ?? null,
+    };
+
+    await prisma.review.upsert({
+      where: { id: fixture.id },
+      update: data,
+      create: { id: fixture.id, ...data },
+    });
+  }
+
+  // Как и у Product — id проставлены вручную, двигаем SERIAL-последовательность,
+  // чтобы отзыв, добавленный позже без явного id, не столкнулся с занятым.
+  await prisma.$executeRaw`SELECT setval(pg_get_serial_sequence('"Review"', 'id'), COALESCE((SELECT MAX(id) FROM "Review"), 1))`;
 }
 
 // Первый аккаунт администратора (docs/plan.md, пункт 31) — без этого войти в

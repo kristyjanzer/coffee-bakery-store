@@ -2,11 +2,10 @@ import { Hero } from "@/components/layout/Hero";
 import { Catalog } from "@/components/catalog/Catalog";
 import { ReviewsSlider } from "@/components/catalog/ReviewsSlider";
 import { getCatalog } from "@/lib/catalog";
-import { getReviews } from "@/lib/reviews";
+import { getSliderReviews } from "@/lib/reviewsApi";
 
 export default async function HomePage() {
-  const catalog = await getCatalog();
-  const reviews = getReviews();
+  const [catalog, reviews] = await Promise.all([getCatalog(), getSliderReviews()]);
 
   return (
     <main>
