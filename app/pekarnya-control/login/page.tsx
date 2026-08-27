@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 export const metadata: Metadata = {
@@ -28,9 +29,13 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
   return (
     <div className="flex min-h-screen items-center justify-center bg-black-olive px-4">
       <div className="w-full max-w-[25rem] bg-warm-cream p-[30px] text-black-olive">
-        <p className="font-gabriela text-caption uppercase tracking-[0.04em] text-forest-ink">
+        {/* Кликабельное название — быстрый выход на витрину без адресной строки. */}
+        <Link
+          href="/"
+          className="inline-block font-gabriela text-caption uppercase tracking-[0.04em] text-forest-ink transition-opacity hover:opacity-70"
+        >
           Coffee Bakery
-        </p>
+        </Link>
         <h1 className="mt-2 font-venuscom text-heading-sm uppercase tracking-[0.03em] text-forest-ink">
           Вход администратора
         </h1>
