@@ -116,9 +116,11 @@ export async function getAdminReviewById(id: number): Promise<Review | undefined
   return ALL_REVIEWS.find((review) => review.id === id);
 }
 
-// Заглушка: PATCH /api/reviews/[id] (пункт 30 плана) ещё не существует. Не мутирует
-// ALL_REVIEWS (нет реального хранилища) — тот же принцип, что updateOrderStatus()
-// в lib/orders.ts: вызывающий компонент сам держит новое состояние локально.
+// Заглушка для админки. Реальный роут PATCH /api/reviews/[id] уже есть (пункт 30
+// плана, lib/reviewsApi.ts), но раздел админки "Отзывы" на Prisma ещё не переведён —
+// это пункт 35. Пока не мутирует ALL_REVIEWS (нет реального хранилища) — тот же
+// принцип, что updateOrderStatus() в lib/orders.ts: вызывающий компонент сам держит
+// новое состояние локально.
 export function moderateReview(
   id: number,
   input: { isApproved: boolean; shopReply: string | null }
