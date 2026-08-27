@@ -29,6 +29,25 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Сквозной сценарий (пункт 36) доходит до реального POST /api/orders → Prisma,
+    # поэтому e2e-джобе нужна своя БД. Одноразовый Postgres в контейнере, не Neon.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: coffee_bakery_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/coffee_bakery_test
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/coffee_bakery_test
     steps:
       - uses: actions/checkout@v4
 
@@ -38,6 +57,10 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # Схема + данные из menu.json в одноразовую БД, чтобы каталог и создание заказа работали.
+      - run: npx prisma migrate deploy
+      - run: npx prisma db seed
 
       # Без --with-deps: ubuntu-latest-раннеры GitHub Actions уже несут нужные системные
       # библиотеки для Chromium. --with-deps дёргает apt-get, который однажды завис на 6

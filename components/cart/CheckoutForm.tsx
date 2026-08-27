@@ -12,6 +12,8 @@ interface CheckoutFormProps {
   totalPrice: number;
   onSubmit: (values: OrderFormValues) => void | Promise<void>;
   isSubmitting: boolean;
+  // Ошибка от сервера при отправке заявки (POST /api/orders вернул не-успех).
+  submitError?: string | null;
 }
 
 type FormErrors = Partial<Record<keyof OrderFormValues, string>>;
@@ -19,7 +21,13 @@ type FormErrors = Partial<Record<keyof OrderFormValues, string>>;
 // Форма оформления заявки (docs/plan.md, пункт 12): имя, телефон, email (обязателен —
 // на него отправляется чек об оплате), комментарий, дата предзаказа. Валидация — тот же
 // zod-стек, что и в остальном проекте, без react-hook-form (лишняя зависимость не нужна).
-export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: CheckoutFormProps) {
+export function CheckoutForm({
+  items,
+  totalPrice,
+  onSubmit,
+  isSubmitting,
+  submitError,
+}: CheckoutFormProps) {
   const [values, setValues] = useState<OrderFormValues>(orderFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -179,6 +187,10 @@ export function CheckoutForm({ items, totalPrice, onSubmit, isSubmitting }: Chec
           </span>
         </div>
       </div>
+
+      {submitError && (
+        <p className="font-venuscom text-caption font-semibold text-red-600">{submitError}</p>
+      )}
 
       <div className="mt-2">
         <Button type="submit" disabled={isSubmitting} className="w-full">

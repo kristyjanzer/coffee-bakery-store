@@ -2127,3 +2127,32 @@ dev-сервер `POST /api/orders` → 201, заказ в БД, в логе `no
 `NEXT_PUBLIC_`), сообщение — plain text (нет HTML/Markdown-инъекции через имя/комментарий
 клиента), ошибки Telegram не пробрасываются и не текут в ответ клиенту. `npm audit` — без
 изменений.
+
+## Задача 66
+
+Форма корзины подключена к реальному `POST /api/orders` вместо заглушки `submitOrder()`
+(пункты 12/28) — обнаружено при отладке: заказ через сайт не долетал ни до БД, ни до
+Telegram, потому что `submitOrder()` был `setTimeout`-заглушкой. Ветка `feature/checkout-real-api`.
+
+**Изменённые/созданные файлы:**
+- `lib/orders.ts` — `submitOrder()` теперь делает `fetch("/api/orders", { method: "POST" })`;
+  в тело кладёт только `productId`+`quantity` (цену/сумму считает сервер по Prisma).
+  Возвращает `{ ok, orderId } | { ok: false, error }`.
+- `components/cart/CheckoutForm.tsx` — проп `submitError`, показ ошибки сервера под кнопкой.
+- `components/cart/CartWidget.tsx` — при `ok:false` остаёмся на шаге checkout с текстом
+  ошибки, корзину не чистим; успех — как раньше.
+- `.github/workflows/ci.yml` — в e2e-джобу добавлен одноразовый Postgres (services) +
+  `DATABASE_URL`/`DIRECT_URL` + `prisma migrate deploy` + `prisma db seed`: сквозной тест
+  теперь доходит до реального создания заказа.
+- Тесты: `lib/orders.test.ts` (блок `submitOrder` переписан под fetch — старый проверял
+  заглушку; остальные блоки не тронуты), `components/cart/CheckoutForm.test.tsx` — создан.
+
+Проверено: `npx vitest run` (188/188), `npm run lint`, `npx tsc --noEmit` — чисто; в браузере
+(Chrome DevTools MCP) против реальной Neon-БД: оформление заказа через корзину → заказ №11 в
+БД (`totalAmount` пересчитан сервером по актуальным ценам, не по стору), `telegramNotifiedAt`
+проставлен, сообщение ушло в бота, модалка «Заявка принята», корзина очищена. Тестовые заказы
+из БД удалены.
+
+**Security review:** применялся — находок нет: цену/название товара клиент не задаёт (сервер
+берёт из Prisma по `productId`, защита от подделки суммы — уже была в `lib/orderCreation.ts`),
+текст ошибки сервера рендерится как React-текст. `npm audit` — без изменений.

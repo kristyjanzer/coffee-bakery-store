@@ -28,8 +28,9 @@ const STEP_TITLES: Record<WidgetStep, string> = {
 // корзины); max берём из lib/menu.ts по productId, так как CartItem остаток не хранит.
 //
 // Шаг "checkout"/"success" (docs/plan.md, пункт 12) — та же модалка переключается на форму
-// заявки без орехов/оплаты. submitOrder() пока заглушка (backend появится в пункте 28) —
-// step хранится локально, а не в cartStore, потому что это чисто UI-состояние виджета.
+// заявки без орехов/оплаты. submitOrder() шлёт POST /api/orders (пункт 28), при ошибке
+// остаёмся на шаге checkout с текстом ошибки. step хранится локально, а не в cartStore,
+// потому что это чисто UI-состояние виджета.
 export function CartWidget() {
   const isOpen = useCartStore((state) => state.isWidgetOpen);
   const closeWidget = useCartStore((state) => state.closeWidget);
@@ -40,16 +41,26 @@ export function CartWidget() {
 
   const [step, setStep] = useState<WidgetStep>("cart");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   function handleClose() {
     closeWidget();
     setStep("cart");
+    setSubmitError(null);
   }
 
   async function handleCheckoutSubmit(values: OrderFormValues) {
     setIsSubmitting(true);
-    await submitOrder({ form: values, items, totalPrice });
+    setSubmitError(null);
+    const result = await submitOrder({ form: values, items, totalPrice });
     setIsSubmitting(false);
+
+    if (!result.ok) {
+      // Заказ не создан — корзину не чистим, пользователь может поправить и повторить.
+      setSubmitError(result.error);
+      return;
+    }
+
     clearCart();
     setStep("success");
   }
@@ -59,7 +70,10 @@ export function CartWidget() {
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
-        onBack={() => setStep("cart")}
+        onBack={() => {
+          setStep("cart");
+          setSubmitError(null);
+        }}
         title={STEP_TITLES.checkout}
       >
         <CheckoutForm
@@ -67,6 +81,7 @@ export function CartWidget() {
           totalPrice={totalPrice}
           onSubmit={handleCheckoutSubmit}
           isSubmitting={isSubmitting}
+          submitError={submitError}
         />
       </Modal>
     );
