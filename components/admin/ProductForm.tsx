@@ -7,7 +7,8 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { productFormSchema } from "@/lib/validations/product";
-import { createProduct, deleteProduct, updateProduct, type AdminCategory, type AdminProduct, type ProductInput } from "@/lib/products";
+import type { AdminCategory, AdminProduct, ProductInput } from "@/lib/products";
+import { createProduct, deleteProduct, updateProduct } from "@/lib/productAdminApi";
 
 export interface ProductFormState {
   name: string;
@@ -86,11 +87,10 @@ interface ProductFormProps {
   product?: AdminProduct;
 }
 
-// Форма создания/редактирования товара (docs/plan.md, пункт 17). createProduct()/
-// updateProduct() — заглушки (POST/PATCH/DELETE /api/products появятся в пункте 27
-// плана), ничего не сохраняют по-настоящему — тот же принцип, что у LoginForm/
-// OrderStatusControl. После "сохранения" — редирект на список (в отличие от
-// LoginForm/OrderStatusControl список товаров уже существует, редиректить есть куда).
+// Форма создания/редактирования товара (docs/plan.md, пункты 17/35). Пишет через
+// /api/products (lib/productAdminApi): POST при создании, PATCH при правке, DELETE
+// при удалении — проверка сессии ADMIN и валидация тела в роут-хендлерах. После
+// успеха — редирект на список + router.refresh(), чтобы список показал изменение.
 export function ProductForm({ categories, product }: ProductFormProps) {
   const router = useRouter();
   const isEditing = Boolean(product);
@@ -100,12 +100,12 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   function handleChange<K extends keyof ProductFormState>(field: K, value: ProductFormState[K]) {
     const nextValues = { ...values, [field]: value };
     setValues(nextValues);
-    setSavedMessage(null);
+    setSubmitError(null);
 
     // Снимаем ошибку поля "на лету", как только оно становится валидным — тот же
     // приём, что в CheckoutForm/LoginForm.
@@ -164,14 +164,17 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
   async function submitProduct(input: ProductInput) {
     setIsSubmitting(true);
-    if (product) {
-      await updateProduct(product.id, input);
-    } else {
-      await createProduct(input);
-    }
+    setSubmitError(null);
+    const result = product
+      ? await updateProduct(product.id, input)
+      : await createProduct(input);
     setIsSubmitting(false);
-    setSavedMessage("Сохранено (заглушка) — переходим к списку…");
+    if (!result.ok) {
+      setSubmitError(result.error);
+      return;
+    }
     router.push("/pekarnya-control/products");
+    router.refresh();
   }
 
   async function handleDelete() {
@@ -179,9 +182,15 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     if (!window.confirm(`Удалить товар «${product.name}»?`)) return;
 
     setIsDeleting(true);
-    await deleteProduct(product.id);
+    setSubmitError(null);
+    const result = await deleteProduct(product.id);
     setIsDeleting(false);
+    if (!result.ok) {
+      setSubmitError(result.error);
+      return;
+    }
     router.push("/pekarnya-control/products");
+    router.refresh();
   }
 
   return (
@@ -469,8 +478,8 @@ export function ProductForm({ categories, product }: ProductFormProps) {
         </label>
       </section>
 
-      {savedMessage && (
-        <p className="font-venuscom text-caption text-forest-ink">{savedMessage}</p>
+      {submitError && (
+        <p className="font-venuscom text-caption font-semibold text-red-600">{submitError}</p>
       )}
 
       <div className="flex flex-wrap items-center gap-4 border-t border-sage-mist pt-6">

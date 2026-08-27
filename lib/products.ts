@@ -1,20 +1,14 @@
-import { getCatalog, type MenuProduct } from "@/lib/menu";
+import { prisma } from "@/lib/prisma";
+import type { MenuProduct } from "@/lib/menu";
 
-// --- Админка: раздел "Товары" (docs/plan.md, пункт 17) ---
+// --- Админка: раздел "Товары" (docs/plan.md, пункты 17/35) ---
 //
-// Product в Prisma появится только в пунктах 22-25 плана, поэтому источник — тот же
-// getCatalog() (lib/menu.ts, реальные товары/фото/остатки из menu.json), дополненный
-// полями из Prisma-схемы Product (docs/architecture.md, раздел 3): allergens/expiryInfo
-// в menu.json всё ещё нет — они стартуют пустыми, админ заполняет их сам через форму
-// (description/composition/protein/fat/carbs в menu.json уже есть и читаются страницей
-// товара, но этот мок админки их пока не подхватывает — будет вместе с пунктом 35).
-// isActive/isSeasonal —
-// не факты о товаре, а операционные флаги витрины, поэтому по аналогии с
-// getTopProducts() в lib/dashboard.ts (задача 29, мок unitsSold поверх реальных
-// товаров) для них допустимы иллюстративные значения по умолчанию.
-//
-// Сигнатуры уже async/Promise — тихая замена на Prisma-запросы без переделки
-// страниц/форм, как lib/orders.ts для раздела "Заказы".
+// Читает товары напрямую из Prisma (раньше здесь был мок на основе menu.json).
+// Не путать с lib/productCatalog.ts — там публичные запросы для GET /api/products;
+// здесь "административный" срез: с категорией, флагами витрины и полями карточки.
+// Мутации (создание/правка/удаление) идут через /api/products из клиентского
+// ProductForm (lib/productAdminApi.ts), а не отсюда — HTTP-граница + проверка
+// сессии ADMIN в роут-хендлере.
 
 export interface AdminCategory {
   slug: string;
@@ -42,35 +36,78 @@ export interface AdminProduct
 // categoryName выводится из categorySlug).
 export type ProductInput = Omit<AdminProduct, "id" | "categoryName">;
 
-// Иллюстративный набор "сезонных" товаров — в menu.json признака сезонности нет ни
-// у одного товара (это будущее поле Prisma-схемы), нужен хотя бы один пример, чтобы
-// фильтр "Сезонные" на списке было на чём проверить.
-const SEASONAL_PRODUCT_IDS = new Set([30, 56, 68]);
+const adminProductSelect = {
+  id: true,
+  name: true,
+  price: true,
+  currency: true,
+  stockQuantity: true,
+  imageUrl: true,
+  volumeMl: true,
+  weightG: true,
+  calories: true,
+  description: true,
+  composition: true,
+  allergens: true,
+  protein: true,
+  fat: true,
+  carbs: true,
+  expiryInfo: true,
+  isSeasonal: true,
+  isActive: true,
+  category: { select: { name: true, slug: true } },
+} as const;
 
-function buildAdminProducts(): AdminProduct[] {
-  const products: AdminProduct[] = [];
-  for (const category of getCatalog()) {
-    for (const product of category.products) {
-      products.push({
-        ...product,
-        categorySlug: category.slug,
-        categoryName: category.name,
-        description: "",
-        composition: "",
-        allergens: "",
-        protein: null,
-        fat: null,
-        carbs: null,
-        expiryInfo: "",
-        isSeasonal: SEASONAL_PRODUCT_IDS.has(product.id),
-        isActive: true,
-      });
-    }
-  }
-  return products;
+interface ProductRow {
+  id: number;
+  name: string;
+  price: number;
+  currency: string;
+  stockQuantity: number | null;
+  imageUrl: string | null;
+  volumeMl: number | null;
+  weightG: number | null;
+  calories: number | null;
+  description: string | null;
+  composition: string | null;
+  allergens: string | null;
+  protein: number | null;
+  fat: number | null;
+  carbs: number | null;
+  expiryInfo: string | null;
+  isSeasonal: boolean;
+  isActive: boolean;
+  category: { name: string; slug: string };
 }
 
-const ADMIN_PRODUCTS = buildAdminProducts();
+// Prisma отдаёт необязательные текстовые колонки как null; форма товара работает
+// со строками ("" = "не заполнено"). Числовые необязательные: volumeMl/weightG/
+// calories в контракте MenuProduct — number | undefined, protein/fat/carbs —
+// number | null (так их ждёт форма).
+function toAdminProduct(row: ProductRow): AdminProduct {
+  return {
+    id: row.id,
+    name: row.name,
+    price: row.price,
+    currency: row.currency,
+    stockQuantity: row.stockQuantity,
+    imageUrl: row.imageUrl ?? "",
+    volumeMl: row.volumeMl ?? undefined,
+    weightG: row.weightG ?? undefined,
+    calories: row.calories ?? undefined,
+    categorySlug: row.category.slug,
+    categoryName: row.category.name,
+    description: row.description ?? "",
+    composition: row.composition ?? "",
+    allergens: row.allergens ?? "",
+    protein: row.protein,
+    fat: row.fat,
+    carbs: row.carbs,
+    expiryInfo: row.expiryInfo ?? "",
+    isSeasonal: row.isSeasonal,
+    isActive: row.isActive,
+  };
+}
 
 export interface ProductFilters {
   categorySlug?: string;
@@ -78,43 +115,25 @@ export interface ProductFilters {
 }
 
 export async function getAdminProducts(filters: ProductFilters = {}): Promise<AdminProduct[]> {
-  return ADMIN_PRODUCTS.filter((product) => {
-    if (filters.categorySlug && product.categorySlug !== filters.categorySlug) return false;
-    if (filters.seasonalOnly && !product.isSeasonal) return false;
-    return true;
+  const rows = await prisma.product.findMany({
+    where: {
+      ...(filters.categorySlug ? { category: { slug: filters.categorySlug } } : {}),
+      ...(filters.seasonalOnly ? { isSeasonal: true } : {}),
+    },
+    orderBy: { id: "asc" },
+    select: adminProductSelect,
   });
+  return rows.map(toAdminProduct);
 }
 
 export async function getAdminProductById(id: number): Promise<AdminProduct | undefined> {
-  return ADMIN_PRODUCTS.find((product) => product.id === id);
+  const row = await prisma.product.findUnique({ where: { id }, select: adminProductSelect });
+  return row ? toAdminProduct(row) : undefined;
 }
 
 export async function getAdminCategories(): Promise<AdminCategory[]> {
-  return getCatalog().map((category) => ({ slug: category.slug, name: category.name }));
-}
-
-// Заглушки: POST/PATCH/DELETE /api/products (пункт 27 плана) ещё не существуют.
-// Не мутируют ADMIN_PRODUCTS (нет реального хранилища) — тот же принцип, что
-// updateOrderStatus() в lib/orders.ts: вызывающий компонент сам держит новое
-// состояние локально, обновление страницы вернёт мок-значения.
-export function createProduct(input: ProductInput): Promise<{ success: true }> {
-  void input;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
-  });
-}
-
-export function updateProduct(id: number, input: ProductInput): Promise<{ success: true }> {
-  void id;
-  void input;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
-  });
-}
-
-export function deleteProduct(id: number): Promise<{ success: true }> {
-  void id;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
+  return prisma.category.findMany({
+    orderBy: { sortOrder: "asc" },
+    select: { name: true, slug: true },
   });
 }
