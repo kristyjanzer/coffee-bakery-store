@@ -2202,3 +2202,11 @@ Telegram, потому что `submitOrder()` был `setTimeout`-заглушк
 `requireAdminSession` в роут-хендлерах (ProductForm — ADMIN, OrderStatusControl — ADMIN/
 ORDER_MANAGER), клиент напрямую в Prisma не пишет; списки читаются только в proxy-защищённых
 Server Components; тексты рендерятся как React-текст. `npm audit` — без изменений.
+
+## Задача 69
+
+Правка вёрстки по замечанию пользователя. Ветка `style/order-status-control-mobile`.
+
+- `components/admin/OrderStatusControl.tsx` — на карточке заказа селект статуса больше не липнет
+  сбоку от лейбла «Статус заказа»: лейбл `block`, обёртка селекта `block w-full` на мобильных и
+  `sm:inline-block sm:w-auto` на десктопе; паддинг `py-2` → `py-3` (как у полей формы товара).
