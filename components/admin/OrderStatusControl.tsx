@@ -1,34 +1,47 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { ORDER_STATUSES, ORDER_STATUS_LABELS, updateOrderStatus, type OrderStatus } from "@/lib/orders";
+import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/orderStatus";
+import { updateOrderStatus } from "@/lib/orderAdminApi";
 
 interface OrderStatusControlProps {
   orderId: number;
   initialStatus: OrderStatus;
 }
 
-// Изменение статуса заказа (docs/plan.md, пункт 16). updateOrderStatus() — заглушка
-// (PATCH /api/orders/[id] появится в пункте 29 плана) и ничего не сохраняет по-настоящему
-// — новый статус живёт только в локальном состоянии этого компонента, поэтому обновление
-// страницы вернёт заказ к мок-значению из lib/orders.ts. Это тот же принцип, что и у
-// LoginForm/CheckoutForm — форма полностью рабочая, персистентность добавится "тихо".
+// Смена статуса заказа (docs/plan.md, пункты 16/29/35). Пишет через PATCH
+// /api/orders/[id] (lib/orderAdminApi) — статус применяется сразу на onChange
+// (единственное поле). На ошибке select возвращается к прежнему значению и
+// показывается текст ошибки; на успехе router.refresh() перечитывает страницу.
 export function OrderStatusControl({ orderId, initialStatus }: OrderStatusControlProps) {
+  const router = useRouter();
   const [status, setStatus] = useState<OrderStatus>(initialStatus);
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleChange(nextStatus: OrderStatus) {
     if (nextStatus === status) return;
 
+    const previous = status;
+    setStatus(nextStatus);
     setIsSaving(true);
     setSavedAt(null);
-    await updateOrderStatus(orderId, nextStatus);
-    setStatus(nextStatus);
+    setError(null);
+
+    const result = await updateOrderStatus(orderId, nextStatus);
     setIsSaving(false);
-    setSavedAt(Date.now());
+
+    if (result.ok) {
+      setSavedAt(Date.now());
+      router.refresh();
+    } else {
+      setStatus(previous);
+      setError(result.error);
+    }
   }
 
   return (
@@ -58,8 +71,11 @@ export function OrderStatusControl({ orderId, initialStatus }: OrderStatusContro
       {isSaving && (
         <p className="mt-1 font-venuscom text-caption text-black-olive/60">Сохраняем…</p>
       )}
-      {!isSaving && savedAt && (
-        <p className="mt-1 font-venuscom text-caption text-forest-ink">Статус обновлён (заглушка)</p>
+      {!isSaving && savedAt && !error && (
+        <p className="mt-1 font-venuscom text-caption text-forest-ink">Статус обновлён</p>
+      )}
+      {error && (
+        <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">{error}</p>
       )}
     </div>
   );

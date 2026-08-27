@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
-import { getOrders, ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/orders";
+import { formatPrice, formatTimeAgo } from "@/lib/utils";
+import { getOrders } from "@/lib/orderAdmin";
+import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/orderStatus";
 
 export const metadata: Metadata = {
   title: "Заказы — Coffee Bakery",
@@ -93,7 +94,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
                     {order.customerContact}
                   </td>
                   <td className="px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    {order.items.map((item) => `${item.name} × ${item.quantity}`).join(", ")}
+                    {order.items.map((item) => `${item.productNameSnapshot} × ${item.quantity}`).join(", ")}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm font-semibold text-black-olive">
                     {formatPrice(order.totalAmount)}
@@ -104,7 +105,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-caption text-black-olive/60">
-                    {order.minutesAgo} мин назад
+                    {formatTimeAgo(order.createdAt)}
                   </td>
                 </tr>
               ))}

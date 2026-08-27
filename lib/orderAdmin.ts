@@ -61,6 +61,20 @@ export async function getOrderById(id: number): Promise<AdminOrder | null> {
   });
 }
 
+// Другие заказы того же клиента (по customerContact — Customer как отдельная модель
+// пока "на вырост", docs/architecture.md, раздел 7), без текущего заказа, от новых к
+// старым. Нужно для блока "История заказов клиента" на карточке заказа (пункт 16).
+export async function getCustomerOrderHistory(
+  customerContact: string,
+  excludeOrderId: number
+): Promise<AdminOrder[]> {
+  return prisma.order.findMany({
+    where: { customerContact, id: { not: excludeOrderId } },
+    orderBy: { createdAt: "desc" },
+    select: adminOrderSelect,
+  });
+}
+
 export async function updateOrderStatus(id: number, status: OrderStatus): Promise<AdminOrder | null> {
   const existing = await prisma.order.findUnique({ where: { id } });
   if (!existing) {

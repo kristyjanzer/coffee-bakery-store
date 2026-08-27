@@ -2177,3 +2177,28 @@ Telegram, потому что `submitOrder()` был `setTimeout`-заглушк
 **Security review:** применялся — находок нет: витринные запросы фильтруют `isActive`; slider
 отдаёт только `isApproved`; мутация отзыва — через уже проверенный `PATCH /api/reviews/[id]`
 (сессия ADMIN внутри роута); тексты рендерятся как React-текст. `npm audit` — без изменений.
+
+## Задача 68
+
+Пункт 35 плана, часть 2 (админ «Товары» и «Заказы») — списки и формы админки на Prisma вместо
+моков. Ветка `feature/admin-products-orders-prisma`.
+
+- `lib/products.ts` — `getAdminProducts/getAdminProductById/getAdminCategories` на Prisma (join
+  категории, фильтры категория/сезонность); мок из menu.json и `SEASONAL_PRODUCT_IDS` удалены.
+- `lib/productAdminApi.ts` — создан: клиентские `create/update/deleteProduct` → `POST/PATCH/DELETE
+  /api/products` ("" → null для необязательных полей).
+- `components/admin/ProductForm.tsx` — реальный API, показ ошибок сервера, `router.refresh()` после успеха.
+- `lib/orderStatus.ts` — создан: `OrderStatus`/`ORDER_STATUSES`/`ORDER_STATUS_LABELS`/
+  `PAYMENT_STATUS_LABELS` (чистые константы); `lib/orders.ts` их ре-экспортит.
+- `lib/orderAdmin.ts` — добавлена `getCustomerOrderHistory()`. `lib/utils.ts` — `formatTimeAgo()`.
+- `app/pekarnya-control/(protected)/orders/page.tsx`, `.../orders/[id]/page.tsx` — переключены на
+  `lib/orderAdmin` (`productNameSnapshot`/`priceSnapshot`, `createdAt` → «N мин назад», null-safe).
+- `lib/orderAdminApi.ts` — создан: клиентский `updateOrderStatus()` → `PATCH /api/orders/[id]`.
+- `components/admin/OrderStatusControl.tsx` — реальный API, откат select при ошибке, `router.refresh()`.
+- `lib/orders.ts` (мок) остаётся для Dashboard и «Клиентов» (нет данных в БД — хвост пункта 35).
+- Тесты: `lib/products.test.ts`, `lib/utils.test.ts` — созданы; `lib/orderAdmin.test.ts` — кейс `getCustomerOrderHistory`.
+
+**Security review:** применялся — находок нет: все мутации админки идут через `/api/*` с
+`requireAdminSession` в роут-хендлерах (ProductForm — ADMIN, OrderStatusControl — ADMIN/
+ORDER_MANAGER), клиент напрямую в Prisma не пишет; списки читаются только в proxy-защищённых
+Server Components; тексты рендерятся как React-текст. `npm audit` — без изменений.
