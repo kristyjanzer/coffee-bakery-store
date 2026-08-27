@@ -17,7 +17,7 @@ store/
 │   │   └── product/[id]/page.tsx   # страница товара (Server Component)
 │   ├── pekarnya-control/          # URL админки намеренно не /admin — сложнее найти путь
 │   │   ├── login/page.tsx       # логин админа (НЕ защищён, вне route group ниже)
-│   │   └── (protected)/          # route group — сайдбар (20%) + контент, сессия проверяется в middleware
+│   │   └── (protected)/          # route group — сайдбар (20%) + контент, сессия проверяется в proxy.ts
 │   │       ├── layout.tsx
 │   │       ├── page.tsx             # Dashboard
 │   │       ├── orders/page.tsx, orders/[id]/page.tsx
@@ -66,7 +66,7 @@ store/
 │   └── images/                 # логотип, hero-картинка, иконки (НЕ фото товаров)
 │
 ├── menu.json                    # остаётся источником сид-данных
-├── middleware.ts                 # защищает /pekarnya-control/* (кроме /pekarnya-control/login)
+├── proxy.ts                       # защищает /pekarnya-control/* (кроме /pekarnya-control/login); в Next 16 имя middleware.ts deprecated
 ├── prisma.config.ts               # путь схемы/миграций, seed, DIRECT_URL для CLI (Prisma 7)
 ├── .env / .env.example
 └── next.config.js / tailwind.config.ts / tsconfig.json / package.json
@@ -286,9 +286,11 @@ Prisma при этом остаётся централизованной в ро
   `AdminUser` (пароль — bcrypt-хэш), JWT-сессии (без таблицы сессий в БД — проще для
   serverless), роль (`ADMIN`/`ORDER_MANAGER`) кладётся в JWT/session callback.
 - `app/api/auth/[...nextauth]/route.ts` — экспортирует хендлеры.
-- **Основная защита** — `middleware.ts` матчит `/pekarnya-control/:path*` (кроме
-  `/pekarnya-control/login`) и редиректит неавторизованных на страницу логина.
-- API-роуты не попадают под матчер middleware (они под `/api`, не `/pekarnya-control`), поэтому каждый
+- **Основная защита** — `proxy.ts` (в Next 16 `middleware.ts` переименован в `proxy.ts`)
+  через `withAuth` из `next-auth/middleware` матчит `/pekarnya-control/:path*` (кроме
+  `/pekarnya-control/login`, который `withAuth` пропускает сам как `pages.signIn`) и
+  редиректит неавторизованных на страницу логина с `callbackUrl`.
+- API-роуты не попадают под матчер proxy (они под `/api`, не `/pekarnya-control`), поэтому каждый
   мутирующий хендлер (`POST/PATCH/DELETE /api/products`, `GET/PATCH /api/orders`) сам
   проверяет `getServerSession(authOptions)` и роль перед обращением к Prisma. Публичные GET
   и `POST /api/orders` (гостевой чекаут) остаются открытыми.
