@@ -1983,3 +1983,25 @@ PR-чек `e2e` упал: `updateOrderStatusSchema` изначально жил�
 
 Проверено: `npx vitest run` (156/156), `npm run lint`, `npx tsc --noEmit` — чисто; локально
 `npm run test:e2e` — тот самый сценарий, что падал в CI, теперь проходит.
+
+## Задача 60
+
+Выполнен пункт 30 плана — `GET /api/reviews` (публично, одобренные отзывы для слайдера) и
+`PATCH /api/reviews/[id]` (модерация + ответ магазина, только `ADMIN`). Ветка `feature/reviews-api`.
+
+**Изменённые/созданные файлы:**
+- `lib/reviewsApi.ts` — создан: `getApprovedReviews()` и `moderateReview()` на Prisma (отдельно от
+  мок-модуля `lib/reviews.ts`, который тянут клиентские компоненты); `product.name` разворачивается
+  в плоское поле `productName`.
+- `lib/validations/review.ts` — создан: `moderateReviewSchema` (`isApproved` + опциональный `shopReply`).
+- `app/api/reviews/route.ts`, `app/api/reviews/[id]/route.ts` — созданы.
+- `lib/reviews.ts` — обновлён устаревший комментарий у заглушки `moderateReview` (роут теперь есть,
+  админка на Prisma — пункт 35).
+- Тесты: `app/api/reviews/route.test.ts`, `app/api/reviews/[id]/route.test.ts`, `lib/reviewsApi.test.ts`.
+
+Проверено: `npx vitest run` (168/168), `npm run lint`, `npx tsc --noEmit` — чисто.
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: PATCH принимает
+только `isApproved`/`shopReply` (нельзя протащить `authorName`/`productId` через тело), проверка
+сессии и роли `ADMIN` — до обращения к Prisma; GET публичный и отдаёт только `isApproved: true`.
+`npm audit` — без изменений (те же 4 уязвимости в `swiper`, не связаны с задачей).
