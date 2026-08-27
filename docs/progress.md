@@ -2070,3 +2070,10 @@ dev-сервер против реальной Neon-БД (админ `admin@test
 `signIn` с `redirect: false` не уводит на дефолтную страницу ошибки NextAuth, пароль уходит
 только в POST на `/api/auth/callback/credentials` (не логируется, не в URL). `npm audit` — без
 изменений.
+
+## Задача 63
+
+Название «Coffee Bakery» на странице логина (`app/pekarnya-control/login/page.tsx`) сделано
+кликабельной ссылкой (`next/link` на `/`, hover `opacity-70`) — быстрый выход на витрину без
+адресной строки. Ветка `feature/login-logo-home-link`. Проверено в браузере (Chrome DevTools MCP):
+клик уводит на главную; `npx vitest run` (176/176), `npm run lint`, `npx tsc --noEmit` — чисто.
