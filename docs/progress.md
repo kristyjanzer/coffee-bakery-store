@@ -2048,17 +2048,22 @@ dev-сервер: `/` → 200, `/pekarnya-control` и `/pekarnya-control/orders`
   Принимает `callbackUrl` пропом.
 - `app/pekarnya-control/login/page.tsx` — стал `async`, читает `?callbackUrl` из `searchParams`,
   валидирует как внутренний путь (`safeCallbackUrl`, защита от open redirect) и отдаёт в форму.
-- `components/admin/Sidebar.tsx` — «Выйти» из ссылки-заглушки стала кнопкой с
-  `signOut({ callbackUrl: "/pekarnya-control/login" })`.
+- `components/admin/Sidebar.tsx` — «Выйти» из ссылки-заглушки стала кнопкой:
+  `signOut({ redirect: false })` → `router.replace("/pekarnya-control/login")` → `router.refresh()`.
+- `app/pekarnya-control/(protected)/layout.tsx` — добавлена проверка `getServerSession` с
+  `redirect("/pekarnya-control/login")`: дублирует `proxy.ts` (defense-in-depth) и делает
+  страницы админки динамическими (`Cache-Control: no-cache, must-revalidate`) — иначе после
+  «Выйти» кнопка «назад» в браузере показывала закэшированную страницу админки.
 - `lib/login.ts` — удалён (заглушка больше не используется).
 - `docs/architecture.md` — раздел 7 дополнен про UI входа/выхода.
 - Тесты: `components/admin/LoginForm.test.tsx`, `components/admin/Sidebar.test.tsx` — созданы.
 
 Проверено: `npx vitest run` (176/176), `npm run lint`, `npx tsc --noEmit` — чисто; вручную через
-dev-сервер против реальной Neon-БД (админ `admin@test.local`, роль ADMIN): неверный пароль →
-`callback` 401, сессия пустая, `/pekarnya-control` → 307; верный пароль → `callback` 200, сессия
-`{"user":{"email":"admin@test.local","role":"ADMIN"}}`, `/pekarnya-control` и `/orders` → 200;
-`signout` → сессия снова пустая; страница логина с `?callbackUrl` рендерится (200).
+dev-сервер против реальной Neon-БД (админ `admin@test.local`, роль ADMIN) и в браузере
+(Chrome DevTools MCP): неверный пароль → инлайн-ошибка, остаёшься на форме; верный вход по
+редиректу с `/pekarnya-control/orders` → попадаешь сразу на `/orders`; «Выйти» → страница логина;
+**кнопка «назад» после выхода → снова страница логина** (не закэшированная админка); повторный
+вход снова уводит на сохранённый `callbackUrl`.
 
 **Security review:** применялся (`.claude/skills/security-review`) — находок нет: `callbackUrl`
 пропускается только если начинается с `/pekarnya-control` и не с `//` (нет open redirect),

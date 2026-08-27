@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -65,14 +65,21 @@ function NavList({ pathname, onNavigate }: NavListProps) {
 // таблицы/формы нуждаются в большей ширине контента, чем витрина.
 //
 // "Выйти" — реальный signOut() из NextAuth (пункт 31): чистит JWT-cookie и уводит
-// на страницу логина. Проверка сессии на страницах — в proxy.ts (пункт 32).
+// на страницу логина. Проверка сессии на страницах — в proxy.ts (пункт 32) и в
+// (protected)/layout.tsx.
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  function handleLogout() {
+  async function handleLogout() {
     setIsOpen(false);
-    void signOut({ callbackUrl: "/pekarnya-control/login" });
+    // redirect: false + router.replace — чтобы страница админки не осталась в
+    // истории (кнопка "назад" на неё не вернёт); refresh() чистит клиентский
+    // Router Cache, чтобы закэшированные RSC-пейлоады разделов не показались снова.
+    await signOut({ redirect: false });
+    router.replace("/pekarnya-control/login");
+    router.refresh();
   }
 
   return (
@@ -100,7 +107,7 @@ export function Sidebar() {
           <NavList pathname={pathname} onNavigate={() => setIsOpen(false)} />
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => void handleLogout()}
             className="text-left font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
           >
             Выйти
@@ -122,7 +129,7 @@ export function Sidebar() {
         </div>
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={() => void handleLogout()}
           className="text-left font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
         >
           Выйти

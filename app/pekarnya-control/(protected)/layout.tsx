@@ -1,4 +1,7 @@
 import type { ReactNode } from "react";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
 import { Sidebar } from "@/components/admin/Sidebar";
 import { AdminSessionProvider } from "@/components/admin/AdminSessionProvider";
 
@@ -7,9 +10,18 @@ import { AdminSessionProvider } from "@/components/admin/AdminSessionProvider";
 // (пункт 13 плана: страница логина публична и без сайдбара). Тот же приём, что
 // в app/(site)/layout.tsx для Header/Footer.
 //
-// Доступ проверяется в proxy.ts (пункт 32) до рендера. SessionProvider здесь — только
-// чтобы клиентский signOut() в Sidebar и будущие useSession() работали.
-export default function ProtectedAdminLayout({ children }: { children: ReactNode }) {
+// Проверка сессии здесь дублирует proxy.ts (пункт 32) намеренно:
+// 1) defense-in-depth — страницы не отрендерятся без сессии, даже если запрос
+//    как-то минует proxy;
+// 2) getServerSession читает cookie → рендер становится динамическим и ответы
+//    уходят с `Cache-Control: no-store`. Без этого после «Выйти» браузер показывал
+//    закэшированную страницу админки по кнопке «назад» (bfcache).
+export default async function ProtectedAdminLayout({ children }: { children: ReactNode }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/pekarnya-control/login");
+  }
+
   return (
     <AdminSessionProvider>
       <div className="lg:flex lg:min-h-screen">
