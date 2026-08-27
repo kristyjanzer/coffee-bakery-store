@@ -2156,3 +2156,24 @@ Telegram, потому что `submitOrder()` был `setTimeout`-заглушк
 **Security review:** применялся — находок нет: цену/название товара клиент не задаёт (сервер
 берёт из Prisma по `productId`, защита от подделки суммы — уже была в `lib/orderCreation.ts`),
 текст ошибки сервера рендерится как React-текст. `npm audit` — без изменений.
+
+## Задача 67
+
+Пункт 35 плана, часть 1 (витрина + отзывы) — Server Components витрины читают Prisma напрямую
+вместо моков. Ветка `feature/catalog-reviews-prisma`.
+
+- `lib/catalog.ts` — создан: `getCatalog()`/`getProductForDetail()` на Prisma (только `isActive`),
+  форма `MenuCategory`/`MenuProduct` прежняя.
+- `app/(site)/page.tsx`, `app/(site)/product/[id]/page.tsx` — переключены на `lib/catalog`.
+- `lib/reviewsApi.ts` — добавлены `getSliderReviews()`, `getAdminReviews()`, `getAdminReviewById()`.
+- `lib/reviews.ts` — свёрнут в type-only (мок отзывов и заглушки удалены).
+- `lib/reviewAdminApi.ts` — создан: клиентский `moderateReview()` → `PATCH /api/reviews/[id]`.
+- `components/admin/ReviewModerationControl.tsx` — реальный вызов API + `router.refresh()`.
+- `app/pekarnya-control/(protected)/page.tsx`, `.../reviews/page.tsx`, `.../reviews/[id]/page.tsx` —
+  источник отзывов переключён на `lib/reviewsApi`.
+- `prisma/seed.ts` — `seedReviews()`: 7 отзывов фикстурой (`productId` по имени товара).
+- Тесты: `lib/catalog.test.ts` — создан; `lib/reviewsApi.test.ts` — добавлены кейсы новых функций.
+
+**Security review:** применялся — находок нет: витринные запросы фильтруют `isActive`; slider
+отдаёт только `isApproved`; мутация отзыва — через уже проверенный `PATCH /api/reviews/[id]`
+(сессия ADMIN внутри роута); тексты рендерятся как React-текст. `npm audit` — без изменений.
