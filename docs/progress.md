@@ -2034,3 +2034,34 @@ dev-сервер: `/` → 200, `/pekarnya-control` и `/pekarnya-control/orders`
 Открытым остаётся то, что и должно: публичный сайт, `/api` GET-роуты, гостевой `POST /api/orders`.
 Форма логина (`LoginForm.tsx`) пока заглушка — реальный `signIn()` это отдельная задача, до неё
 войти в админку через браузер нельзя.
+
+## Задача 62
+
+Доделан хвост задачи 56 (пункт 31 плана) — реальный вход/выход в UI вместо заглушки `lib/login.ts`.
+Ветка `feature/admin-auth-login-ui`.
+
+**Изменённые/созданные файлы:**
+- `components/admin/AdminSessionProvider.tsx` — создан: клиентская обёртка над `SessionProvider`.
+- `app/pekarnya-control/(protected)/layout.tsx` — обёрнут в `AdminSessionProvider`.
+- `components/admin/LoginForm.tsx` — вместо `loginAdmin()` зовёт `signIn("credentials", { redirect: false })`,
+  показывает «Неверный email или пароль» инлайн, при успехе `router.replace(callbackUrl)` + `refresh()`.
+  Принимает `callbackUrl` пропом.
+- `app/pekarnya-control/login/page.tsx` — стал `async`, читает `?callbackUrl` из `searchParams`,
+  валидирует как внутренний путь (`safeCallbackUrl`, защита от open redirect) и отдаёт в форму.
+- `components/admin/Sidebar.tsx` — «Выйти» из ссылки-заглушки стала кнопкой с
+  `signOut({ callbackUrl: "/pekarnya-control/login" })`.
+- `lib/login.ts` — удалён (заглушка больше не используется).
+- `docs/architecture.md` — раздел 7 дополнен про UI входа/выхода.
+- Тесты: `components/admin/LoginForm.test.tsx`, `components/admin/Sidebar.test.tsx` — созданы.
+
+Проверено: `npx vitest run` (176/176), `npm run lint`, `npx tsc --noEmit` — чисто; вручную через
+dev-сервер против реальной Neon-БД (админ `admin@test.local`, роль ADMIN): неверный пароль →
+`callback` 401, сессия пустая, `/pekarnya-control` → 307; верный пароль → `callback` 200, сессия
+`{"user":{"email":"admin@test.local","role":"ADMIN"}}`, `/pekarnya-control` и `/orders` → 200;
+`signout` → сессия снова пустая; страница логина с `?callbackUrl` рендерится (200).
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: `callbackUrl`
+пропускается только если начинается с `/pekarnya-control` и не с `//` (нет open redirect),
+`signIn` с `redirect: false` не уводит на дефолтную страницу ошибки NextAuth, пароль уходит
+только в POST на `/api/auth/callback/credentials` (не логируется, не в URL). `npm audit` — без
+изменений.
