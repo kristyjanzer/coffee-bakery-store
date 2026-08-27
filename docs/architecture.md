@@ -286,6 +286,10 @@ Prisma при этом остаётся централизованной в ро
   `AdminUser` (пароль — bcrypt-хэш), JWT-сессии (без таблицы сессий в БД — проще для
   serverless), роль (`ADMIN`/`ORDER_MANAGER`) кладётся в JWT/session callback.
 - `app/api/auth/[...nextauth]/route.ts` — экспортирует хендлеры.
+- UI входа: `LoginForm` зовёт `signIn("credentials", { redirect: false })` и сам ведёт на
+  `callbackUrl` (его читает и валидирует как внутренний путь `login/page.tsx`); `Sidebar` —
+  `signOut({ callbackUrl: "/pekarnya-control/login" })`. `(protected)/layout.tsx` обёрнут
+  в `AdminSessionProvider` (клиентский `SessionProvider`).
 - **Основная защита** — `proxy.ts` (в Next 16 `middleware.ts` переименован в `proxy.ts`)
   через `withAuth` из `next-auth/middleware` матчит `/pekarnya-control/:path*` (кроме
   `/pekarnya-control/login`, который `withAuth` пропускает сам как `pages.signIn`) и

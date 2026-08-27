@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 
@@ -63,12 +64,23 @@ function NavList({ pathname, onNavigate }: NavListProps) {
 // что публичный Nav.tsx). Брейкпоинт lg (не md, как у публичного Nav) — админские
 // таблицы/формы нуждаются в большей ширине контента, чем витрина.
 //
-// Ссылка "Выйти" — заглушка (ведёт на /pekarnya-control/login): реального signOut() пока нет,
-// NextAuth появится в пункте 31 плана. Проверка сессии — задача middleware.ts
-// (пункт 32), здесь только структура/навигация.
+// "Выйти" — реальный signOut() из NextAuth (пункт 31): чистит JWT-cookie и уводит
+// на страницу логина. Проверка сессии на страницах — в proxy.ts (пункт 32) и в
+// (protected)/layout.tsx.
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+
+  async function handleLogout() {
+    setIsOpen(false);
+    // redirect: false + router.replace — чтобы страница админки не осталась в
+    // истории (кнопка "назад" на неё не вернёт); refresh() чистит клиентский
+    // Router Cache, чтобы закэшированные RSC-пейлоады разделов не показались снова.
+    await signOut({ redirect: false });
+    router.replace("/pekarnya-control/login");
+    router.refresh();
+  }
 
   return (
     <>
@@ -93,13 +105,13 @@ export function Sidebar() {
       {isOpen && (
         <div className="flex flex-col gap-6 border-b border-sage-mist/20 bg-black-olive px-6 py-4 lg:hidden">
           <NavList pathname={pathname} onNavigate={() => setIsOpen(false)} />
-          <Link
-            href="/pekarnya-control/login"
-            onClick={() => setIsOpen(false)}
-            className="font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
+          <button
+            type="button"
+            onClick={() => void handleLogout()}
+            className="text-left font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
           >
             Выйти
-          </Link>
+          </button>
         </div>
       )}
 
@@ -115,12 +127,13 @@ export function Sidebar() {
             <NavList pathname={pathname} />
           </nav>
         </div>
-        <Link
-          href="/pekarnya-control/login"
-          className="font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
+        <button
+          type="button"
+          onClick={() => void handleLogout()}
+          className="text-left font-venuscom text-body-sm uppercase text-warm-cream/70 hover:text-warm-cream"
         >
           Выйти
-        </Link>
+        </button>
       </aside>
     </>
   );

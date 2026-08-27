@@ -1,27 +1,37 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { loginFormDefaultValues, loginFormSchema, type LoginFormValues } from "@/lib/validations/auth";
-import { loginAdmin } from "@/lib/login";
 
 type FormErrors = Partial<Record<keyof LoginFormValues, string>>;
 
-// Форма логина администратора (docs/plan.md, пункт 13): email + пароль.
-// Валидация — тот же клиентский zod-стек, что и в CheckoutForm, без react-hook-form.
-// loginAdmin() пока заглушка (реальная авторизация — пункт 31 плана), поэтому после
-// успешной отправки показывается только placeholder-сообщение, без редиректа —
-// защищённых страниц админки (пункт 15+) ещё нет.
-export function LoginForm() {
+interface LoginFormProps {
+  // Куда вернуть после успешного входа. Приходит из ?callbackUrl (его ставит
+  // proxy.ts при редиректе неавторизованного) и уже провалидирован на сервере
+  // как безопасный внутренний путь — см. login/page.tsx.
+  callbackUrl: string;
+}
+
+// Форма логина администратора (docs/plan.md, пункты 13 и 31): email + пароль.
+// Клиентская zod-валидация — тот же стек, что в CheckoutForm. Реальный вход —
+// через signIn("credentials") из NextAuth (lib/auth.ts).
+export function LoginForm({ callbackUrl }: LoginFormProps) {
+  const router = useRouter();
   const [values, setValues] = useState<LoginFormValues>(loginFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  // Ошибка от NextAuth (неверные учётные данные) — на уровне всей формы, не поля.
+  const [authError, setAuthError] = useState(false);
 
   function handleChange(field: keyof LoginFormValues, value: string) {
     const nextValues = { ...values, [field]: value };
     setValues(nextValues);
+    // Любая правка снимает общий баннер "неверный email или пароль".
+    setAuthError(false);
 
     // Снимаем ошибку поля "на лету", как только оно становится валидным — но только
     // если ошибка уже была показана (после неудачного submit), как в CheckoutForm.
@@ -58,17 +68,27 @@ export function LoginForm() {
 
   async function submitLogin(loginValues: LoginFormValues) {
     setIsSubmitting(true);
-    await loginAdmin(loginValues);
-    setIsSubmitting(false);
-    setIsSuccess(true);
-  }
+    setAuthError(false);
 
-  if (isSuccess) {
-    return (
-      <p className="font-venuscom text-body-sm text-black-olive">
-        Вход выполнен (заглушка) — раздел администратора появится в следующих задачах.
-      </p>
-    );
+    // redirect: false — разбираем результат сами: показываем ошибку инлайн, без
+    // перезагрузки и без ухода на дефолтную страницу ошибки NextAuth.
+    const result = await signIn("credentials", {
+      email: loginValues.email,
+      password: loginValues.password,
+      redirect: false,
+    });
+
+    if (!result || result.error) {
+      setAuthError(true);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // replace (не push) — чтобы кнопка "назад" не возвращала на форму логина.
+    // refresh() — сбросить серверный RSC-кэш, чтобы защищённые страницы
+    // перерисовались уже с сессией.
+    router.replace(callbackUrl);
+    router.refresh();
   }
 
   return (
@@ -110,6 +130,12 @@ export function LoginForm() {
           <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">{errors.password}</p>
         )}
       </div>
+
+      {authError && (
+        <p className="font-venuscom text-caption font-semibold text-red-600">
+          Неверный email или пароль
+        </p>
+      )}
 
       <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
         {isSubmitting ? "Входим…" : "Войти"}
