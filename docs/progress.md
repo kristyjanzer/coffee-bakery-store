@@ -1950,12 +1950,12 @@ NextAuth, задача 56). Ветка `feature/products-mutations`.
 - `lib/orderAdmin.ts` — добавлены `getOrderById()` и `updateOrderStatus()`; общий `select` для
   `getOrders`/`getOrderById`/`updateOrderStatus` вынесен в `adminOrderSelect`, чтобы форма ответа
   не разъезжалась между тремя функциями.
-- `lib/validations/order.ts` — добавлена `updateOrderStatusSchema` (`{ status }` — PATCH меняет
-  только статус, как и написано в architecture.md; не полное редактирование заказа).
+- `lib/validations/orderStatus.ts` — создана: `updateOrderStatusSchema` (`{ status }` — PATCH
+  меняет только статус, как и написано в architecture.md; не полное редактирование заказа).
 - `app/api/orders/[id]/route.ts` — создан: `GET` (404 если не найден), `PATCH` (400 при
   некорректном статусе, 404 если заказ не найден).
 - Тесты дополнены/созданы: `lib/orderAdmin.test.ts` (`getOrderById`/`updateOrderStatus`),
-  `app/api/orders/[id]/route.test.ts` (`GET`/`PATCH`).
+  `app/api/orders/[id]/route.test.ts` (`GET`/`PATCH`), `lib/validations/orderStatus.test.ts`.
 
 Проверено: `npx vitest run` (153/153), `npm run lint`, `npx tsc --noEmit` — чисто; вручную против
 реальной Neon-БД через реальный NextAuth-логин (временный `AdminUser` с ролью `ORDER_MANAGER`,
@@ -1967,3 +1967,19 @@ id → 404; некорректный статус → 400.
 только поле `status` из фиксированного набора значений enum (нельзя протащить произвольные поля
 заказа через тело запроса); проверка сессии и роли — до обращения к Prisma; ошибки БД клиенту не
 пробрасываются. `npm audit` — без изменений.
+
+### Фикс после падения CI (e2e)
+
+PR-чек `e2e` упал: `updateOrderStatusSchema` изначально жила в `lib/validations/order.ts` — общем
+файле, который импортируют клиентские компоненты (`CheckoutForm`, `CartWidget`) ради
+`orderFormSchema`. Импорт `OrderStatus` из `@/generated/prisma/client` в этом же файле протащил
+серверный Prisma-рантайм (использует `node:async_hooks`) в клиентский вебпак-бандл — сборка
+дев-сервера падала с `UnhandledSchemeError`, playwright не мог достучаться до страницы за
+120 секунд.
+
+**Исправлено:** `updateOrderStatusSchema` вынесена в отдельный `lib/validations/orderStatus.ts`
+(его не импортирует ни один клиентский компонент), `lib/validations/order.ts` вернулся к
+чистому `zod` без Prisma-импортов. `app/api/orders/[id]/route.ts` — обновлён путь импорта.
+
+Проверено: `npx vitest run` (156/156), `npm run lint`, `npx tsc --noEmit` — чисто; локально
+`npm run test:e2e` — тот самый сценарий, что падал в CI, теперь проходит.

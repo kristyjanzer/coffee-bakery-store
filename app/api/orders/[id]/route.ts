@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getOrderById, updateOrderStatus } from "@/lib/orderAdmin";
-import { updateOrderStatusSchema } from "@/lib/validations/order";
+import { updateOrderStatusSchema } from "@/lib/validations/orderStatus";
 import { requireAdminSession } from "@/lib/auth";
 
 interface RouteParams {
