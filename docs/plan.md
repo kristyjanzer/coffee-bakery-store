@@ -38,7 +38,7 @@
 29. API `/api/orders/[id]` (GET/PATCH — детали и смена статуса, админ)
 30. API `/api/reviews`, `/api/reviews/[id]` (GET публично; PATCH — модерация/ответ, админ)
 31. NextAuth: `authOptions` (Credentials-провайдер, bcrypt-хэш пароля, JWT-сессии, роли ADMIN/ORDER_MANAGER)
-32. `middleware.ts`: защита `/pekarnya-control/*` кроме `/pekarnya-control/login`; проверка сессии внутри мутирующих API-роутов
+32. `proxy.ts` (быв. `middleware.ts`, переименован в Next 16): защита `/pekarnya-control/*` кроме `/pekarnya-control/login`; проверка сессии внутри мутирующих API-роутов
 33. Интеграция Telegram Bot API (`lib/telegram.ts`, `notifyNewOrder()`, вызов из `POST /api/orders`, обёрнут в try/catch)
 34. Загрузка изображений товаров (Cloudinary/Supabase Storage, `lib/storage.ts`, unsigned upload из формы товара)
 35. Подключение Server Components к Prisma напрямую (главная, товар, списки в админке — без похода через `/api/*`)

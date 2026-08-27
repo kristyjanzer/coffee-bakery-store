@@ -2005,3 +2005,32 @@ PR-чек `e2e` упал: `updateOrderStatusSchema` изначально жил�
 только `isApproved`/`shopReply` (нельзя протащить `authorName`/`productId` через тело), проверка
 сессии и роли `ADMIN` — до обращения к Prisma; GET публичный и отдаёт только `isApproved: true`.
 `npm audit` — без изменений (те же 4 уязвимости в `swiper`, не связаны с задачей).
+
+## Задача 61
+
+Выполнен пункт 32 плана — защита `/pekarnya-control/*` (кроме `/pekarnya-control/login`) через
+`withAuth` из `next-auth/middleware`. Ветка `feature/admin-auth-middleware`. Файл назван `proxy.ts`,
+а не `middleware.ts`: в Next 16 имя `middleware` deprecated (warning на каждом старте dev/build),
+конфиг `matcher` идентичен, next-auth v4 работает на nodejs-рантайме proxy.
+
+**Изменённые/созданные файлы:**
+- `proxy.ts` — создан: `withAuth({ pages.signIn })` + `matcher: ["/pekarnya-control/:path*"]`.
+  Страницу логина вручную не вырезаем — `withAuth` пропускает `pages.signIn` сам.
+- `proxy.test.ts` — создан: матчер, редирект без сессии с `callbackUrl`, защита корня раздела,
+  проход страницы логина без петли.
+- `docs/plan.md` (пункт 32), `docs/architecture.md` (раздел 7, дерево файлов, раздел 2) —
+  `middleware.ts` → `proxy.ts`.
+- Обновлены устаревшие комментарии в `app/pekarnya-control/login/page.tsx` и
+  `e2e/checkout-flow.spec.ts` (только текст, логика теста не тронута).
+
+Проверено: `npx vitest run` (172/172), `npm run lint`, `npx tsc --noEmit` — чисто; вручную через
+dev-сервер: `/` → 200, `/pekarnya-control` и `/pekarnya-control/orders` → 307 на
+`/pekarnya-control/login?callbackUrl=…`, `/pekarnya-control/login` → 200 (без петли),
+`/api/products` → 200 (под матчер не попадает).
+
+**Security review:** применялся (`.claude/skills/security-review`) — находок нет: `proxy.ts`
+закрывает все страницы админки на уровне запроса (до рендера), секретов в коде нет
+(`NEXTAUTH_SECRET` из env), редирект без `callbackUrl`-инъекции (next-auth строит URL сам).
+Открытым остаётся то, что и должно: публичный сайт, `/api` GET-роуты, гостевой `POST /api/orders`.
+Форма логина (`LoginForm.tsx`) пока заглушка — реальный `signIn()` это отдельная задача, до неё
+войти в админку через браузер нельзя.
