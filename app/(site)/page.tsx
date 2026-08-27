@@ -1,11 +1,11 @@
 import { Hero } from "@/components/layout/Hero";
 import { Catalog } from "@/components/catalog/Catalog";
 import { ReviewsSlider } from "@/components/catalog/ReviewsSlider";
-import { getCatalog } from "@/lib/menu";
+import { getCatalog } from "@/lib/catalog";
 import { getReviews } from "@/lib/reviews";
 
-export default function HomePage() {
-  const catalog = getCatalog();
+export default async function HomePage() {
+  const catalog = await getCatalog();
   const reviews = getReviews();
 
   return (

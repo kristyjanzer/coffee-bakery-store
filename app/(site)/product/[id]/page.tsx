@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/product/ProductDetail";
-import { getProductById } from "@/lib/menu";
+import { getProductForDetail } from "@/lib/catalog";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -8,7 +8,8 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = getProductById(Number(id));
+  const numericId = Number(id);
+  const product = Number.isInteger(numericId) ? await getProductForDetail(numericId) : null;
 
   if (!product) {
     notFound();
