@@ -20,6 +20,12 @@ const PRODUCT_PRICE = 180;
 test("каталог → добавление в корзину → изменение количества → оформление заявки", async ({
   page,
 }) => {
+  // Сценарий длинный (витрина → корзина → API заказа), а dev-сервер компилирует
+  // каждый роут при первом обращении — дефолтных 30 c на тест не всегда хватает
+  // при параллельном прогоне с остальными спеками. Тот же запас, что в
+  // e2e/admin-order.spec.ts.
+  test.setTimeout(120_000);
+
   await page.goto("/");
 
   // 1. Переход по табу категории
@@ -50,6 +56,8 @@ test("каталог → добавление в корзину → измене
   await modal.getByLabel("Email (пришлем чек об оплате)").fill("test@example.com");
   await modal.getByRole("button", { name: "Отправить заявку" }).click();
 
-  await expect(modal).toHaveAttribute("aria-label", "Заявка принята");
+  // Запас по времени: dev-сервер компилирует роут POST /api/orders при первом
+  // обращении, это дольше дефолтных 5 c ожидания ассерта (см. e2e/admin-order.spec.ts).
+  await expect(modal).toHaveAttribute("aria-label", "Заявка принята", { timeout: 20_000 });
   await expect(modal).toContainText("Спасибо! Мы получили вашу заявку");
 });
