@@ -2285,3 +2285,16 @@ ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `Notificati
 
 **Изменения схемы БД:** снят `@unique` с `Customer.email`; миграция
 `20260828094447_drop_customer_email_unique`.
+
+## Задача 74
+
+Дашборд на Prisma-агрегатах, убран мок заказов, задача 3/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/dashboard.ts` → `lib/dashboardStats.ts`: summary/salesChart(range: дни7/недели8/месяцы6)/
+  topProducts/pendingOrders на агрегатах по не-отменённым заказам. Новый тест `dashboardStats.test.ts`.
+- `lib/orders.ts` сжат до `submitOrder` + ре-экспорт констант; удалены `MOCK_ORDERS` и 4 функции,
+  из `orders.test.ts` убраны 4 мёртвых describe.
+- Новый `components/admin/SalesRangeTabs.tsx`; `Dashboard.tsx` (типы из dashboardStats,
+  `formatTimeAgo` вместо `minutesAgo`, вкладки периода) и `(protected)/page.tsx` (разбор `?range=`).
+
+**Security review:** применялся — находок нет (только чтение, `range` валидируется по `SALES_RANGES`).
