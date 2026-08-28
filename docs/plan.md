@@ -42,4 +42,4 @@
 33. Интеграция Telegram Bot API (`lib/telegram.ts`, `notifyNewOrder()`, вызов из `POST /api/orders`, обёрнут в try/catch)
 34. Загрузка изображений товаров (Cloudinary/Supabase Storage, `lib/storage.ts`, unsigned upload из формы товара)
 35. Подключение Server Components к Prisma напрямую (главная, товар, списки в админке — без похода через `/api/*`). Покрыт полностью: витрина + Товары + Заказы + Dashboard + Клиенты + Управление страницами + Настройки читают Prisma напрямую; мутации админки — через `/api/*` за `requireAdminSession`. Демо-заказы для дашборда/клиентов — в `prisma/seed.ts` (`seedOrders`).
-36. Security review (`.claude/skills/security-review`) + сквозное тестирование сценария: каталог → корзина → заявка → админка
+36. Security review (`.claude/skills/security-review`) + сквозное тестирование сценария: каталог → корзина → заявка → админка ✅ (задача 80 в progress.md; блокирующих находок нет, e2e-сценарий покрыт `e2e/checkout-flow.spec.ts` + `e2e/admin-order.spec.ts`)
