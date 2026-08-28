@@ -2276,6 +2276,12 @@ ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `Notificati
   `getOrdersByCustomerId()`; страницы `customers/{page,[id]/page}.tsx` → Prisma + `formatTimeAgo`.
 - `prisma/seed.ts` — `backfillCustomers()` (идемпотентно). Тесты: `phone.test.ts`,
   `customers.test.ts` новые; `orderCreation`/`orderAdmin` тесты дополнены.
+- `prisma/schema.prisma` + `docs/architecture.md` §3 — снят `@unique` с `Customer.email`
+  (телефон — ключ идентификации гостя, email мог коллизить при per-order upsert).
+  Миграция `20260828094447_drop_customer_email_unique` (`DROP INDEX "Customer_email_key"`).
 
 **Security review:** применялся — находок нет. Телефон нормализуется до upsert, сумма заказа
 по-прежнему из серверных снимков цен, заказ+клиент в одной транзакции. Новых env нет.
+
+**Изменения схемы БД:** снят `@unique` с `Customer.email`; миграция
+`20260828094447_drop_customer_email_unique`.

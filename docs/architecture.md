@@ -193,7 +193,7 @@ model Customer {
   id              Int      @id @default(autoincrement())
   name            String?
   phone           String?  @unique
-  email           String?  @unique
+  email           String?
   deliveryAddress String?
   orders          Order[]
   createdAt       DateTime @default(now())
