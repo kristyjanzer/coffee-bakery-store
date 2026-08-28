@@ -2420,6 +2420,11 @@ build-time only, фикс = downgrade Prisma 7→6, breaking — задача 70
 - `app/pekarnya-control/(protected)/reviews/[id]/page.tsx` — `initialImageUrl={review.imageUrl}`.
 - `lib/validations/review.test.ts` — создан (imageUrl: принимается / null / длинный отклоняется / trim).
 - `lib/reviewsApi.test.ts` — кейс «`moderateReview` прокидывает `imageUrl`».
+- `components/ui/Button.tsx` — вариант `outline` перекрашен с белой обводки/кремового
+  текста (для тёмного фона) на Forest Ink по прозрачному: единственные два места
+  использования (`ProductForm` и `ReviewModerationControl`) — на светлом `warm-cream`
+  фоне админки, где прежний вариант был невидим. Заодно чинит давнюю невидимую кнопку
+  «Загрузить фото» в форме товара (задача 71).
 
 Приоритет источника картинки в слайдере (задача 81): своё фото отзыва → фото товара → заглушка.
 
