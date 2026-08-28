@@ -2247,3 +2247,21 @@ Server Components; тексты рендерятся как React-текст. `n
 ошибки Cloudinary не пробрасываются клиенту (общий 502 + текст, детали в лог). MIME-тип объявляет
 клиент (подделываем) — но Cloudinary сам отклоняет не-изображения, а роут только для админа; rate
 limiting нет, как и на прочих `/api/*` (эндпоинт под сессией). `npm audit` — без изменений.
+
+## Задача 72
+
+Схема Prisma под хвост пункта 35 (админка на Prisma), задача 1/7. Ветка `feature/admin-prisma-tail`.
+
+- `prisma/schema.prisma` — `Order.customer` / `Customer.orders` (nullable FK); новые модели
+  `SitePage` (PK slug), `Banner`, `NotificationSettings` (singleton id=1).
+- `prisma/migrations/20260828091108_add_customer_order_relation/` — одна миграция со всеми
+  изменениями (3 CREATE TABLE + FK), применена к Neon; `migrate status` чист.
+- `docs/architecture.md` — раздел 3: те же модели + relation в наброске схемы, предложение
+  про заполнение `Customer`/редактирование `SitePage`/`Banner`/`NotificationSettings`.
+
+**Security review:** применялся — находок нет (правка только схемы/миграций/доков, новой
+поверхности атаки нет; миграция аддитивная, без пользовательского ввода).
+
+**Изменения схемы БД:** `Order.customerId` → полноценная связь с `Customer` (nullable FK,
+ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `NotificationSettings`.
+`docs/architecture.md` раздел 3 актуализирован.

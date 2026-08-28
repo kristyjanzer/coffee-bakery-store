@@ -166,7 +166,8 @@ model Order {
   totalAmount           Int
   paymentMethod         String?    // задел на будущее
   paymentStatus         String     @default("UNPAID")
-  customerId             Int?       // задел на будущее — связь с Customer
+  customerId             Int?
+  customer               Customer?   @relation(fields: [customerId], references: [id])
   telegramNotifiedAt     DateTime?
   items                  OrderItem[]
   createdAt               DateTime @default(now())
@@ -186,7 +187,7 @@ model OrderItem {
   quantity                  Int
 }
 
-// --- заделы под будущее, чтобы не переделывать схему при росте проекта ---
+// --- прочие модели данных ---
 
 model Customer {
   id              Int      @id @default(autoincrement())
@@ -194,6 +195,7 @@ model Customer {
   phone           String?  @unique
   email           String?  @unique
   deliveryAddress String?
+  orders          Order[]
   createdAt       DateTime @default(now())
 }
 
@@ -219,7 +221,43 @@ model AdminUser {
 }
 
 enum AdminRole { ADMIN ORDER_MANAGER }
+
+// --- Управление страницами (docs/plan.md, пункт 20) ---
+
+model SitePage {
+  slug           String   @id   // "about" | "contacts" | "delivery"
+  title          String
+  content        String
+  seoTitle       String
+  seoDescription String
+  updatedAt      DateTime @updatedAt
+}
+
+model Banner {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String              // "" допустимо (загрузка фото — пункт 34)
+  title     String
+  link      String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// --- Настройки уведомлений (docs/plan.md, пункт 21): singleton-строка (id всегда 1) ---
+
+model NotificationSettings {
+  id                 Int      @id @default(1)
+  notifyEmail        Boolean  @default(false)
+  notifyEmailAddress String   @default("")
+  notifySms          Boolean  @default(false)
+  notifySmsPhone     String   @default("")
+  updatedAt          DateTime @updatedAt
+}
 ```
+
+`Customer` заполняется при создании заказа (upsert по телефону);
+`SitePage`/`Banner`/`NotificationSettings` редактируются в админке (пункты 20–21), на
+витрине пока не читаются.
 
 **Сидирование:** `prisma/seed.ts` читает `../menu.json`, идёт по категориям в порядке файла
 (проставляя `sortOrder`), делает upsert `Category`, затем `Product`. Запускается один раз
