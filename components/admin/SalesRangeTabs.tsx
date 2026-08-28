@@ -10,6 +10,8 @@ const TABS: { range: SalesRange; label: string }[] = [
 // Переключатель периода графика продаж на дашборде (about-project.md, пункт 1 —
 // "по дням/неделям/месяцам"). Обычные ссылки с ?range=, без клиентского JS —
 // тот же приём, что табы в /pekarnya-control/pages.
+// scroll={false} — иначе Next.js при переходе по ссылке прокручивает страницу
+// наверх, а табы стоят ниже сводных блоков: пользователь терял место на графике.
 export function SalesRangeTabs({ active }: { active: SalesRange }) {
   return (
     <div className="flex flex-wrap gap-2" role="tablist">
@@ -17,6 +19,7 @@ export function SalesRangeTabs({ active }: { active: SalesRange }) {
         <Link
           key={tab.range}
           href={tab.range === "days" ? "/pekarnya-control" : `/pekarnya-control?range=${tab.range}`}
+          scroll={false}
           role="tab"
           aria-selected={active === tab.range}
           className={
