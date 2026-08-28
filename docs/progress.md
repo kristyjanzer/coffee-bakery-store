@@ -2344,3 +2344,38 @@ limiting нет, как и на прочих `/api/*` (эндпоинт под �
 - `.env.example` — комментарий у `DATABASE_URL`/`DIRECT_URL`: `pg` v8 печатает deprecation-warning
   про `sslmode=require` (в pg v9 станет слабее `verify-full`). Сейчас безопасно; убрать warning —
   дописать `&sslmode=verify-full`; полноценно — отдельной задачей с апгрейдом `pg`.
+
+## Задача 80
+
+Выполнен пункт 36 плана — security review + сквозное тестирование сценария
+каталог → корзина → заявка → админка. Ветка `test/e2e-checkout-flow-timeout`.
+
+**Изменённые файлы:**
+- `lib/validations/order.ts` — `createOrderSchema`: `quantity` ≤ 100 на позицию,
+  `items` ≤ 50 (гость не может прислать абсурдный payload → раздутая `totalAmount`
+  у товара без лимита остатка / спам в Telegram). Приём тот же, что `bannerListSchema.max(20)`.
+- `lib/validations/order.test.ts` — 2 новых кейса на верхние границы.
+- `e2e/checkout-flow.spec.ts` — `test.setTimeout(120_000)` и `{ timeout: 20_000 }`
+  на ассерт «Заявка принята» (dev-сервер компилит роут `POST /api/orders` по
+  первому обращению дольше дефолтных 5 c — та же правка, что уже была в `admin-order.spec.ts`).
+- `playwright.config.ts` — `workers: 1` локально (параллельные воркеры устраивают
+  гонку компиляции dev-сервера, а `retries: 0` локально сразу красит прогон);
+  в CI без изменений (воркеры по умолчанию + `retries: 2`).
+
+**Security review** (`.claude/skills/security-review`) всего сквозного флоу:
+блокирующих находок нет. Секреты только через `process.env` на сервере, `.env`
+в `.gitignore` и вне git-истории. Все мутирующие `/api/*` — `requireAdminSession()`
+до обращения к Prisma; role split (ADMIN vs ORDER_MANAGER) соблюдён; `proxy.ts` +
+layout-гейты + per-route проверка (defense-in-depth). Вход: bcrypt.compare всегда
+(защита от timing-энумерации), `safeCallbackUrl` от open redirect, guard
+«последний ADMIN». Цена/название заказа — снимок из Prisma, не из тела запроса.
+Все запросы через Prisma query builder; `$executeRaw` в сиде — статический SQL без
+ввода; `dangerouslySetInnerHTML` не используется; `next/image` — только
+`res.cloudinary.com`. Известные ограничения (не блокеры для учебного проекта,
+задокументированы здесь): нет rate limiting на публичном `POST /api/orders` и на
+`/api/auth/callback/credentials`; нет CSP / security headers в `next.config.js`;
+`npm audit` — 3 high в `deepmerge-ts` ← `@prisma/config` ← `prisma` (CLI,
+build-time only, фикс = downgrade Prisma 7→6, breaking — задача 70/79).
+
+Проверено: `npm run typecheck`, `npm run lint`, `npm run build`, `npx vitest run`
+(296/296), `npm run test:e2e` (3/3) — чисто.

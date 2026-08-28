@@ -49,12 +49,18 @@ export const orderFormDefaultValues: OrderFormValues = {
 // productId (lib/orderCreation.ts), чтобы нельзя было подделать сумму заказа.
 export const orderItemInputSchema = z.object({
   productId: z.number().int().positive(),
-  quantity: z.number().int().positive(),
+  // Верхняя граница — заведомо больше любого реального заказа пекарни, но не даёт
+  // прислать абсурдное число (гигантская totalAmount у товара с stockQuantity: null,
+  // раздутое сообщение в Telegram). Дополнительно к остатку на складе, который
+  // проверяет createOrder() по Prisma.
+  quantity: z.number().int().positive().max(100, "Не больше 100 шт. одной позиции"),
 });
 
 export const createOrderSchema = orderFormSchema
   .extend({
-    items: z.array(orderItemInputSchema).min(1, "Корзина пуста"),
+    // max — тот же приём, что bannerListSchema.max(20): не принимать абсурдный
+    // объём позиций в одном запросе.
+    items: z.array(orderItemInputSchema).min(1, "Корзина пуста").max(50, "Слишком много позиций"),
   })
   .refine((values) => !values.preferredDate || !Number.isNaN(Date.parse(values.preferredDate)), {
     message: "Некорректная дата предзаказа",
