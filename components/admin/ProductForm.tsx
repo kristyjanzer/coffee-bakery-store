@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { productFormSchema } from "@/lib/validations/product";
 import type { AdminCategory, AdminProduct, ProductInput } from "@/lib/products";
 import { createProduct, deleteProduct, updateProduct } from "@/lib/productAdminApi";
+import { uploadProductImage } from "@/lib/uploadApi";
 
 export interface ProductFormState {
   name: string;
@@ -101,6 +103,27 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleImageFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    // сбрасываем value, чтобы повторный выбор того же файла снова сработал
+    event.target.value = "";
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+    const result = await uploadProductImage(file);
+    setIsUploading(false);
+
+    if (result.ok) {
+      handleChange("imageUrl", result.url);
+    } else {
+      setUploadError(result.error);
+    }
+  }
 
   function handleChange<K extends keyof ProductFormState>(field: K, value: ProductFormState[K]) {
     const nextValues = { ...values, [field]: value };
@@ -276,19 +299,68 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
         <div className="sm:col-span-2">
           <label htmlFor="imageUrl" className="font-venuscom text-caption text-black-olive/70">
-            Ссылка на фото (Cloudinary/Supabase Storage — загрузка из формы появится в пункте 34 плана)
+            Фото товара
           </label>
-          <Input
-            id="imageUrl"
-            value={values.imageUrl}
-            onChange={(event) => handleChange("imageUrl", event.target.value)}
-            placeholder="https://res.cloudinary.com/..."
-            className="mt-1"
-            error={Boolean(errors.imageUrl)}
-          />
-          {errors.imageUrl && (
-            <p className="mt-1 font-venuscom text-caption font-semibold text-red-600">{errors.imageUrl}</p>
-          )}
+
+          <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start">
+            {/* Превью: загруженное/вставленное фото или плашка-заглушка */}
+            <div className="relative size-24 shrink-0 overflow-hidden border border-sage-mist bg-sage-mist/20">
+              {values.imageUrl ? (
+                <Image src={values.imageUrl} alt="" fill sizes="96px" className="object-cover" />
+              ) : (
+                <span className="flex h-full items-center justify-center font-venuscom text-caption text-black-olive/40">
+                  нет фото
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-1 flex-col gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                onChange={(event) => void handleImageFile(event)}
+                className="hidden"
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {isUploading ? "Загружаем…" : values.imageUrl ? "Заменить фото" : "Загрузить фото"}
+                </Button>
+                {values.imageUrl && !isUploading && (
+                  <button
+                    type="button"
+                    onClick={() => handleChange("imageUrl", "")}
+                    className="font-venuscom text-caption text-red-600 hover:underline"
+                  >
+                    Убрать
+                  </button>
+                )}
+              </div>
+
+              {/* URL можно вставить и вручную (напр. фото уже лежит в Cloudinary) */}
+              <Input
+                id="imageUrl"
+                value={values.imageUrl}
+                onChange={(event) => handleChange("imageUrl", event.target.value)}
+                placeholder="или вставьте ссылку: https://res.cloudinary.com/..."
+                error={Boolean(errors.imageUrl)}
+              />
+              {uploadError && (
+                <p className="font-venuscom text-caption font-semibold text-red-600">{uploadError}</p>
+              )}
+              {errors.imageUrl && (
+                <p className="font-venuscom text-caption font-semibold text-red-600">{errors.imageUrl}</p>
+              )}
+              <p className="font-venuscom text-caption text-black-olive/50">
+                JPEG, PNG, WebP или AVIF, до 4 МБ
+              </p>
+            </div>
+          </div>
         </div>
 
         <div>
@@ -483,14 +555,14 @@ export function ProductForm({ categories, product }: ProductFormProps) {
       )}
 
       <div className="flex flex-wrap items-center gap-4 border-t border-sage-mist pt-6">
-        <Button type="submit" disabled={isSubmitting || isDeleting}>
+        <Button type="submit" disabled={isSubmitting || isDeleting || isUploading}>
           {isSubmitting ? "Сохраняем…" : "Сохранить товар"}
         </Button>
         {isEditing && (
           <Button
             type="button"
             variant="ghost"
-            disabled={isSubmitting || isDeleting}
+            disabled={isSubmitting || isDeleting || isUploading}
             onClick={() => void handleDelete()}
             className="text-red-600 hover:text-red-600"
           >

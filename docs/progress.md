@@ -2217,3 +2217,33 @@ Server Components; тексты рендерятся как React-текст. `n
 `npm audit` (prototype pollution, GHSA-hmx5-qpq5-p643). API `swiper/react` без изменений,
 `components/catalog/ReviewsSlider.tsx` не тронут. Осталось 3 «high» в audit (`@prisma/config`/
 `deepmerge-ts`) — их «фикс» откатывает Prisma 7→6, не применяем (дев-тулинг, не рантайм).
+
+## Задача 71
+
+Выполнен пункт 34 плана — загрузка фото товара из формы в админке (Cloudinary через серверный
+прокси). Ветка `feature/product-image-upload`.
+
+- `lib/storage.ts` — создан: `uploadImage(file)` → Cloudinary `image/upload` с unsigned
+  `upload_preset` (try/catch, таймаут), детали ошибки — только в лог, клиенту общий текст.
+- `lib/validations/upload.ts` — создан: `validateImageFile()` (тип `image/jpeg|png|webp|avif`,
+  размер ≤ 4 МБ), `MAX_IMAGE_BYTES`, `ALLOWED_IMAGE_TYPES`.
+- `app/api/uploads/route.ts` — создан: `POST`, `requireAdminSession()` → валидация → `uploadImage`
+  → `{ url }`. Коды 400/401/403/413/502.
+- `lib/uploadApi.ts` — создан: клиентский `uploadProductImage(file)` → `POST /api/uploads`.
+- `components/admin/ProductForm.tsx` — поле «Фото товара»: `<input type=file>` + превью
+  (`next/image`) + кнопка «Загрузить/Заменить/Убрать»; текстовое поле URL оставлено для ручной
+  вставки. Заглушка-комментарий про пункт 34 убрана.
+- `docs/architecture.md` — раздел 6 и структура папок актуализированы (серверный прокси вместо
+  прежнего наброска «грузить из браузера»).
+- `.env.example` — уточнён комментарий у `CLOUDINARY_*` (unsigned preset, без `NEXT_PUBLIC_`).
+- Тесты: `lib/storage.test.ts`, `lib/validations/upload.test.ts`, `app/api/uploads/route.test.ts`.
+
+**Новые переменные окружения:** `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_UPLOAD_PRESET` (уже были в
+`.env.example`; заполнены реальными значениями; в Cloudinary создан unsigned preset
+`coffee_bakery_products` с Allowed formats `jpg,png,webp,avif`).
+
+**Security review:** применялся — блокирующих находок нет. Конфиг Cloudinary — только `process.env`
+на сервере; роут за `requireAdminSession(["ADMIN"])`, проверка типа/размера до вызова Cloudinary;
+ошибки Cloudinary не пробрасываются клиенту (общий 502 + текст, детали в лог). MIME-тип объявляет
+клиент (подделываем) — но Cloudinary сам отклоняет не-изображения, а роут только для админа; rate
+limiting нет, как и на прочих `/api/*` (эндпоинт под сессией). `npm audit` — без изменений.

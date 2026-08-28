@@ -33,7 +33,8 @@ store/
 │       ├── products/[id]/route.ts        # GET / PATCH / DELETE
 │       ├── orders/route.ts               # POST (гость) → Telegram; GET (админ)
 │       ├── orders/[id]/route.ts          # GET / PATCH статуса (админ)
-│       └── reviews/route.ts, reviews/[id]/route.ts
+│       ├── reviews/route.ts, reviews/[id]/route.ts
+│       └── uploads/route.ts              # POST — фото товара в Cloudinary (админ)
 │
 ├── components/
 │   ├── layout/     # Header, Footer, Nav
@@ -47,7 +48,7 @@ store/
 │   ├── prisma.ts       # singleton PrismaClient (@prisma/adapter-pg, безопасно для serverless)
 │   ├── auth.ts          # NextAuth authOptions, проверка роли
 │   ├── telegram.ts      # notifyNewOrder() — только на сервере
-│   ├── storage.ts        # хелпер Cloudinary/Supabase Storage
+│   ├── storage.ts        # uploadImage() — заливка фото товара в Cloudinary (из POST /api/uploads)
 │   ├── validations/      # zod-схемы (order.ts, product.ts)
 │   └── utils.ts           # formatPrice, slugify и т.д.
 │
@@ -108,6 +109,7 @@ store/
 | `/api/orders/[id]` | GET / PATCH | админ | детали, смена статуса |
 | `/api/reviews` | GET | публично | одобренные отзывы для слайдера |
 | `/api/reviews/[id]` | PATCH | админ | модерация, ответ магазина |
+| `/api/uploads` | POST | админ | загрузка фото товара в Cloudinary → `{ url }` |
 
 **Важное правило:** Server Component не должен ходить через `fetch()` в свой же `/api/*` —
 это лишний сетевой хоп. Server Component читает данные из Prisma напрямую через `lib/prisma.ts`.
@@ -269,12 +271,19 @@ enum AdminRole { ADMIN ORDER_MANAGER }
 Telegram не ронял создание заказа. `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` — только на сервере,
 никогда не попадают в клиентский бандл.
 
-**Хранение изображений (Cloudinary/Supabase Storage)** — `lib/storage.ts`. Для MVP — загрузка
-прямо из формы товара в админке на Cloudinary через unsigned upload preset (без серверного
-секрета), после чего клиент делает `PATCH /api/products/[id]` с полученным URL — запись в
-Prisma при этом остаётся централизованной в роут-хендлере. Подписанная загрузка через
-серверный секрет — естественное усложнение на будущее, если unsigned-preset станет проблемой
-безопасности.
+**Хранение изображений (Cloudinary)** — `lib/storage.ts` экспортирует `uploadImage(file)`:
+`fetch` на `https://api.cloudinary.com/v1_1/<cloud_name>/image/upload` с `upload_preset`
+(unsigned), обёрнут в try/catch. Вызывается только из `POST /api/uploads` — форма товара в
+админке (`ProductForm`, клиентский компонент) шлёт файл туда, роут проверяет сессию `ADMIN`,
+тип (`image/jpeg|png|webp|avif`) и размер (≤ 4 МБ), затем отдаёт файл в Cloudinary и
+возвращает `{ url }`. Полученный URL кладётся в поле формы и уходит в БД обычным
+`POST`/`PATCH /api/products[/id]` вместе с остальными полями товара.
+
+Осознанное отклонение от прежнего наброска (грузить прямо из браузера): по общему принципу
+ниже сторонние API дёргаются только из роут-хендлеров, не из клиента. Плюс серверный прокси
+даёт проверку типа/размера до Cloudinary и не светит `cloud_name`/`preset` в бандл.
+`CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_UPLOAD_PRESET` — только `process.env`, без `NEXT_PUBLIC_`.
+Файл проходит через serverless-функцию, поэтому лимит 4 МБ (ниже потолка тела Vercel).
 
 **Общий принцип:** роут-хендлеры — это граница интеграций. Все сторонние ключи/секреты живут
 только на сервере, вызываются из хелперов в `lib/*` внутри роут-хендлеров, никогда напрямую
