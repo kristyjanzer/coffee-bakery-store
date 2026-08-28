@@ -2379,3 +2379,26 @@ build-time only, фикс = downgrade Prisma 7→6, breaking — задача 70
 
 Проверено: `npm run typecheck`, `npm run lint`, `npm run build`, `npx vitest run`
 (296/296), `npm run test:e2e` (3/3) — чисто.
+
+## Задача 81
+
+Слайдер отзывов на главной показывал заглушку-иконку у всех отзывов — `Review.imageUrl`
+в БД никто не заполняет (сид не ставит, поля в модерации нет). Ветка `fix/reviews-slider-images`.
+
+**Изменённые файлы:**
+- `lib/reviewsApi.ts` — `apiReviewSelect.product` тянет ещё и `imageUrl`; `ApiReview`/`ReviewRow`
+  получили `productImageUrl`; `getSliderReviews` отдаёт `imageUrl: row.imageUrl || row.productImageUrl || ""`
+  (фото связанного товара как источник картинки, собственное фото отзыва — приоритет).
+- `lib/reviewsApi.test.ts` — 2 кейса: подстановка фото товара и приоритет своего `imageUrl`.
+
+`ReviewsSlider.tsx`, схема, сид, `next.config.js` — без изменений (компонент уже рендерит
+`imageUrl`, домен `res.cloudinary.com` уже разрешён).
+
+Проверено: `npx vitest run` (298/298), `npm run typecheck`, `npm run lint`, `npm run build` — чисто;
+в браузере (Chrome DevTools MCP) `#reviews` — все 4 одобренных отзыва с реальными фото Cloudinary,
+0 заглушек, консоль без ошибок.
+
+**Security review** (`.claude/skills/security-review`): находок нет. Добавлен только публичный
+`product.imageUrl` (Cloudinary URL, уже публичен через товары) в публичный GET `/api/reviews`
+и слайдер; нового пользовательского ввода/секретов/auth-поверхности нет, `next/image` рендерит
+только `res.cloudinary.com`, `dangerouslySetInnerHTML` не используется.
