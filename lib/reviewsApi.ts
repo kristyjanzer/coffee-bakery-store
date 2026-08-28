@@ -14,6 +14,7 @@ export interface ApiReview {
   id: number;
   productId: number | null;
   productName: string | null; // имя связанного товара — для слайдера/карточки в админке
+  productImageUrl: string | null; // фото связанного товара — источник картинки для слайдера
   authorName: string;
   quoteText: string;
   rating: number | null;
@@ -33,7 +34,7 @@ const apiReviewSelect = {
   isApproved: true,
   shopReply: true,
   createdAt: true,
-  product: { select: { name: true } },
+  product: { select: { name: true, imageUrl: true } },
 } as const;
 
 // Строка из Prisma с вложенным product — разворачиваем в плоский ApiReview.
@@ -47,12 +48,16 @@ interface ReviewRow {
   isApproved: boolean;
   shopReply: string | null;
   createdAt: Date;
-  product: { name: string } | null;
+  product: { name: string; imageUrl: string | null } | null;
 }
 
 function toApiReview(row: ReviewRow): ApiReview {
   const { product, ...rest } = row;
-  return { ...rest, productName: product?.name ?? null };
+  return {
+    ...rest,
+    productName: product?.name ?? null,
+    productImageUrl: product?.imageUrl ?? null,
+  };
 }
 
 // GET /api/reviews — только одобренные отзывы для слайдера на главной (публично).
@@ -76,7 +81,9 @@ export async function getSliderReviews(): Promise<Review[]> {
     authorName: row.authorName,
     quoteText: row.quoteText,
     productName: row.productName ?? "",
-    imageUrl: row.imageUrl ?? "",
+    // Своё фото отзыва имеет приоритет; иначе — фото связанного товара
+    // (у отзыва собственного imageUrl сейчас нет, поля в модерации тоже нет).
+    imageUrl: row.imageUrl || row.productImageUrl || "",
     isApproved: row.isApproved,
     shopReply: row.shopReply,
   }));

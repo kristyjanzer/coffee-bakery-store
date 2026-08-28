@@ -58,6 +58,51 @@ describe("getSliderReviews", () => {
       shopReply: null,
     });
   });
+
+  it("подставляет фото связанного товара, когда у отзыва нет своего imageUrl", async () => {
+    findManyMock.mockResolvedValueOnce([
+      {
+        id: 1,
+        productId: 5,
+        authorName: "Марина К.",
+        quoteText: "Вкусно",
+        rating: 5,
+        imageUrl: null,
+        isApproved: true,
+        shopReply: null,
+        createdAt: new Date(0),
+        product: { name: "Круассан", imageUrl: "https://res.cloudinary.com/x/croissant.avif" },
+      },
+    ]);
+
+    const { getSliderReviews } = await import("@/lib/reviewsApi");
+    const [review] = await getSliderReviews();
+
+    expect(review.imageUrl).toBe("https://res.cloudinary.com/x/croissant.avif");
+    expect(review.productName).toBe("Круассан");
+  });
+
+  it("своё imageUrl отзыва имеет приоритет над фото товара", async () => {
+    findManyMock.mockResolvedValueOnce([
+      {
+        id: 1,
+        productId: 5,
+        authorName: "Марина К.",
+        quoteText: "Вкусно",
+        rating: 5,
+        imageUrl: "https://res.cloudinary.com/x/own-review.avif",
+        isApproved: true,
+        shopReply: null,
+        createdAt: new Date(0),
+        product: { name: "Круассан", imageUrl: "https://res.cloudinary.com/x/croissant.avif" },
+      },
+    ]);
+
+    const { getSliderReviews } = await import("@/lib/reviewsApi");
+    const [review] = await getSliderReviews();
+
+    expect(review.imageUrl).toBe("https://res.cloudinary.com/x/own-review.avif");
+  });
 });
 
 describe("getAdminReviews", () => {
