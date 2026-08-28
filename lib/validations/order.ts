@@ -22,6 +22,20 @@ export const orderFormSchema = z.object({
 
 export type OrderFormValues = z.infer<typeof orderFormSchema>;
 
+// Телефон к единому виду +7XXXXXXXXXX: только цифры, ведущая 8 → 7, префикс +.
+// Нужно, чтобы один человек с "+7 900…" и "8 900…" не создал двух Customer
+// (upsert по phone в lib/orderCreation.ts).
+export function normalizePhone(raw: string): string {
+  let digits = raw.replace(/\D/g, ""); // выкидываем скобки, пробелы, дефисы, плюс
+  if (digits.length === 11 && digits.startsWith("8")) {
+    digits = `7${digits.slice(1)}`; // 8 900… → 7 900…
+  }
+  if (!digits.startsWith("7")) {
+    digits = `7${digits}`; // "900…" без кода страны → добавляем 7
+  }
+  return `+${digits}`;
+}
+
 export const orderFormDefaultValues: OrderFormValues = {
   customerName: "",
   customerContact: "",

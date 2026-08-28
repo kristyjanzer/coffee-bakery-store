@@ -2265,3 +2265,17 @@ limiting нет, как и на прочих `/api/*` (эндпоинт под �
 **Изменения схемы БД:** `Order.customerId` → полноценная связь с `Customer` (nullable FK,
 ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `NotificationSettings`.
 `docs/architecture.md` раздел 3 актуализирован.
+
+## Задача 73
+
+Раздел админки «Клиенты» на таблице `Customer`, задача 2/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/validations/order.ts` — новый `normalizePhone()`; `lib/orderCreation.ts` — `createOrder()`
+  в `$transaction` делает `customer.upsert` по нормализованному телефону + `Order.customerId`.
+- `lib/customers.ts` переписан на Prisma (агрегаты по заказам); `lib/orderAdmin.ts` — новая
+  `getOrdersByCustomerId()`; страницы `customers/{page,[id]/page}.tsx` → Prisma + `formatTimeAgo`.
+- `prisma/seed.ts` — `backfillCustomers()` (идемпотентно). Тесты: `phone.test.ts`,
+  `customers.test.ts` новые; `orderCreation`/`orderAdmin` тесты дополнены.
+
+**Security review:** применялся — находок нет. Телефон нормализуется до upsert, сумма заказа
+по-прежнему из серверных снимков цен, заказ+клиент в одной транзакции. Новых env нет.

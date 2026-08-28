@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { CreateOrderInput } from "@/lib/validations/order";
+import { normalizePhone, type CreateOrderInput } from "@/lib/validations/order";
 
 export type CreateOrderResult = { ok: true; orderId: number } | { ok: false; error: string };
 
@@ -38,17 +38,32 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
 
   const totalAmount = orderItems.reduce((sum, item) => sum + item.priceSnapshot * item.quantity, 0);
 
-  const order = await prisma.order.create({
-    data: {
-      customerName: input.customerName,
-      customerContact: input.customerContact,
-      customerEmail: input.email,
-      comment: input.comment || null,
-      preferredDate: input.preferredDate ? new Date(input.preferredDate) : null,
-      totalAmount,
-      items: { create: orderItems },
-    },
-    select: { id: true },
+  // Телефон — ключ идентификации клиента (Customer.phone @unique). Приводим к
+  // единому виду, чтобы "+7 900…" и "8 900…" от одного человека не завели двух.
+  const phone = normalizePhone(input.customerContact);
+
+  // Заказ и его клиент создаются в одной транзакции: если order.create упадёт,
+  // не должно остаться "висящего" Customer без единого заказа.
+  const order = await prisma.$transaction(async (tx) => {
+    const customer = await tx.customer.upsert({
+      where: { phone },
+      update: { name: input.customerName, email: input.email },
+      create: { name: input.customerName, phone, email: input.email },
+    });
+
+    return tx.order.create({
+      data: {
+        customerName: input.customerName,
+        customerContact: input.customerContact,
+        customerEmail: input.email,
+        comment: input.comment || null,
+        preferredDate: input.preferredDate ? new Date(input.preferredDate) : null,
+        totalAmount,
+        customerId: customer.id,
+        items: { create: orderItems },
+      },
+      select: { id: true },
+    });
   });
 
   return { ok: true, orderId: order.id };

@@ -75,6 +75,17 @@ export async function getCustomerOrderHistory(
   });
 }
 
+// Все заказы клиента (по Order.customerId) от новых к старым — для блока «История
+// заказов» на карточке клиента (docs/plan.md, пункт 18). В отличие от
+// getCustomerOrderHistory (матч по строке customerContact) здесь связь по FK.
+export async function getOrdersByCustomerId(customerId: number): Promise<AdminOrder[]> {
+  return prisma.order.findMany({
+    where: { customerId },
+    orderBy: { createdAt: "desc" },
+    select: adminOrderSelect,
+  });
+}
+
 export async function updateOrderStatus(id: number, status: OrderStatus): Promise<AdminOrder | null> {
   const existing = await prisma.order.findUnique({ where: { id } });
   if (!existing) {

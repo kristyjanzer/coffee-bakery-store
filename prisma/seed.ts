@@ -4,6 +4,7 @@ import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import rawMenu from "@/menu.json";
 import { slugify } from "@/lib/utils";
+import { normalizePhone } from "@/lib/validations/order";
 
 interface RawMenuItem {
   id: number;
@@ -78,6 +79,26 @@ async function main() {
 
   await seedReviews();
   await seedAdminUser();
+  await backfillCustomers();
+}
+
+// Исторические заказы (созданные до появления связи Order↔Customer) — привязать к
+// Customer по нормализованному телефону. Идемпотентно: после первого прогона
+// заказов с customerId: null не остаётся.
+async function backfillCustomers() {
+  const orphanOrders = await prisma.order.findMany({
+    where: { customerId: null },
+    select: { id: true, customerName: true, customerContact: true, customerEmail: true },
+  });
+  for (const order of orphanOrders) {
+    const phone = normalizePhone(order.customerContact);
+    const customer = await prisma.customer.upsert({
+      where: { phone },
+      update: { name: order.customerName, email: order.customerEmail },
+      create: { name: order.customerName, phone, email: order.customerEmail },
+    });
+    await prisma.order.update({ where: { id: order.id }, data: { customerId: customer.id } });
+  }
 }
 
 // Отзывы для слайдера на главной и раздела "Отзывы" в админке (docs/plan.md,

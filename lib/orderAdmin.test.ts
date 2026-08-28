@@ -75,6 +75,24 @@ describe("getCustomerOrderHistory", () => {
   });
 });
 
+describe("getOrdersByCustomerId", () => {
+  it("запрашивает заказы по customerId, от новых к старым", async () => {
+    const rows = [{ id: 5, status: "NEW", items: [] }];
+    findManyMock.mockResolvedValueOnce(rows);
+
+    const { getOrdersByCustomerId } = await import("@/lib/orderAdmin");
+    const result = await getOrdersByCustomerId(7);
+
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { customerId: 7 },
+        orderBy: { createdAt: "desc" },
+      })
+    );
+    expect(result).toEqual(rows);
+  });
+});
+
 describe("updateOrderStatus", () => {
   it("возвращает null и не вызывает update, если заказ не найден", async () => {
     findUniqueMock.mockResolvedValueOnce(null);

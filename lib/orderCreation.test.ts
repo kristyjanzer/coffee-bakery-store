@@ -4,14 +4,33 @@ import type { CreateOrderInput } from "@/lib/validations/order";
 
 const findManyMock = vi.hoisted(() => vi.fn());
 const createMock = vi.hoisted(() => vi.fn());
+const customerUpsertMock = vi.hoisted(() => vi.fn());
+// $transaction в проде получает колбэк и прогоняет его с tx-клиентом; в тесте
+// отдаём тот же tx, где order.create / customer.upsert — те же моки, что и выше
+// (правка мок-инфраструктуры под транзакцию в createOrder, не ослабление проверок).
+const transactionMock = vi.hoisted(() =>
+  vi.fn((cb: (tx: unknown) => unknown) =>
+    cb({ customer: { upsert: customerUpsertMock }, order: { create: createMock } })
+  )
+);
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: { product: { findMany: findManyMock }, order: { create: createMock } },
+  prisma: {
+    product: { findMany: findManyMock },
+    order: { create: createMock },
+    customer: { upsert: customerUpsertMock },
+    $transaction: transactionMock,
+  },
 }));
 
 beforeEach(() => {
   findManyMock.mockReset();
   createMock.mockReset();
+  customerUpsertMock.mockReset();
+  customerUpsertMock.mockResolvedValue({ id: 1 }); // безобидный дефолт
+  transactionMock.mockImplementation((cb: (tx: unknown) => unknown) =>
+    cb({ customer: { upsert: customerUpsertMock }, order: { create: createMock } })
+  );
 });
 
 const baseInput: CreateOrderInput = {
@@ -88,6 +107,35 @@ describe("createOrder", () => {
       expect.objectContaining({
         data: expect.objectContaining({ comment: null, preferredDate: null }),
       })
+    );
+  });
+});
+
+describe("createOrder — связь с Customer", () => {
+  it("делает upsert Customer по нормализованному телефону и проставляет customerId", async () => {
+    findManyMock.mockResolvedValueOnce([
+      { id: 1, name: "Двойной эспрессо", price: 200, stockQuantity: null },
+    ]);
+    customerUpsertMock.mockResolvedValueOnce({ id: 7 });
+    createMock.mockResolvedValueOnce({ id: 100 });
+
+    const result = await createOrder({
+      ...baseInput,
+      customerName: "Тест",
+      customerContact: "8 (900) 123-45-67",
+      email: "t@e.com",
+    });
+
+    expect(result).toEqual({ ok: true, orderId: 100 });
+    expect(customerUpsertMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { phone: "+79001234567" },
+        update: expect.objectContaining({ name: "Тест", email: "t@e.com" }),
+        create: expect.objectContaining({ phone: "+79001234567", name: "Тест", email: "t@e.com" }),
+      })
+    );
+    expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ customerId: 7 }) })
     );
   });
 });
