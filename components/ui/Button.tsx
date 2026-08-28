@@ -15,9 +15,12 @@ const variantStyles: Record<ButtonVariant, string> = {
   // Filled CTA Button (Lemon) — основное действие
   filled:
     "border-0 bg-lemon-zest px-4 py-3 text-body-sm font-semibold text-black-olive shadow-none hover:opacity-90",
-  // Ghost / Outlined Navigation Item — активный пункт навигации на тёмном фоне
+  // Ghost / Outlined — второстепенная кнопка. Используется только на светлых
+  // поверхностях админки (warm-cream): формы товара и отзыва, кнопки «Загрузить
+  // фото». Forest Ink по Warm Cream — валидная пара DESIGN.md; белая обводка/кремовый
+  // текст (для тёмного фона) здесь были бы невидимы.
   outline:
-    "border border-pure-white bg-transparent px-1.5 py-2 text-body-sm font-normal text-warm-cream shadow-none hover:bg-pure-white/10",
+    "border border-forest-ink bg-transparent px-4 py-2 text-body-sm font-normal text-forest-ink shadow-none hover:bg-forest-ink/5",
   // Ghost Link Button (ORDER NOW) — второстепенное действие, подчёркивание только при наведении
   ghost:
     "border-0 bg-transparent p-0 text-body-sm font-medium text-forest-ink shadow-none hover:underline underline-offset-4",

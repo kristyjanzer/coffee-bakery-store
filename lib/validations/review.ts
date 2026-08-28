@@ -12,6 +12,10 @@ export const moderateReviewSchema = z.object({
   isApproved: z.boolean(),
   // null — явно убрать ответ, отсутствие поля — не менять (semantics Prisma .update()).
   shopReply: z.string().trim().max(2000, "Ответ слишком длинный").nullable().optional(),
+  // Фото отзыва для слайдера на главной. null — убрать (тогда слайдер покажет фото
+  // связанного товара, см. getSliderReviews), отсутствие поля — не менять. URL
+  // приходит с POST /api/uploads (Cloudinary) или вставляется вручную.
+  imageUrl: z.string().trim().max(500, "Ссылка слишком длинная").nullable().optional(),
 });
 
 export type ModerateReviewInput = z.infer<typeof moderateReviewSchema>;

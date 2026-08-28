@@ -125,12 +125,14 @@ export async function moderateReview(
     return null;
   }
 
-  // shopReply: undefined (поля нет в теле) Prisma не трогает, null — очищает колонку.
+  // shopReply/imageUrl: undefined (поля нет в теле) Prisma не трогает, null — очищает
+  // колонку. Пустой imageUrl → слайдер на главной покажет фото связанного товара.
   const row = await prisma.review.update({
     where: { id },
     data: {
       isApproved: input.isApproved,
       shopReply: input.shopReply,
+      imageUrl: input.imageUrl,
     },
     select: apiReviewSelect,
   });

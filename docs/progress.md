@@ -2402,3 +2402,41 @@ build-time only, фикс = downgrade Prisma 7→6, breaking — задача 70
 `product.imageUrl` (Cloudinary URL, уже публичен через товары) в публичный GET `/api/reviews`
 и слайдер; нового пользовательского ввода/секретов/auth-поверхности нет, `next/image` рендерит
 только `res.cloudinary.com`, `dangerouslySetInnerHTML` не используется.
+
+## Задача 82
+
+По запросу пользователя: загрузка фото отдельного отзыва через админку (для слайдера
+на главной). Ветка `feature/admin-review-photo-upload`. Продолжение задачи 81 (слайдер
+берёт фото товара как fallback).
+
+**Изменённые файлы:**
+- `lib/validations/review.ts` — `moderateReviewSchema` получила `imageUrl`
+  (`string.max(500).nullable().optional()`; `null` = убрать, отсутствие = не менять).
+- `lib/reviewsApi.ts` — `moderateReview()` прокидывает `imageUrl` в `prisma.review.update`.
+- `components/admin/ReviewModerationControl.tsx` — блок «Фото отзыва» по образцу
+  `ProductForm`: превью (`next/image`), скрытый `<input type=file>` → `uploadProductImage`
+  (reuse `lib/uploadApi`, Cloudinary через `POST /api/uploads`), кнопка «Загрузить/Заменить»,
+  ссылка «Убрать», запасное поле ручного URL. Payload на «Сохранить» — `imageUrl: value.trim() || null`.
+- `app/pekarnya-control/(protected)/reviews/[id]/page.tsx` — `initialImageUrl={review.imageUrl}`.
+- `lib/validations/review.test.ts` — создан (imageUrl: принимается / null / длинный отклоняется / trim).
+- `lib/reviewsApi.test.ts` — кейс «`moderateReview` прокидывает `imageUrl`».
+- `components/ui/Button.tsx` — вариант `outline` перекрашен с белой обводки/кремового
+  текста (для тёмного фона) на Forest Ink по прозрачному: единственные два места
+  использования (`ProductForm` и `ReviewModerationControl`) — на светлом `warm-cream`
+  фоне админки, где прежний вариант был невидим. Заодно чинит давнюю невидимую кнопку
+  «Загрузить фото» в форме товара (задача 71).
+
+Приоритет источника картинки в слайдере (задача 81): своё фото отзыва → фото товара → заглушка.
+
+Проверено: `npx vitest run` (304/304), `npm run typecheck`, `npm run lint`, `npm run build` — чисто;
+в браузере (Chrome DevTools MCP) под ADMIN: поле «Фото отзыва» рендерится, ручная вставка URL →
+сохранение → слайдер показывает это фото у отзыва вместо фото товара; «Убрать» → сохранение →
+слайдер возвращается к фото товара; `initialImageUrl` предзаполняет поле; консоль без ошибок.
+Файловая загрузка не автоматизировалась — код 1-в-1 с `ProductForm` (задача 71).
+
+**Security review** (`.claude/skills/security-review`): находок нет. `PATCH /api/reviews/[id]` —
+`requireAdminSession(["ADMIN"])` до Prisma (без изменений), `moderateReviewSchema` валидирует
+`imageUrl` (длина, trim); `POST /api/uploads` — ADMIN-only, проверка типа/размера до Cloudinary
+(без изменений); `next/image` рендерит только `res.cloudinary.com` (`next.config.js`) — произвольный
+URL из поля не пройдёт оптимизацию, SSRF-поверхности нет; текст/URL рендерятся как атрибуты React,
+`dangerouslySetInnerHTML` не используется.
