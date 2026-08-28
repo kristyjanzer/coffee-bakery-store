@@ -44,6 +44,7 @@ export default async function AdminPagesPage({ searchParams }: PagesPageProps) {
           <Link
             key={item.tab}
             href={item.tab === "about" ? "/pekarnya-control/pages" : `/pekarnya-control/pages?tab=${item.tab}`}
+            scroll={false}
             role="tab"
             aria-selected={tab === item.tab}
             className={

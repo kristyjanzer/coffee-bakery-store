@@ -50,6 +50,7 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
         <div className="flex flex-wrap gap-3" role="tablist">
           <Link
             href={buildHref(undefined, seasonalOnly)}
+            scroll={false}
             role="tab"
             aria-selected={!activeCategory}
             className={
@@ -64,6 +65,7 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
             <Link
               key={category.slug}
               href={buildHref(category.slug, seasonalOnly)}
+              scroll={false}
               role="tab"
               aria-selected={activeCategory === category.slug}
               className={
@@ -79,6 +81,7 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
 
         <Link
           href={buildHref(activeCategory, !seasonalOnly)}
+          scroll={false}
           aria-pressed={seasonalOnly}
           className={
             seasonalOnly

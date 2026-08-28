@@ -27,6 +27,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
       <div className="flex flex-wrap gap-3" role="tablist">
         <Link
           href="/pekarnya-control/reviews"
+          scroll={false}
           role="tab"
           aria-selected={!status}
           className={
@@ -39,6 +40,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
         </Link>
         <Link
           href="/pekarnya-control/reviews?status=pending"
+          scroll={false}
           role="tab"
           aria-selected={status === "pending"}
           className={
@@ -51,6 +53,7 @@ export default async function AdminReviewsPage({ searchParams }: ReviewsPageProp
         </Link>
         <Link
           href="/pekarnya-control/reviews?status=approved"
+          scroll={false}
           role="tab"
           aria-selected={status === "approved"}
           className={
