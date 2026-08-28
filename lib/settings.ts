@@ -1,25 +1,17 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import type { AdminRole } from "@/types/next-auth";
+import type { AdminRole, AdminUserRecord } from "@/lib/adminRoles";
 
-export type { AdminRole };
-
-export const ADMIN_ROLES: AdminRole[] = ["ADMIN", "ORDER_MANAGER"];
-
-export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
-  ADMIN: "Администратор",
-  ORDER_MANAGER: "Менеджер заказов",
-};
+// Роли/подписи/тип записи — в отдельном Prisma-free модуле (см. комментарий там):
+// их тянет клиентский AdminUsersManager, а этот файл импортирует @/lib/prisma.
+// Server-код и тесты по-прежнему берут их из "@/lib/settings" через ре-экспорт.
+export { ADMIN_ROLES, ADMIN_ROLE_LABELS } from "@/lib/adminRoles";
+export type { AdminRole, AdminUserRecord };
 
 // Список/форма пользователей админки (docs/plan.md, пункт 21). Читается напрямую
 // из Prisma — Server Component не ходит через свой /api/*. Мутации из клиентских
 // форм — через lib/settingsAdminApi.ts → /api/admin-users. Пароль (passwordHash)
 // наружу не отдаётся: select ограничен id/email/role.
-export interface AdminUserRecord {
-  id: number;
-  email: string;
-  role: AdminRole;
-}
 
 export interface NotificationSettings {
   notifyEmail: boolean;

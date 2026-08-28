@@ -1,4 +1,5 @@
-import type { AdminRole, AdminUserInput, NotificationSettings } from "@/lib/settings";
+import type { AdminRole } from "@/lib/adminRoles";
+import type { AdminUserInput, NotificationSettings } from "@/lib/settings";
 
 // Клиентский helper для мутаций раздела «Настройки» из админки (docs/plan.md,
 // пункт 21). AdminUsersManager / NotificationSettingsForm — клиентские компоненты,

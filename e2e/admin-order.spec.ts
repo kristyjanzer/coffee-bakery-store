@@ -66,3 +66,30 @@ test("гость оформляет заявку → админ видит её 
   const row = page.locator("tr", { hasText: customerName });
   await expect(row).toBeVisible();
 });
+
+// Smoke-тест всех разделов админки: ловит регрессии сборки бандла — например
+// серверный модуль (Prisma-рантайм через @/lib/prisma), утёкший в клиентский
+// компонент, ронял /pekarnya-control/settings с "Module not found: Can't resolve 'fs'".
+test("все разделы админки открываются под ADMIN", async ({ page }) => {
+  test.setTimeout(120_000);
+
+  await page.goto("/pekarnya-control/login");
+  await page.getByLabel("Email").fill(ADMIN_EMAIL);
+  await page.getByLabel("Пароль").fill(ADMIN_PASSWORD);
+  await page.getByRole("button", { name: "Войти" }).click();
+  await page.waitForURL((url) => !url.pathname.endsWith("/login"), { timeout: 20_000 });
+
+  const sections: [string, string][] = [
+    ["/pekarnya-control", "Дашборд"],
+    ["/pekarnya-control/orders", "Заказы"],
+    ["/pekarnya-control/products", "Товары"],
+    ["/pekarnya-control/customers", "Клиенты"],
+    ["/pekarnya-control/reviews", "Отзывы"],
+    ["/pekarnya-control/pages", "Управление страницами"],
+    ["/pekarnya-control/settings", "Настройки"],
+  ];
+  for (const [path, heading] of sections) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible({ timeout: 15_000 });
+  }
+});

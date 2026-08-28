@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { ADMIN_ROLES, ADMIN_ROLE_LABELS, type AdminRole, type AdminUserRecord } from "@/lib/settings";
+import { ADMIN_ROLES, ADMIN_ROLE_LABELS, type AdminRole, type AdminUserRecord } from "@/lib/adminRoles";
 import {
   createAdminUser,
   deleteAdminUser,
