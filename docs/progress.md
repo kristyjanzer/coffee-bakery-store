@@ -2323,3 +2323,13 @@ ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `Notificati
 **Новые переменные окружения:** `SEED_MANAGER_EMAIL`, `SEED_MANAGER_PASSWORD` (опциональные, только seed).
 
 **Security review:** применялся — находок нет (ручки за ADMIN до БД, zod, `passwordHash` не в `select`, guard последнего ADMIN / self-demote).
+
+## Задача 77
+
+Блок F — e2e «заявка видна в админке», задача 6/7. Ветка `feature/admin-prisma-tail`.
+
+- Новый `e2e/admin-order.spec.ts` (+`dotenv/config`): гость оформляет заявку → админ логинится → видит заказ в `/pekarnya-control/orders`.
+- `e2e/checkout-flow.spec.ts` — переписана только шапка-комментарий, тело не тронуто.
+- `.github/workflows/ci.yml` — в env job `e2e` добавлены `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`; `.env.example` — пометка про e2e.
+
+**Security review:** применялся — находок нет (тестовый код + CI-only фейковые секреты).

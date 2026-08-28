@@ -48,6 +48,12 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/coffee_bakery_test
       DIRECT_URL: postgresql://postgres:postgres@localhost:5432/coffee_bakery_test
+      # Учётка админа: prisma db seed создаёт её из этих переменных, а
+      # e2e/admin-order.spec.ts под ней логинится в /pekarnya-control.
+      ADMIN_EMAIL: admin@ci.local
+      ADMIN_PASSWORD: ci-admin-password-123
+      NEXTAUTH_SECRET: ci-only-not-a-real-secret
+      NEXTAUTH_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
 
