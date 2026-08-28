@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, formatTimeAgo } from "@/lib/utils";
 import { getCustomers } from "@/lib/customers";
 
 export const metadata: Metadata = {
@@ -58,7 +58,7 @@ export default async function AdminCustomersPage() {
                     {formatPrice(customer.totalSpent)}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-caption text-black-olive/60">
-                    {customer.lastOrderMinutesAgo} мин назад
+                    {customer.lastOrderAt ? formatTimeAgo(customer.lastOrderAt) : "—"}
                   </td>
                 </tr>
               ))}

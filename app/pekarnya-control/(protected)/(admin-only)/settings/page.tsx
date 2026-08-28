@@ -42,6 +42,7 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
           <Link
             key={item.tab}
             href={item.tab === "users" ? "/pekarnya-control/settings" : `/pekarnya-control/settings?tab=${item.tab}`}
+            scroll={false}
             role="tab"
             aria-selected={tab === item.tab}
             className={

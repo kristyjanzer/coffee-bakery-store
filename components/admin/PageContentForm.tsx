@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { updateSitePage, type PageSlug } from "@/lib/pages";
+import { updateSitePage } from "@/lib/pageAdminApi";
+import type { PageSlug } from "@/lib/pages";
 
 interface PageContentFormProps {
   slug: PageSlug;
@@ -14,9 +16,9 @@ interface PageContentFormProps {
 }
 
 // Форма редактирования одной из фиксированных страниц (О нас/Контакты/Доставка и
-// оплата) + SEO title/description (docs/plan.md, пункт 20). updateSitePage() —
-// заглушка (PATCH /api/pages/[slug] появится вместе с остальными мутациями админки),
-// ничего не сохраняет по-настоящему — тот же принцип, что ReviewModerationControl.
+// оплата) + SEO title/description (docs/plan.md, пункт 20). Сохраняет через
+// PATCH /api/pages/[slug] (lib/pageAdminApi.ts), после успеха — router.refresh(),
+// чтобы серверный компонент перечитал свежий контент из БД.
 export function PageContentForm({
   slug,
   initialTitle,
@@ -30,6 +32,8 @@ export function PageContentForm({
   const [seoDescription, setSeoDescription] = useState(initialSeoDescription);
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,8 +43,14 @@ export function PageContentForm({
   async function submit() {
     setIsSaving(true);
     setSavedAt(null);
-    await updateSitePage(slug, { title, content, seoTitle, seoDescription });
+    setError(null);
+    const result = await updateSitePage(slug, { title, content, seoTitle, seoDescription });
     setIsSaving(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    router.refresh();
     setSavedAt(Date.now());
   }
 
@@ -117,7 +127,10 @@ export function PageContentForm({
           {isSaving ? "Сохраняем…" : "Сохранить"}
         </Button>
         {!isSaving && savedAt && (
-          <p className="font-venuscom text-caption text-forest-ink">Сохранено (заглушка)</p>
+          <p className="font-venuscom text-caption text-forest-ink">Сохранено</p>
+        )}
+        {error && (
+          <p className="font-venuscom text-caption font-semibold text-red-600">{error}</p>
         )}
       </div>
     </form>

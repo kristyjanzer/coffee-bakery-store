@@ -24,8 +24,10 @@ store/
 │   │       ├── products/page.tsx, products/new/page.tsx, products/[id]/page.tsx
 │   │       ├── customers/page.tsx, customers/[id]/page.tsx
 │   │       ├── reviews/page.tsx, reviews/[id]/page.tsx
-│   │       ├── pages/page.tsx       # О нас/Контакты/Доставка, SEO, баннеры
-│   │       └── settings/page.tsx    # пользователи админки, уведомления
+│   │       └── (admin-only)/         # вложенный route group — только роль ADMIN (layout-редирект)
+│   │           ├── layout.tsx        # getServerSession(authOptions) + redirect("/pekarnya-control"), если role !== ADMIN
+│   │           ├── pages/page.tsx       # О нас/Контакты/Доставка, SEO, баннеры
+│   │           └── settings/page.tsx    # пользователи админки, уведомления
 │   └── api/
 │       ├── auth/[...nextauth]/route.ts
 │       ├── categories/route.ts
@@ -34,6 +36,10 @@ store/
 │       ├── orders/route.ts               # POST (гость) → Telegram; GET (админ)
 │       ├── orders/[id]/route.ts          # GET / PATCH статуса (админ)
 │       ├── reviews/route.ts, reviews/[id]/route.ts
+│       ├── pages/[slug]/route.ts         # PATCH контента страницы (ADMIN)
+│       ├── banners/route.ts              # PUT — перезапись списка баннеров (ADMIN)
+│       ├── admin-users/route.ts, admin-users/[id]/route.ts  # CRUD пользователей админки (ADMIN)
+│       ├── settings/notifications/route.ts  # PUT — настройки уведомлений (ADMIN)
 │       └── uploads/route.ts              # POST — фото товара в Cloudinary (админ)
 │
 ├── components/
@@ -46,10 +52,14 @@ store/
 │
 ├── lib/
 │   ├── prisma.ts       # singleton PrismaClient (@prisma/adapter-pg, безопасно для serverless)
-│   ├── auth.ts          # NextAuth authOptions, проверка роли
+│   ├── auth.ts          # NextAuth authOptions, requireAdminSession(roles) — проверка роли в API
 │   ├── telegram.ts      # notifyNewOrder() — только на сервере
 │   ├── storage.ts        # uploadImage() — заливка фото товара в Cloudinary (из POST /api/uploads)
-│   ├── validations/      # zod-схемы (order.ts, product.ts)
+│   ├── dashboardStats.ts # агрегаты дашборда (summary/salesChart/topProducts/pendingOrders) из Prisma
+│   ├── customers.ts      # раздел «Клиенты» — агрегаты по заказам из Prisma
+│   ├── pages.ts / settings.ts  # чтение SitePage/Banner/AdminUser/NotificationSettings из Prisma
+│   ├── *AdminApi.ts      # клиентские обёртки fetch к мутирующим /api/* (order/product/review/page/settings)
+│   ├── validations/      # zod-схемы (order.ts, product.ts, page.ts, banner.ts, adminUser.ts, notificationSettings.ts)
 │   └── utils.ts           # formatPrice, slugify и т.д.
 │
 ├── stores/
@@ -59,7 +69,7 @@ store/
 │
 ├── prisma/
 │   ├── schema.prisma
-│   ├── seed.ts               # читает ../menu.json, наполняет БД
+│   ├── seed.ts               # читает ../menu.json; сид каталога, отзывов, админа, страниц, баннеров, демо-заказов; backfillCustomers
 │   └── migrations/
 ├── generated/prisma/          # клиент Prisma 7 (не node_modules), в .gitignore
 │
@@ -96,7 +106,7 @@ store/
 | `/pekarnya-control/products`, `/products/new`, `/products/[id]` | защищено | |
 | `/pekarnya-control/customers`, `/pekarnya-control/customers/[id]` | защищено | |
 | `/pekarnya-control/reviews`, `/pekarnya-control/reviews/[id]` | защищено | |
-| `/pekarnya-control/pages`, `/pekarnya-control/settings` | защищено | |
+| `/pekarnya-control/pages`, `/pekarnya-control/settings` | защищено, только ADMIN | route group `(admin-only)` + `layout.tsx` редиректит не-ADMIN |
 
 ### API (Route Handlers)
 | Endpoint | Метод | Доступ | Назначение |
@@ -109,6 +119,10 @@ store/
 | `/api/orders/[id]` | GET / PATCH | админ | детали, смена статуса |
 | `/api/reviews` | GET | публично | одобренные отзывы для слайдера |
 | `/api/reviews/[id]` | PATCH | админ | модерация, ответ магазина |
+| `/api/pages/[slug]` | PATCH | только ADMIN | контент/SEO страницы витрины |
+| `/api/banners` | PUT | только ADMIN | перезапись списка баннеров (`$transaction`) |
+| `/api/admin-users`, `/api/admin-users/[id]` | GET/POST/PATCH/DELETE | только ADMIN | пользователи админки и роли (guard последнего ADMIN + запрет удалять себя) |
+| `/api/settings/notifications` | PUT | только ADMIN | настройки уведомлений (singleton) |
 | `/api/uploads` | POST | админ | загрузка фото товара в Cloudinary → `{ url }` |
 
 **Важное правило:** Server Component не должен ходить через `fetch()` в свой же `/api/*` —
@@ -166,7 +180,8 @@ model Order {
   totalAmount           Int
   paymentMethod         String?    // задел на будущее
   paymentStatus         String     @default("UNPAID")
-  customerId             Int?       // задел на будущее — связь с Customer
+  customerId             Int?
+  customer               Customer?   @relation(fields: [customerId], references: [id])
   telegramNotifiedAt     DateTime?
   items                  OrderItem[]
   createdAt               DateTime @default(now())
@@ -186,14 +201,15 @@ model OrderItem {
   quantity                  Int
 }
 
-// --- заделы под будущее, чтобы не переделывать схему при росте проекта ---
+// --- прочие модели данных ---
 
 model Customer {
   id              Int      @id @default(autoincrement())
   name            String?
   phone           String?  @unique
-  email           String?  @unique
+  email           String?
   deliveryAddress String?
+  orders          Order[]
   createdAt       DateTime @default(now())
 }
 
@@ -219,7 +235,43 @@ model AdminUser {
 }
 
 enum AdminRole { ADMIN ORDER_MANAGER }
+
+// --- Управление страницами (docs/plan.md, пункт 20) ---
+
+model SitePage {
+  slug           String   @id   // "about" | "contacts" | "delivery"
+  title          String
+  content        String
+  seoTitle       String
+  seoDescription String
+  updatedAt      DateTime @updatedAt
+}
+
+model Banner {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String              // "" допустимо (загрузка фото — пункт 34)
+  title     String
+  link      String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// --- Настройки уведомлений (docs/plan.md, пункт 21): singleton-строка (id всегда 1) ---
+
+model NotificationSettings {
+  id                 Int      @id @default(1)
+  notifyEmail        Boolean  @default(false)
+  notifyEmailAddress String   @default("")
+  notifySms          Boolean  @default(false)
+  notifySmsPhone     String   @default("")
+  updatedAt          DateTime @updatedAt
+}
 ```
+
+`Customer` заполняется при создании заказа (upsert по телефону);
+`SitePage`/`Banner`/`NotificationSettings` редактируются в админке (пункты 20–21), на
+витрине пока не читаются.
 
 **Сидирование:** `prisma/seed.ts` читает `../menu.json`, идёт по категориям в порядке файла
 (проставляя `sortOrder`), делает upsert `Category`, затем `Product`. Запускается один раз
@@ -307,6 +359,19 @@ Telegram не ронял создание заказа. `TELEGRAM_BOT_TOKEN`/`TE
   мутирующий хендлер (`POST/PATCH/DELETE /api/products`, `GET/PATCH /api/orders`) сам
   проверяет `getServerSession(authOptions)` и роль перед обращением к Prisma. Публичные GET
   и `POST /api/orders` (гостевой чекаут) остаются открытыми.
+- **ADMIN-only разделы.** `/pekarnya-control/settings` (пользователи админки, уведомления) и
+  `/pekarnya-control/pages` (страницы витрины, баннеры) доступны только роли `ADMIN`, не
+  `ORDER_MANAGER`. На уровне UI — вложенный route group `app/pekarnya-control/(protected)/(admin-only)/`
+  с `layout.tsx`, который читает `getServerSession(authOptions)` и делает
+  `redirect("/pekarnya-control")`, если `role !== "ADMIN"` (`requireAdminSession`
+  возвращает `{ ok, status }` — это форма для API-роутов, не для layout), а
+  `Sidebar` скрывает эти пункты (`isAdmin`). На уровне API каждый соответствующий хендлер
+  (`PATCH /api/pages/[slug]`, `PUT /api/banners`, `/api/admin-users(/[id])`,
+  `PUT /api/settings/notifications`) первой строкой вызывает `requireAdminSession(["ADMIN"])`
+  из `lib/auth.ts` — до любого обращения к Prisma и до разбора тела. `/api/admin-users`
+  дополнительно: `passwordHash` никогда не попадает в ответ (в `select` только `id`/`email`/`role`),
+  guard последнего `ADMIN` (нельзя удалить/разжаловать) и запрет удалять/менять самого себя
+  (сверка с `getServerSession`).
 
 **Задел на будущую авторизацию покупателей** (по about-project.md — email/телефон/Google/
 Facebook, восстановление через Telegram): `providers` в `lib/auth.ts` — единая точка, куда

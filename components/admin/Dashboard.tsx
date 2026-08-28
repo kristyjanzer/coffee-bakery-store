@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBagShopping, faStar } from "@fortawesome/free-solid-svg-icons";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, formatTimeAgo } from "@/lib/utils";
 import type { Review } from "@/lib/reviews";
 import { ORDER_STATUS_LABELS } from "@/lib/orders";
 import type {
   DashboardSummary,
   PendingOrder,
   SalesChartPoint,
+  SalesRange,
   TopProduct,
-} from "@/lib/dashboard";
+} from "@/lib/dashboardStats";
+import { SalesRangeTabs } from "./SalesRangeTabs";
 
 interface DashboardProps {
   summary: DashboardSummary;
@@ -17,16 +19,20 @@ interface DashboardProps {
   topProducts: TopProduct[];
   pendingOrders: PendingOrder[];
   reviews: Review[];
+  range: SalesRange;
 }
 
 // Классы столбиков/полосок графиков — только литеральные строки, перечисленные прямо
 // здесь (в components/**, которые сканирует Tailwind, см. tailwind.config.ts). Держать
-// их в lib/dashboard.ts (данные) нельзя: там Tailwind их не увидит и не сгенерирует
+// их в lib/dashboardStats.ts (данные) нельзя: там Tailwind их не увидит и не сгенерирует
 // нужный CSS — ровно так это и сломалось при первой попытке. Высота/ширина подобраны
 // по рангу значения в наборе, а не проценту (inline style запрещён code-style.md).
-const SALES_BAR_HEIGHT_STEPS = ["h-10", "h-16", "h-20", "h-24", "h-28", "h-32", "h-36"];
-// Мобильный вариант графика продаж (горизонтальные полоски) — 7 шагов под те же 7 точек.
-const SALES_BAR_WIDTH_STEPS = ["w-1/3", "w-2/5", "w-1/2", "w-3/5", "w-2/3", "w-5/6", "w-full"];
+// 8 шагов — под максимум точек графика (вкладка «Недели» возвращает 8, «Дни» — 7,
+// «Месяцы» — 6). Меньше шагов, чем точек → два самых высоких столбца схлопывались бы
+// в одну высоту (pickStepByRank отдаёт последний шаг всем «лишним» рангам).
+const SALES_BAR_HEIGHT_STEPS = ["h-10", "h-16", "h-20", "h-24", "h-28", "h-32", "h-36", "h-40"];
+// Мобильный вариант графика продаж (горизонтальные полоски) — те же 8 шагов, до w-full.
+const SALES_BAR_WIDTH_STEPS = ["w-1/3", "w-2/5", "w-1/2", "w-3/5", "w-2/3", "w-5/6", "w-11/12", "w-full"];
 const TOP_PRODUCT_WIDTH_STEPS = ["w-3/5", "w-2/3", "w-5/6", "w-11/12", "w-full"];
 
 function pickStepByRank(steps: string[], value: number, allValues: number[]): string {
@@ -54,29 +60,29 @@ function SectionHeading({ children }: { children: string }) {
 
 // Наполнение дашборда (docs/plan.md, пункт 15; about-project.md, раздел "Страница
 // административной панели", пункт 1) — сводка, график, топ товаров, новые заказы,
-// уведомления. Данные — мок из lib/dashboard.ts (см. комментарий там), кроме
-// уведомлений о новых отзывах — они собираются здесь же из lib/reviews.ts (прокинуто
+// уведомления. Данные — Prisma-агрегаты из lib/dashboardStats.ts, кроме
+// уведомлений о новых отзывах — они собираются здесь же из отзывов (прокинуто
 // пропом из app/pekarnya-control/(protected)/page.tsx как getAdminReviews() — видит и неодобренные
 // отзывы, задача 19), а не дублируются отдельным мок-массивом.
-export function Dashboard({ summary, salesChart, topProducts, pendingOrders, reviews }: DashboardProps) {
+export function Dashboard({ summary, salesChart, topProducts, pendingOrders, reviews, range }: DashboardProps) {
   const revenues = salesChart.map((point) => point.revenue);
   const unitsSoldValues = topProducts.map((product) => product.unitsSold);
   const latestOrder = pendingOrders[0];
-  const reviewNotifications = reviews
-    .slice(0, 2)
-    .map((review, index) => ({
-      id: `review-${review.id}`,
-      icon: faStar,
-      message: `Новый отзыв от ${review.authorName} — ${review.productName}`,
-      minutesAgo: index === 0 ? 12 : 64,
-    }));
+  const reviewNotifications = reviews.slice(0, 2).map((review) => ({
+    id: `review-${review.id}`,
+    icon: faStar,
+    message: `Новый отзыв от ${review.authorName} — ${review.productName}`,
+    // Времени поступления отзыва в модели нет (Review без createdAt-снапшота в
+    // уведомлении) — строку "N мин назад" для отзывов не показываем.
+    timeAgo: null as string | null,
+  }));
   const notifications = latestOrder
     ? [
         {
           id: `order-${latestOrder.id}`,
           icon: faBagShopping,
           message: `Новый заказ №${latestOrder.id} — ${formatPrice(latestOrder.totalAmount)}`,
-          minutesAgo: latestOrder.minutesAgo,
+          timeAgo: formatTimeAgo(latestOrder.createdAt),
         },
         ...reviewNotifications,
       ]
@@ -107,7 +113,10 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders, rev
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionHeading>График продаж — последние 7 дней</SectionHeading>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <SectionHeading>График продаж</SectionHeading>
+          <SalesRangeTabs active={range} />
+        </div>
         <div className="bg-warm-cream p-[15px] shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
           {/* Десктоп/планшет — вертикальные столбцы. Высота ряда раньше была
               зафиксирована (h-36) вровень с самым высоким столбиком, но подпись
@@ -225,7 +234,7 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders, rev
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-caption text-black-olive/60">
-                    {order.minutesAgo} мин назад
+                    {formatTimeAgo(order.createdAt)}
                   </td>
                 </tr>
               ))}
@@ -242,9 +251,11 @@ export function Dashboard({ summary, salesChart, topProducts, pendingOrders, rev
               <FontAwesomeIcon icon={notification.icon} className="mt-1 size-3.5 text-forest-ink" />
               <div>
                 <p className="font-venuscom text-body-sm text-black-olive">{notification.message}</p>
-                <p className="font-venuscom text-caption text-black-olive/60">
-                  {notification.minutesAgo} мин назад
-                </p>
+                {notification.timeAgo ? (
+                  <p className="font-venuscom text-caption text-black-olive/60">
+                    {notification.timeAgo}
+                  </p>
+                ) : null}
               </div>
             </li>
           ))}

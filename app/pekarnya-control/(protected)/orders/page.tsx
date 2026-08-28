@@ -33,6 +33,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
       <div className="flex flex-wrap gap-3" role="tablist">
         <Link
           href="/pekarnya-control/orders"
+          scroll={false}
           role="tab"
           aria-selected={!activeStatus}
           className={
@@ -47,6 +48,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
           <Link
             key={status}
             href={`/pekarnya-control/orders?status=${status}`}
+            scroll={false}
             role="tab"
             aria-selected={activeStatus === status}
             className={

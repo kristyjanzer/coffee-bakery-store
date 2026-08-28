@@ -1,27 +1,17 @@
-export type AdminRole = "ADMIN" | "ORDER_MANAGER";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import type { AdminRole, AdminUserRecord } from "@/lib/adminRoles";
 
-export const ADMIN_ROLES: AdminRole[] = ["ADMIN", "ORDER_MANAGER"];
+// Роли/подписи/тип записи — в отдельном Prisma-free модуле (см. комментарий там):
+// их тянет клиентский AdminUsersManager, а этот файл импортирует @/lib/prisma.
+// Server-код и тесты по-прежнему берут их из "@/lib/settings" через ре-экспорт.
+export { ADMIN_ROLES, ADMIN_ROLE_LABELS } from "@/lib/adminRoles";
+export type { AdminRole, AdminUserRecord };
 
-export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
-  ADMIN: "Администратор",
-  ORDER_MANAGER: "Менеджер заказов",
-};
-
-export interface AdminUserRecord {
-  id: number;
-  email: string;
-  role: AdminRole;
-}
-
-// Временный источник данных до подключения Prisma/NextAuth (docs/plan.md, пункты
-// 22-25, 31) — тот же приём, что в lib/pages.ts: сигнатуры уже async/Promise, замена
-// на реальные запросы будет "тихой". AdminUser в схеме (docs/architecture.md,
-// раздел 3) уже содержит email/passwordHash/role — здесь пароль не хранится и не
-// показывается, только то, что реально нужно списку/форме.
-const ADMIN_USERS: AdminUserRecord[] = [
-  { id: 1, email: "admin@example.com", role: "ADMIN" },
-  { id: 2, email: "orders@example.com", role: "ORDER_MANAGER" },
-];
+// Список/форма пользователей админки (docs/plan.md, пункт 21). Читается напрямую
+// из Prisma — Server Component не ходит через свой /api/*. Мутации из клиентских
+// форм — через lib/settingsAdminApi.ts → /api/admin-users. Пароль (passwordHash)
+// наружу не отдаётся: select ограничен id/email/role.
 
 export interface NotificationSettings {
   notifyEmail: boolean;
@@ -30,55 +20,96 @@ export interface NotificationSettings {
   notifySmsPhone: string;
 }
 
-const NOTIFICATION_SETTINGS: NotificationSettings = {
-  notifyEmail: true,
-  notifyEmailAddress: "orders@example.com",
-  notifySms: false,
-  notifySmsPhone: "",
-};
-
-export async function getAdminUsers(): Promise<AdminUserRecord[]> {
-  return ADMIN_USERS;
-}
-
-export async function getNotificationSettings(): Promise<NotificationSettings> {
-  return NOTIFICATION_SETTINGS;
-}
-
 export interface AdminUserInput {
   email: string;
   password: string;
   role: AdminRole;
 }
 
-// Заглушки: POST/PATCH/DELETE для пользователей админки появятся вместе с остальными
-// мутациями (пункты 22-31 плана). Не мутируют ADMIN_USERS — тот же принцип, что
-// moderateReview()/updateProduct(): вызывающий компонент держит новое состояние сам.
-export function createAdminUser(input: AdminUserInput): Promise<{ success: true }> {
-  void input;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
-  });
+// Ошибка «нельзя снять или удалить последнего ADMIN» — роут ловит её и отдаёт 409.
+export class LastAdminError extends Error {
+  constructor() {
+    super("Нельзя удалить или разжаловать последнего администратора");
+    this.name = "LastAdminError";
+  }
 }
 
-export function updateAdminUserRole(id: number, role: AdminRole): Promise<{ success: true }> {
-  void id;
-  void role;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
-  });
+export async function getAdminUsers(): Promise<AdminUserRecord[]> {
+  return prisma.adminUser.findMany({
+    orderBy: { id: "asc" },
+    select: { id: true, email: true, role: true },
+  }) as Promise<AdminUserRecord[]>;
 }
 
-export function deleteAdminUser(id: number): Promise<{ success: true }> {
-  void id;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
+export async function createAdminUser(input: AdminUserInput): Promise<AdminUserRecord> {
+  const email = input.email.trim().toLowerCase();
+  const passwordHash = await bcrypt.hash(input.password, 10);
+  const created = await prisma.adminUser.create({
+    data: { email, passwordHash, role: input.role },
+    select: { id: true, email: true, role: true },
   });
+  return created as AdminUserRecord;
 }
 
-export function updateNotificationSettings(input: NotificationSettings): Promise<{ success: true }> {
-  void input;
-  return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: true }), 500);
+// Последний ADMIN не должен остаться без прав: если цель — ADMIN и он единственный,
+// снятие роли/удаление запрещено (иначе в админку было бы некому войти).
+async function assertNotLastAdmin(targetId: number): Promise<void> {
+  const target = await prisma.adminUser.findUnique({ where: { id: targetId } });
+  if (!target || target.role !== "ADMIN") return;
+  const adminCount = await prisma.adminUser.count({ where: { role: "ADMIN" } });
+  if (adminCount <= 1) throw new LastAdminError();
+}
+
+export async function updateAdminUserRole(id: number, role: AdminRole): Promise<AdminUserRecord> {
+  if (role !== "ADMIN") await assertNotLastAdmin(id);
+  const updated = await prisma.adminUser.update({
+    where: { id },
+    data: { role },
+    select: { id: true, email: true, role: true },
   });
+  return updated as AdminUserRecord;
+}
+
+export async function deleteAdminUser(id: number): Promise<void> {
+  await assertNotLastAdmin(id);
+  await prisma.adminUser.delete({ where: { id } });
+}
+
+const DEFAULT_NOTIFICATIONS: NotificationSettings = {
+  notifyEmail: false,
+  notifyEmailAddress: "",
+  notifySms: false,
+  notifySmsPhone: "",
+};
+
+// NotificationSettings — единственная строка (id: 1). upsert создаёт её при первом
+// обращении, чтобы форма всегда получала объект, даже если сида не было.
+export async function getNotificationSettings(): Promise<NotificationSettings> {
+  const row = await prisma.notificationSettings.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, ...DEFAULT_NOTIFICATIONS },
+  });
+  return {
+    notifyEmail: row.notifyEmail,
+    notifyEmailAddress: row.notifyEmailAddress,
+    notifySms: row.notifySms,
+    notifySmsPhone: row.notifySmsPhone,
+  };
+}
+
+export async function updateNotificationSettings(
+  input: NotificationSettings
+): Promise<NotificationSettings> {
+  const row = await prisma.notificationSettings.upsert({
+    where: { id: 1 },
+    update: input,
+    create: { id: 1, ...input },
+  });
+  return {
+    notifyEmail: row.notifyEmail,
+    notifyEmailAddress: row.notifyEmailAddress,
+    notifySms: row.notifySms,
+    notifySmsPhone: row.notifySmsPhone,
+  };
 }

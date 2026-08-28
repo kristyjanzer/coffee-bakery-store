@@ -1,19 +1,17 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ADMIN_ROLES, ADMIN_ROLE_LABELS, type AdminRole, type AdminUserRecord } from "@/lib/adminRoles";
 import {
-  ADMIN_ROLES,
-  ADMIN_ROLE_LABELS,
   createAdminUser,
   deleteAdminUser,
   updateAdminUserRole,
-  type AdminRole,
-  type AdminUserRecord,
-} from "@/lib/settings";
+} from "@/lib/settingsAdminApi";
 
 interface AdminUsersManagerProps {
   users: AdminUserRecord[];
@@ -29,35 +27,43 @@ function emptyNewUser(): NewUserForm {
   return { email: "", password: "", role: "ORDER_MANAGER" };
 }
 
-// Пользователи админки и роли (docs/plan.md, пункт 21). Смена роли у существующего
-// пользователя применяется сразу на onChange (как OrderStatusControl — единственное
-// поле, менять его есть смысл поштучно), удаление — с подтверждением (как в
-// ProductForm). Новый пользователь создаётся отдельной формой снизу — email/пароль/
-// роль осмысленны только вместе, поэтому сохраняются одной кнопкой (как
-// ReviewModerationControl). createAdminUser()/updateAdminUserRole()/deleteAdminUser()
-// — заглушки без реального персиста, локальный список — источник правды для UI.
-export function AdminUsersManager({ users: initialUsers }: AdminUsersManagerProps) {
-  const [users, setUsers] = useState<AdminUserRecord[]>(initialUsers);
+// Пользователи админки и роли (docs/plan.md, пункт 21). Источник правды — сервер:
+// каждая мутация идёт в /api/admin-users (проверка сессии ADMIN, guard последнего
+// ADMIN, guard «сам себя» — в роутах), при успехе делаем router.refresh(), при
+// ошибке показываем текст с сервера и НЕ трогаем список. Смена роли применяется
+// сразу на onChange (как OrderStatusControl), удаление — с подтверждением.
+export function AdminUsersManager({ users }: AdminUsersManagerProps) {
+  const router = useRouter();
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [rowError, setRowError] = useState<string | null>(null);
   const [newUser, setNewUser] = useState<NewUserForm>(emptyNewUser());
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const nextTempId = useRef(-1);
 
   async function handleRoleChange(id: number, role: AdminRole) {
     setSavingId(id);
-    await updateAdminUserRole(id, role);
-    setUsers((prev) => prev.map((user) => (user.id === id ? { ...user, role } : user)));
+    setRowError(null);
+    const result = await updateAdminUserRole(id, role);
     setSavingId(null);
+    if (!result.ok) {
+      setRowError(result.error);
+      return;
+    }
+    router.refresh();
   }
 
   async function handleDelete(user: AdminUserRecord) {
     if (!window.confirm(`Удалить пользователя «${user.email}»?`)) return;
 
     setSavingId(user.id);
-    await deleteAdminUser(user.id);
-    setUsers((prev) => prev.filter((item) => item.id !== user.id));
+    setRowError(null);
+    const result = await deleteAdminUser(user.id);
     setSavingId(null);
+    if (!result.ok) {
+      setRowError(result.error);
+      return;
+    }
+    router.refresh();
   }
 
   function handleCreateSubmit(event: FormEvent<HTMLFormElement>) {
@@ -67,8 +73,8 @@ export function AdminUsersManager({ users: initialUsers }: AdminUsersManagerProp
       setCreateError("Заполните email и пароль");
       return;
     }
-    if (users.some((user) => user.email === newUser.email.trim())) {
-      setCreateError("Пользователь с таким email уже есть");
+    if (newUser.password.length < 8) {
+      setCreateError("Пароль минимум 8 символов");
       return;
     }
 
@@ -78,14 +84,22 @@ export function AdminUsersManager({ users: initialUsers }: AdminUsersManagerProp
 
   async function submitCreate() {
     setIsCreating(true);
-    await createAdminUser(newUser);
-    setUsers((prev) => [...prev, { id: nextTempId.current--, email: newUser.email.trim(), role: newUser.role }]);
-    setNewUser(emptyNewUser());
+    const result = await createAdminUser({ ...newUser, email: newUser.email.trim() });
     setIsCreating(false);
+    if (!result.ok) {
+      setCreateError(result.error);
+      return;
+    }
+    setNewUser(emptyNewUser());
+    router.refresh();
   }
 
   return (
     <div className="flex max-w-2xl flex-col gap-8">
+      {rowError && (
+        <p className="font-venuscom text-caption font-semibold text-red-600">{rowError}</p>
+      )}
+
       {users.length === 0 ? (
         <p className="font-venuscom text-body-sm text-black-olive/70">Пользователей пока нет.</p>
       ) : (

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, formatTimeAgo } from "@/lib/utils";
 import { getCustomerById } from "@/lib/customers";
-import { getOrders, ORDER_STATUS_LABELS } from "@/lib/orders";
+import { getOrdersByCustomerId } from "@/lib/orderAdmin";
+import { ORDER_STATUS_LABELS } from "@/lib/orderStatus";
 
 export const metadata: Metadata = {
   title: "Клиент — Coffee Bakery",
@@ -18,13 +19,13 @@ interface CustomerPageProps {
 export default async function AdminCustomerPage({ params }: CustomerPageProps) {
   const { id } = await params;
   const customerId = Number(id);
-  const customer = Number.isNaN(customerId) ? undefined : await getCustomerById(customerId);
+  const customer = Number.isNaN(customerId) ? null : await getCustomerById(customerId);
 
   if (!customer) {
     notFound();
   }
 
-  const orders = (await getOrders()).filter((order) => order.customerContact === customer.phone);
+  const orders = await getOrdersByCustomerId(customer.id);
 
   return (
     <div className="flex flex-col gap-8">
@@ -92,7 +93,9 @@ export default async function AdminCustomerPage({ params }: CustomerPageProps) {
                     </Link>
                   </td>
                   <td className="px-[15px] py-3 font-venuscom text-body-sm text-black-olive">
-                    {order.items.map((item) => `${item.name} × ${item.quantity}`).join(", ")}
+                    {order.items
+                      .map((item) => `${item.productNameSnapshot} × ${item.quantity}`)
+                      .join(", ")}
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-body-sm font-semibold text-black-olive">
                     {formatPrice(order.totalAmount)}
@@ -103,7 +106,7 @@ export default async function AdminCustomerPage({ params }: CustomerPageProps) {
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-3 font-venuscom text-caption text-black-olive/60">
-                    {order.minutesAgo} мин назад
+                    {formatTimeAgo(order.createdAt)}
                   </td>
                 </tr>
               ))}

@@ -2247,3 +2247,100 @@ Server Components; тексты рендерятся как React-текст. `n
 ошибки Cloudinary не пробрасываются клиенту (общий 502 + текст, детали в лог). MIME-тип объявляет
 клиент (подделываем) — но Cloudinary сам отклоняет не-изображения, а роут только для админа; rate
 limiting нет, как и на прочих `/api/*` (эндпоинт под сессией). `npm audit` — без изменений.
+
+## Задача 72
+
+Схема Prisma под хвост пункта 35, задача 1/7. Ветка `feature/admin-prisma-tail`.
+
+- `prisma/schema.prisma` — `Order.customer`/`Customer.orders` (nullable FK); новые модели
+  `SitePage` (PK slug), `Banner`, `NotificationSettings` (singleton id=1).
+- `prisma/migrations/20260828091108_add_customer_order_relation/` — миграция (3 CREATE TABLE + FK), применена к Neon.
+- `docs/architecture.md` §3 — те же модели в наброске схемы.
+
+**Изменения схемы БД:** новые таблицы `SitePage`, `Banner`, `NotificationSettings`;
+`Order.customerId` → полноценная связь с `Customer` (nullable FK, ON DELETE SET NULL).
+
+## Задача 73
+
+Раздел админки «Клиенты» на таблице `Customer`, задача 2/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/validations/order.ts` — `normalizePhone()`; `lib/orderCreation.ts` — `createOrder()` в
+  `$transaction` делает `customer.upsert` по нормализованному телефону + `Order.customerId`.
+- `lib/customers.ts` переписан на Prisma; `lib/orderAdmin.ts` — `getOrdersByCustomerId()`;
+  страницы `customers/{page,[id]/page}.tsx` → Prisma. `prisma/seed.ts` — `backfillCustomers()`.
+- `prisma/schema.prisma` — снят `@unique` с `Customer.email`. Тесты: `phone.test.ts`,
+  `customers.test.ts` новые; `orderCreation`/`orderAdmin` дополнены.
+
+**Изменения схемы БД:** снят `@unique` с `Customer.email`; миграция
+`20260828094447_drop_customer_email_unique` (`DROP INDEX "Customer_email_key"`).
+**PENDING:** `npx prisma migrate deploy` против Neon — при разработке классификатор
+заблокировал применение, на Neon ещё висит `@unique` на `Customer.email`.
+
+## Задача 74
+
+Дашборд на Prisma-агрегатах, убран мок заказов, задача 3/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/dashboard.ts` → `lib/dashboardStats.ts`: summary/salesChart(range: дни7/недели8/месяцы6)/
+  topProducts/pendingOrders на агрегатах по не-отменённым заказам. Новый `dashboardStats.test.ts`.
+- `lib/orders.ts` сжат до `submitOrder` + ре-экспорт констант (удалены `MOCK_ORDERS` и 4 функции,
+  из `orders.test.ts` убраны 4 мёртвых describe).
+- Новый `components/admin/SalesRangeTabs.tsx`; `Dashboard.tsx` (типы из dashboardStats,
+  `formatTimeAgo`, вкладки периода) и `(protected)/page.tsx` (разбор `?range=`).
+
+## Задача 75
+
+Блок D «Управление страницами» на Prisma, задача 4/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/pages.ts` — чтение из Prisma; стаб-мутации → новый `lib/pageAdminApi.ts`. Новые роуты
+  `PATCH /api/pages/[slug]`, `PUT /api/banners` за `requireAdminSession(ADMIN)`. Новые
+  `lib/validations/{page,banner}.ts`.
+- `PageContentForm.tsx`/`BannerManager.tsx` — мутации через `pageAdminApi` + `router.refresh()`.
+  `prisma/seed.ts` — `seedSitePages` (upsert) + `seedBanners`.
+- Тесты: `pages`, `validations/page`, `validations/banner`, `api/pages/[slug]/route`, `api/banners/route`.
+
+## Задача 76
+
+Блок E «Настройки и пользователи админки» на Prisma, ADMIN-only разделы, задача 5/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/settings.ts` — на Prisma (bcrypt, `LastAdminError` guard последнего ADMIN); стаб-мутации →
+  новый `lib/settingsAdminApi.ts`; новые `lib/validations/{adminUser,notificationSettings}.ts`.
+- Новые роуты `/api/admin-users`, `/api/admin-users/[id]`, `PUT /api/settings/notifications` за
+  `requireAdminSession(["ADMIN"])` (+ guard «сам себя» через `getServerSession`). Тесты на все.
+- `pages`/`settings` → route group `(protected)/(admin-only)/` с `layout.tsx` (редирект не-ADMIN);
+  `Sidebar` получил проп `isAdmin`; клиентские менеджеры — через `settingsAdminApi`.
+  `prisma/seed.ts` — опциональный второй админ.
+
+**Новые переменные окружения:** `SEED_MANAGER_EMAIL`, `SEED_MANAGER_PASSWORD` (опциональные, только seed).
+
+## Задача 77
+
+Блок F — e2e «заявка видна в админке», задача 6/7. Ветка `feature/admin-prisma-tail`.
+
+- Новый `e2e/admin-order.spec.ts` (+`dotenv/config`): гость оформляет заявку → админ логинится →
+  видит заказ в `/pekarnya-control/orders`. `e2e/checkout-flow.spec.ts` — только шапка-комментарий.
+- `.github/workflows/ci.yml` — в env job `e2e` добавлены `ADMIN_EMAIL`, `ADMIN_PASSWORD`,
+  `NEXTAUTH_SECRET`, `NEXTAUTH_URL`; `.env.example` — пометка про e2e.
+
+**Новые переменные окружения:** только CI (job `e2e`) — `ADMIN_EMAIL`, `ADMIN_PASSWORD`,
+`NEXTAUTH_SECRET`, `NEXTAUTH_URL` (фейковые значения для прогона тестов).
+
+## Задача 78
+
+Демо-заказы в сиде + финализация доков, задача 7/7. Ветка `feature/admin-prisma-tail`.
+
+- `prisma/seed.ts` — `ORDER_FIXTURES` (12 демо-заказов, 9 клиентов, все 6 статусов) + `seedOrders()`
+  (идемпотентный upsert по id 9001–9012, snapshot цен из БД, `setval` для Order-sequence);
+  порядок в `main()`: …→ `seedOrders` → `backfillCustomers`.
+- `docs/plan.md` — пункты 15/18/20/21/35 помечены как доведённые до Prisma.
+  `docs/architecture.md` §7, дерево файлов и таблицы роутов/API актуализированы.
+
+Миграция `20260828094447_drop_customer_email_unique` (задача 73) применена к Neon
+(`prisma migrate status` — чисто, 5 миграций).
+
+## Задача 79
+
+Пометка про SSL-warning драйвера `pg` при старте dev-сервера. Ветка `feature/admin-prisma-tail`.
+
+- `.env.example` — комментарий у `DATABASE_URL`/`DIRECT_URL`: `pg` v8 печатает deprecation-warning
+  про `sslmode=require` (в pg v9 станет слабее `verify-full`). Сейчас безопасно; убрать warning —
+  дописать `&sslmode=verify-full`; полноценно — отдельной задачей с апгрейдом `pg`.

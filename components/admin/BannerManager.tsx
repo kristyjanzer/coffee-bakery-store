@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { saveBanners, type Banner, type BannerInput } from "@/lib/pages";
+import { saveBanners } from "@/lib/pageAdminApi";
+import type { Banner, BannerInput } from "@/lib/pages";
 
 interface BannerRow extends BannerInput {
   key: number;
@@ -18,13 +20,15 @@ interface BannerManagerProps {
 }
 
 // Управление баннерами/слайдером на главной (docs/plan.md, пункт 20). Весь список
-// редактируется и сохраняется одной кнопкой — saveBanners() (заглушка, POST/PATCH/DELETE
-// появятся вместе с остальными мутациями админки) принимает целый массив разом, проще, чем
-// отдельные ручки под добавление/удаление/переупорядочивание каждой строки.
+// редактируется и сохраняется одной кнопкой — saveBanners() (PUT /api/banners,
+// lib/pageAdminApi.ts) принимает целый массив разом и заменяет таблицу в транзакции,
+// проще, чем отдельные ручки под добавление/удаление/переупорядочивание каждой строки.
 export function BannerManager({ banners }: BannerManagerProps) {
   const [rows, setRows] = useState<BannerRow[]>(() => banners.map(bannerToRow));
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   // Новым (ещё не сохранённым) строкам нужен стабильный React-key, отличный от реальных id —
   // используем убывающие отрицательные числа, чтобы не пересечься с id из моков.
   const nextTempKey = useRef(-1);
@@ -53,8 +57,14 @@ export function BannerManager({ banners }: BannerManagerProps) {
   async function submit() {
     setIsSaving(true);
     setSavedAt(null);
-    await saveBanners(rows.map(({ key, ...input }) => { void key; return input; }));
+    setError(null);
+    const result = await saveBanners(rows.map(({ key, ...input }) => { void key; return input; }));
     setIsSaving(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    router.refresh();
     setSavedAt(Date.now());
   }
 
@@ -69,7 +79,7 @@ export function BannerManager({ banners }: BannerManagerProps) {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label htmlFor={`imageUrl-${row.key}`} className="font-venuscom text-caption text-black-olive/70">
-                    Ссылка на изображение (загрузка из формы появится в пункте 34 плана)
+                    Ссылка на изображение
                   </label>
                   <Input
                     id={`imageUrl-${row.key}`}
@@ -141,7 +151,10 @@ export function BannerManager({ banners }: BannerManagerProps) {
           {isSaving ? "Сохраняем…" : "Сохранить баннеры"}
         </Button>
         {!isSaving && savedAt && (
-          <p className="font-venuscom text-caption text-forest-ink">Сохранено (заглушка)</p>
+          <p className="font-venuscom text-caption text-forest-ink">Сохранено</p>
+        )}
+        {error && (
+          <p className="font-venuscom text-caption font-semibold text-red-600">{error}</p>
         )}
       </div>
     </form>
