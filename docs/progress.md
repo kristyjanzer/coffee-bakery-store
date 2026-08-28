@@ -2334,6 +2334,13 @@ limiting нет, как и на прочих `/api/*` (эндпоинт под �
 - `docs/plan.md` — пункты 15/18/20/21/35 помечены как доведённые до Prisma.
   `docs/architecture.md` §7, дерево файлов и таблицы роутов/API актуализированы.
 
-**PENDING:** `npx prisma migrate deploy` против Neon — миграция
-`20260828094447_drop_customer_email_unique` (задача 73) закоммичена, но ещё не применена
-на Neon; там пока висит `@unique` на `Customer.email`.
+Миграция `20260828094447_drop_customer_email_unique` (задача 73) применена к Neon
+(`prisma migrate status` — чисто, 5 миграций).
+
+## Задача 79
+
+Пометка про SSL-warning драйвера `pg` при старте dev-сервера. Ветка `feature/admin-prisma-tail`.
+
+- `.env.example` — комментарий у `DATABASE_URL`/`DIRECT_URL`: `pg` v8 печатает deprecation-warning
+  про `sslmode=require` (в pg v9 станет слабее `verify-full`). Сейчас безопасно; убрать warning —
+  дописать `&sslmode=verify-full`; полноценно — отдельной задачей с апгрейдом `pg`.
