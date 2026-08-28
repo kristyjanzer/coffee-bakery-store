@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 // Одна строка баннера/слайдера главной (docs/plan.md, пункт 20). imageUrl может быть
-// пустым — загрузка фото появится отдельно (пункт 34), а title/link нужны всегда.
+// пустым (баннер без картинки), а title/link нужны всегда. Фото пока задаётся URL
+// вручную; виджет загрузки можно добавить по образцу ProductForm (пункт 34) отдельно.
 export const bannerInputSchema = z.object({
   imageUrl: z.string().trim().max(500),
   title: z.string().trim().min(1, "Укажите заголовок баннера").max(200),

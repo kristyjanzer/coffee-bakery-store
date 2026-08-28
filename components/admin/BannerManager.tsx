@@ -79,7 +79,7 @@ export function BannerManager({ banners }: BannerManagerProps) {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label htmlFor={`imageUrl-${row.key}`} className="font-venuscom text-caption text-black-olive/70">
-                    Ссылка на изображение (загрузка из формы появится в пункте 34 плана)
+                    Ссылка на изображение
                   </label>
                   <Input
                     id={`imageUrl-${row.key}`}
