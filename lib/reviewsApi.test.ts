@@ -168,4 +168,20 @@ describe("moderateReview", () => {
     );
     expect(result).toMatchObject({ id: 1, isApproved: true, shopReply: "Спасибо!", productName: "Штрудель яблочный" });
   });
+
+  it("прокидывает imageUrl в prisma.review.update (null — убрать фото)", async () => {
+    findUniqueMock.mockResolvedValueOnce({ id: 1 });
+    updateMock.mockResolvedValueOnce({
+      id: 1, productId: 5, authorName: "Ольга Т.", quoteText: "Вкусно",
+      rating: null, imageUrl: null, isApproved: true, shopReply: null, createdAt: new Date(0),
+      product: { name: "Штрудель", imageUrl: null },
+    });
+
+    const { moderateReview } = await import("@/lib/reviewsApi");
+    await moderateReview(1, { isApproved: true, imageUrl: null });
+
+    expect(updateMock).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ imageUrl: null }) })
+    );
+  });
 });

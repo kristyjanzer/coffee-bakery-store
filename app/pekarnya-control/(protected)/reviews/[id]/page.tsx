@@ -47,6 +47,7 @@ export default async function AdminReviewPage({ params }: ReviewPageProps) {
           reviewId={review.id}
           initialIsApproved={review.isApproved}
           initialShopReply={review.shopReply}
+          initialImageUrl={review.imageUrl}
         />
       </section>
     </div>
