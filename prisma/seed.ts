@@ -265,6 +265,24 @@ async function seedAdminUser() {
     update: { passwordHash },
     create: { email: email.trim().toLowerCase(), passwordHash },
   });
+
+  // Опциональный второй аккаунт с ролью ORDER_MANAGER (задача 76) — чтобы было на
+  // ком проверить ADMIN-only разделы. Как и основной админ: без переменных шаг
+  // просто пропускается.
+  const managerEmail = process.env.SEED_MANAGER_EMAIL;
+  const managerPassword = process.env.SEED_MANAGER_PASSWORD;
+  if (managerEmail && managerPassword) {
+    const managerHash = await bcrypt.hash(managerPassword, 10);
+    await prisma.adminUser.upsert({
+      where: { email: managerEmail.trim().toLowerCase() },
+      update: { passwordHash: managerHash, role: "ORDER_MANAGER" },
+      create: {
+        email: managerEmail.trim().toLowerCase(),
+        passwordHash: managerHash,
+        role: "ORDER_MANAGER",
+      },
+    });
+  }
 }
 
 main()

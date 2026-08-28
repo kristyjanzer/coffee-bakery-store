@@ -11,14 +11,14 @@ import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 // названия пунктов меню 1-в-1 из ТЗ. Разделы, кроме Dashboard, появятся в пунктах
 // 16-21 плана — ссылки уже готовы под них (как ссылки на #menu/#reviews в
 // публичном Nav.tsx до появления самих секций).
-const navItems = [
+const navItems: { href: string; label: string; adminOnly?: boolean }[] = [
   { href: "/pekarnya-control", label: "Dashboard" },
   { href: "/pekarnya-control/orders", label: "Заказы" },
   { href: "/pekarnya-control/products", label: "Товары" },
   { href: "/pekarnya-control/customers", label: "Клиенты" },
   { href: "/pekarnya-control/reviews", label: "Отзывы" },
-  { href: "/pekarnya-control/pages", label: "Управление страницами" },
-  { href: "/pekarnya-control/settings", label: "Настройки" },
+  { href: "/pekarnya-control/pages", label: "Управление страницами", adminOnly: true },
+  { href: "/pekarnya-control/settings", label: "Настройки", adminOnly: true },
 ];
 
 function isActiveHref(pathname: string, href: string) {
@@ -28,15 +28,20 @@ function isActiveHref(pathname: string, href: string) {
 
 interface NavListProps {
   pathname: string;
+  isAdmin: boolean;
   onNavigate?: () => void;
 }
 
 // Активный пункт — Ghost/Outlined Navigation Item из DESIGN.md (та же обводка,
 // что у "Главная" в публичном Nav.tsx), только на всю ширину сайдбара.
-function NavList({ pathname, onNavigate }: NavListProps) {
+// Пункты с adminOnly видит только ADMIN — для ORDER_MANAGER «Управление
+// страницами» и «Настройки» скрыты (сами разделы редиректят, см. (admin-only)).
+function NavList({ pathname, isAdmin, onNavigate }: NavListProps) {
   return (
     <ul className="flex flex-col gap-2">
-      {navItems.map((item) => {
+      {navItems
+        .filter((item) => !item.adminOnly || isAdmin)
+        .map((item) => {
         const active = isActiveHref(pathname, item.href);
         return (
           <li key={item.href}>
@@ -67,7 +72,9 @@ function NavList({ pathname, onNavigate }: NavListProps) {
 // "Выйти" — реальный signOut() из NextAuth (пункт 31): чистит JWT-cookie и уводит
 // на страницу логина. Проверка сессии на страницах — в proxy.ts (пункт 32) и в
 // (protected)/layout.tsx.
-export function Sidebar() {
+// isAdmin приходит из (protected)/layout.tsx (Server Component с getServerSession) —
+// useSession здесь не зовём: Sidebar.test.tsx мокает next-auth/react без него.
+export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -104,7 +111,7 @@ export function Sidebar() {
 
       {isOpen && (
         <div className="flex flex-col gap-6 border-b border-sage-mist/20 bg-black-olive px-6 py-4 lg:hidden">
-          <NavList pathname={pathname} onNavigate={() => setIsOpen(false)} />
+          <NavList pathname={pathname} isAdmin={isAdmin} onNavigate={() => setIsOpen(false)} />
           <button
             type="button"
             onClick={() => void handleLogout()}
@@ -124,7 +131,7 @@ export function Sidebar() {
             Coffee Bakery
           </Link>
           <nav className="mt-8">
-            <NavList pathname={pathname} />
+            <NavList pathname={pathname} isAdmin={isAdmin} />
           </nav>
         </div>
         <button

@@ -25,7 +25,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
   return (
     <AdminSessionProvider>
       <div className="lg:flex lg:min-h-screen">
-        <Sidebar />
+        <Sidebar isAdmin={session?.user?.role === "ADMIN"} />
         {/* min-w-0 обязателен: флекс-элемент без него не может сжаться уже
             min-content своих потомков (браузерный дефолт min-width: auto) — с
             широкой таблицей внутри (например, /pekarnya-control/customers, все колонки

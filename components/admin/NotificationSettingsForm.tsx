@@ -1,27 +1,31 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { updateNotificationSettings, type NotificationSettings } from "@/lib/settings";
+import type { NotificationSettings } from "@/lib/settings";
+import { updateNotificationSettings } from "@/lib/settingsAdminApi";
 
 interface NotificationSettingsFormProps {
   initialSettings: NotificationSettings;
 }
 
 // Настройки уведомлений — email/SMS при новом заказе (docs/plan.md, пункт 21).
-// updateNotificationSettings() — заглушка (мутации появятся вместе с остальными
-// пунктами 22-31 плана), ничего не сохраняет по-настоящему — тот же принцип, что
-// PageContentForm. Реальная отправка уведомлений при заказе — lib/telegram.ts
-// (пункт 33 плана), эти настройки лишь описывают, куда/включено ли email/SMS.
+// Сохранение идёт в PUT /api/settings/notifications (проверка сессии ADMIN + zod
+// в роуте), при успехе router.refresh(). Реальная отправка уведомлений при заказе —
+// lib/telegram.ts (пункт 33 плана), эти настройки лишь описывают, куда/включено ли.
 export function NotificationSettingsForm({ initialSettings }: NotificationSettingsFormProps) {
+  const router = useRouter();
   const [settings, setSettings] = useState(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   function handleChange<K extends keyof NotificationSettings>(field: K, value: NotificationSettings[K]) {
     setSettings((prev) => ({ ...prev, [field]: value }));
     setSavedAt(null);
+    setError(null);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -32,9 +36,15 @@ export function NotificationSettingsForm({ initialSettings }: NotificationSettin
   async function submit() {
     setIsSaving(true);
     setSavedAt(null);
-    await updateNotificationSettings(settings);
+    setError(null);
+    const result = await updateNotificationSettings(settings);
     setIsSaving(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
     setSavedAt(Date.now());
+    router.refresh();
   }
 
   return (
@@ -95,9 +105,10 @@ export function NotificationSettingsForm({ initialSettings }: NotificationSettin
         <Button type="submit" disabled={isSaving}>
           {isSaving ? "Сохраняем…" : "Сохранить"}
         </Button>
-        {!isSaving && savedAt && (
-          <p className="font-venuscom text-caption text-forest-ink">Сохранено (заглушка)</p>
+        {!isSaving && savedAt && !error && (
+          <p className="font-venuscom text-caption text-forest-ink">Сохранено</p>
         )}
+        {error && <p className="font-venuscom text-caption font-semibold text-red-600">{error}</p>}
       </div>
     </form>
   );

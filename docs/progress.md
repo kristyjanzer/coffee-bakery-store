@@ -2311,3 +2311,15 @@ ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `Notificati
 - Тесты: `pages`, `validations/page`, `validations/banner`, `api/pages/[slug]/route`, `api/banners/route`.
 
 **Security review:** применялся — находок нет (ручки за ADMIN до БД, zod, `slug` по белому списку). Новых env нет.
+
+## Задача 76
+
+Блок E «Настройки и пользователи админки» на Prisma, ADMIN-only разделы, задача 5/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/settings.ts` — на Prisma (bcrypt, `LastAdminError` guard последнего ADMIN); стаб-мутации → новый `lib/settingsAdminApi.ts`; новые `lib/validations/{adminUser,notificationSettings}.ts`.
+- Новые роуты `/api/admin-users`, `/api/admin-users/[id]`, `PUT /api/settings/notifications` за `requireAdminSession(["ADMIN"])` (+ guard «сам себя» через `getServerSession`). Тесты на все.
+- `pages`/`settings` → route group `(protected)/(admin-only)/` с `layout.tsx` (редирект не-ADMIN); `Sidebar` получил проп `isAdmin` и скрывает 2 пункта; `AdminUsersManager`/`NotificationSettingsForm` — через `settingsAdminApi` + `router.refresh()`. `prisma/seed.ts` — опциональный второй админ.
+
+**Новые переменные окружения:** `SEED_MANAGER_EMAIL`, `SEED_MANAGER_PASSWORD` (опциональные, только seed).
+
+**Security review:** применялся — находок нет (ручки за ADMIN до БД, zod, `passwordHash` не в `select`, guard последнего ADMIN / self-demote).
