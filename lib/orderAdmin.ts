@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@/generated/prisma/client";
 
-// Список заказов для админки (docs/plan.md, пункт 28, GET /api/orders) — не путать
-// с lib/orders.ts (мок-данные раздела админки "Заказы", пункт 16, ещё не переведён
-// на Prisma; та же логика разделения, что у lib/productCatalog.ts vs lib/products.ts).
+// Список заказов для админки (docs/plan.md, пункт 28, GET /api/orders). В lib/orders.ts
+// остались только submitOrder + константы статусов заказа — данные админки читаются
+// отсюда через Prisma.
 export interface AdminOrderItem {
   productId: number;
   productNameSnapshot: string;
@@ -61,9 +61,10 @@ export async function getOrderById(id: number): Promise<AdminOrder | null> {
   });
 }
 
-// Другие заказы того же клиента (по customerContact — Customer как отдельная модель
-// пока "на вырост", docs/architecture.md, раздел 7), без текущего заказа, от новых к
-// старым. Нужно для блока "История заказов клиента" на карточке заказа (пункт 16).
+// Другие заказы того же клиента — матч по строке customerContact (в отличие от
+// getOrdersByCustomerId, которая ходит по FK Order.customerId → Customer), без
+// текущего заказа, от новых к старым. Для блока "История заказов клиента" на
+// карточке заказа (пункт 16).
 export async function getCustomerOrderHistory(
   customerContact: string,
   excludeOrderId: number

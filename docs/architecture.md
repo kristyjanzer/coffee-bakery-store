@@ -25,7 +25,7 @@ store/
 │   │       ├── customers/page.tsx, customers/[id]/page.tsx
 │   │       ├── reviews/page.tsx, reviews/[id]/page.tsx
 │   │       └── (admin-only)/         # вложенный route group — только роль ADMIN (layout-редирект)
-│   │           ├── layout.tsx        # requireAdminSession(["ADMIN"]) → redirect не-ADMIN
+│   │           ├── layout.tsx        # getServerSession(authOptions) + redirect("/pekarnya-control"), если role !== ADMIN
 │   │           ├── pages/page.tsx       # О нас/Контакты/Доставка, SEO, баннеры
 │   │           └── settings/page.tsx    # пользователи админки, уведомления
 │   └── api/
@@ -362,7 +362,9 @@ Telegram не ронял создание заказа. `TELEGRAM_BOT_TOKEN`/`TE
 - **ADMIN-only разделы.** `/pekarnya-control/settings` (пользователи админки, уведомления) и
   `/pekarnya-control/pages` (страницы витрины, баннеры) доступны только роли `ADMIN`, не
   `ORDER_MANAGER`. На уровне UI — вложенный route group `app/pekarnya-control/(protected)/(admin-only)/`
-  с `layout.tsx`, который через `requireAdminSession(["ADMIN"])` редиректит не-ADMIN, а
+  с `layout.tsx`, который читает `getServerSession(authOptions)` и делает
+  `redirect("/pekarnya-control")`, если `role !== "ADMIN"` (`requireAdminSession`
+  возвращает `{ ok, status }` — это форма для API-роутов, не для layout), а
   `Sidebar` скрывает эти пункты (`isAdmin`). На уровне API каждый соответствующий хендлер
   (`PATCH /api/pages/[slug]`, `PUT /api/banners`, `/api/admin-users(/[id])`,
   `PUT /api/settings/notifications`) первой строкой вызывает `requireAdminSession(["ADMIN"])`

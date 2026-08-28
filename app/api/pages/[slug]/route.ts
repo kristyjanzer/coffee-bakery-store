@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
 import { requireAdminSession } from "@/lib/auth";
 import { sitePageInputSchema, PAGE_SLUGS, type PageSlug } from "@/lib/validations/page";
 
@@ -42,6 +43,12 @@ export async function PATCH(
     const updated = await prisma.sitePage.update({ where: { slug }, data: parsed.data });
     return NextResponse.json(updated);
   } catch (error) {
+    // P2025 — обновляемой записи нет (slug из белого списка, но строки в БД ещё
+    // нет / её удалили). Это 404, а не сбой сервера — тот же приём, что в
+    // app/api/admin-users/[id]/route.ts.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "Страница не найдена" }, { status: 404 });
+    }
     console.error("PATCH /api/pages/[slug]:", error);
     return NextResponse.json({ error: "Не удалось сохранить страницу" }, { status: 500 });
   }

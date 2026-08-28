@@ -84,7 +84,7 @@ model OrderItem {
   quantity            Int
 }
 
-// --- заделы под будущее, чтобы не переделывать схему при росте проекта ---
+// --- прочие модели данных ---
 
 model Customer {
   id              Int      @id @default(autoincrement())

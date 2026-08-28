@@ -57,6 +57,26 @@ describe("getSalesChart", () => {
     const points = await getSalesChart("days");
     expect(points[points.length - 1].revenue).toBe(1000);
   });
+  it("weeks: заказ с датой now попадает в последний бакет", async () => {
+    orderFindManyMock.mockResolvedValue([{ createdAt: new Date(), totalAmount: 1500 }]);
+    const { getSalesChart } = await import("@/lib/dashboardStats");
+    const points = await getSalesChart("weeks");
+    expect(points[points.length - 1].revenue).toBe(1500);
+  });
+  it("months: заказ с датой now попадает в последний бакет", async () => {
+    orderFindManyMock.mockResolvedValue([{ createdAt: new Date(), totalAmount: 2500 }]);
+    const { getSalesChart } = await import("@/lib/dashboardStats");
+    const points = await getSalesChart("months");
+    expect(points[points.length - 1].revenue).toBe(2500);
+  });
+  it("days: заказ 40-дневной давности вне 7-дневного окна и не попадает ни в один бакет", async () => {
+    const old = new Date();
+    old.setDate(old.getDate() - 40);
+    orderFindManyMock.mockResolvedValue([{ createdAt: old, totalAmount: 9999 }]);
+    const { getSalesChart } = await import("@/lib/dashboardStats");
+    const points = await getSalesChart("days");
+    expect(points.reduce((s, p) => s + p.revenue, 0)).toBe(0);
+  });
 });
 
 describe("getTopProducts", () => {

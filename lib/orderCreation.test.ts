@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { createOrder } from "@/lib/orderCreation";
+import { Prisma } from "@/generated/prisma/client";
 import type { CreateOrderInput } from "@/lib/validations/order";
 
 const findManyMock = vi.hoisted(() => vi.fn());
@@ -137,5 +138,35 @@ describe("createOrder — связь с Customer", () => {
     expect(createMock).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ customerId: 7 }) })
     );
+  });
+
+  it("возвращает ok:false (не бросает) при коллизии unique-поля Prisma (P2002)", async () => {
+    findManyMock.mockResolvedValueOnce([
+      { id: 1, name: "Двойной эспрессо", price: 200, stockQuantity: null },
+    ]);
+    customerUpsertMock.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+        code: "P2002",
+        clientVersion: "x",
+      })
+    );
+
+    const result = await createOrder(baseInput);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(typeof result.error).toBe("string");
+      expect(result.error.length).toBeGreaterThan(0);
+    }
+    expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it("пробрасывает не-P2002 ошибки БД (роут отдаст 500)", async () => {
+    findManyMock.mockResolvedValueOnce([
+      { id: 1, name: "Двойной эспрессо", price: 200, stockQuantity: null },
+    ]);
+    customerUpsertMock.mockRejectedValueOnce(new Error("connection reset"));
+
+    await expect(createOrder(baseInput)).rejects.toThrow("connection reset");
   });
 });

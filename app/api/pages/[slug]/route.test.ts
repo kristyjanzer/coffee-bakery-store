@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Prisma } from "@/generated/prisma/client";
 
 const sitePageUpdateMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
@@ -86,6 +87,21 @@ describe("PATCH /api/pages/[slug]", () => {
     expect(sitePageUpdateMock).toHaveBeenCalledWith(
       expect.objectContaining({ where: { slug: "about" } })
     );
+  });
+
+  it("возвращает 404, если страницы с таким slug нет в БД (P2025)", async () => {
+    requireAdminSessionMock.mockResolvedValueOnce({ ok: true, role: "ADMIN" });
+    sitePageUpdateMock.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError("Record to update not found", {
+        code: "P2025",
+        clientVersion: "x",
+      })
+    );
+
+    const { PATCH } = await import("@/app/api/pages/[slug]/route");
+    const response = await PATCH(patchRequest("about", validBody), makeParams("about"));
+
+    expect(response.status).toBe(404);
   });
 
   it("возвращает 500, если запрос к БД падает", async () => {
