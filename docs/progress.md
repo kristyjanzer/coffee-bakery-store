@@ -2333,3 +2333,24 @@ ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `Notificati
 - `.github/workflows/ci.yml` — в env job `e2e` добавлены `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`; `.env.example` — пометка про e2e.
 
 **Security review:** применялся — находок нет (тестовый код + CI-only фейковые секреты).
+
+## Задача 78
+
+Демо-заказы в сиде + финализация доков, задача 7/7 (хвост пункта 35). Ветка `feature/admin-prisma-tail`.
+
+- `prisma/seed.ts` — `ORDER_FIXTURES` (12 демо-заказов, 9 клиентов, все 6 статусов, `createdAt`
+  за последние ~33 дня) + `seedOrders()` (идемпотентный upsert по id 9001–9012, snapshot цен из БД,
+  `setval` для Order-sequence); порядок в `main()`: …→ `seedOrders` → `backfillCustomers` (последним).
+- `docs/plan.md` — пункты 15/18/20/21 помечены «доведён до Prisma в хвосте пункта 35», пункт 35
+  расписан как полностью покрытый. `docs/architecture.md` — §7 (абзац про ADMIN-only разделы
+  `(admin-only)` + `requireAdminSession(["ADMIN"])`), дерево файлов и таблицы роутов/API актуализированы.
+
+**Security review:** прогнан по `git diff main...HEAD` — находок нет. Мутирующие роуты
+(`/api/pages`, `/api/banners`, `/api/admin-users`, `/api/settings/notifications`) вызывают
+`requireAdminSession(["ADMIN"])` до Prisma и до разбора тела; zod на всех телах; id из URL —
+`Number.isInteger && >0`; `passwordHash` не в `select`; guard последнего ADMIN и self-delete на
+месте; ошибки Prisma не пробрасываются клиенту; `createOrder` — в одном `$transaction`.
+
+**PENDING:** `npx prisma migrate deploy` нужно прогнать против Neon — миграция
+`20260828094447_drop_customer_email_unique` закоммичена, но при разработке классификатор
+заблокировал её применение; на Neon ещё висит `@unique` на `Customer.email`.

@@ -79,9 +79,212 @@ async function main() {
 
   await seedReviews();
   await seedAdminUser();
-  await backfillCustomers();
   await seedSitePages();
   await seedBanners();
+  await seedOrders();
+  // backfillCustomers ОБЯЗАН быть последним: он привязывает Customer и к демо-заказам
+  // из seedOrders, и к историческим заказам без customerId.
+  await backfillCustomers();
+}
+
+// Демо-заказы для дашборда и раздела «Клиенты» — на свежей БД обе секции иначе пустые
+// (docs/plan.md, хвост пункта 35). Идемпотентно: upsert по фиксированным id.
+// Товары — реальные id/цены из menu.json (цена берётся снимком из БД, не хардкодится).
+// customerId здесь не ставим — его проставит backfillCustomers() по телефону.
+//
+// ВАЖНО про уникальность: на Neon ещё висит `@unique` на `Customer.email` (миграция
+// drop_customer_email_unique закоммичена, но не применена). backfillCustomers() upsert-ит
+// Customer по телефону и пишет email — поэтому каждый отдельный телефон здесь имеет
+// свой отдельный email, а заказы одного клиента делят и телефон, и email.
+const ORDER_FIXTURES: Array<{
+  id: number;
+  customerName: string;
+  phone: string;
+  email: string;
+  status: "NEW" | "IN_PROGRESS" | "PREPARING" | "READY" | "DELIVERED" | "CANCELLED";
+  daysAgo: number;
+  items: { productId: number; quantity: number }[];
+}> = [
+  // Анна Смирнова — 2 заказа (свежий + давний, для «истории клиента»)
+  {
+    id: 9012,
+    customerName: "Анна Смирнова",
+    phone: "+7 900 123-45-01",
+    email: "anna.smirnova@example.com",
+    status: "NEW",
+    daysAgo: 1,
+    items: [
+      { productId: 6, quantity: 2 }, // Капучино
+      { productId: 46, quantity: 1 }, // Круассан с шоколадом
+    ],
+  },
+  {
+    id: 9005,
+    customerName: "Анна Смирнова",
+    phone: "+7 900 123-45-01",
+    email: "anna.smirnova@example.com",
+    status: "DELIVERED",
+    daysAgo: 15,
+    items: [
+      { productId: 8, quantity: 1 }, // Латте
+      { productId: 32, quantity: 2 }, // Печенье "Бискотти"
+    ],
+  },
+  // Игорь Петров — 2 заказа
+  {
+    id: 9011,
+    customerName: "Игорь Петров",
+    phone: "+7 900 123-45-02",
+    email: "igor.petrov@example.com",
+    status: "IN_PROGRESS",
+    daysAgo: 2,
+    items: [
+      { productId: 1, quantity: 1 }, // Двойной эспрессо
+      { productId: 39, quantity: 1 }, // Штрудель яблочный
+    ],
+  },
+  {
+    id: 9004,
+    customerName: "Игорь Петров",
+    phone: "+7 900 123-45-02",
+    email: "igor.petrov@example.com",
+    status: "CANCELLED",
+    daysAgo: 19,
+    items: [{ productId: 9, quantity: 1 }], // Раф
+  },
+  // Светлана Антонова — 2 заказа
+  {
+    id: 9010,
+    customerName: "Светлана Антонова",
+    phone: "+7 900 123-45-03",
+    email: "svetlana.antonova@example.com",
+    status: "PREPARING",
+    daysAgo: 4,
+    items: [{ productId: 64, quantity: 1 }], // Десерт "Соленая карамель"
+  },
+  {
+    id: 9002,
+    customerName: "Светлана Антонова",
+    phone: "+7 900 123-45-03",
+    email: "svetlana.antonova@example.com",
+    status: "DELIVERED",
+    daysAgo: 27,
+    items: [{ productId: 64, quantity: 2 }],
+  },
+  // Разовые клиенты
+  {
+    id: 9009,
+    customerName: "Дмитрий Волков",
+    phone: "+7 900 123-45-04",
+    email: "dmitry.volkov@example.com",
+    status: "NEW",
+    daysAgo: 6,
+    items: [{ productId: 6, quantity: 3 }], // Капучино
+  },
+  {
+    id: 9008,
+    customerName: "Ольга Титова",
+    phone: "+7 900 123-45-06",
+    email: "olga.titova@example.com",
+    status: "READY",
+    daysAgo: 9,
+    items: [{ productId: 39, quantity: 2 }], // Штрудель яблочный
+  },
+  {
+    id: 9007,
+    customerName: "Николай Романов",
+    phone: "+7 900 123-45-07",
+    email: "nikolay.romanov@example.com",
+    status: "DELIVERED",
+    daysAgo: 12,
+    items: [{ productId: 70, quantity: 1 }], // Торт "Медовик"
+  },
+  {
+    id: 9006,
+    customerName: "Марина Ковалёва",
+    phone: "+7 900 123-45-09",
+    email: "marina.kovaleva@example.com",
+    status: "DELIVERED",
+    daysAgo: 14,
+    items: [
+      { productId: 6, quantity: 1 },
+      { productId: 39, quantity: 1 },
+    ],
+  },
+  {
+    id: 9003,
+    customerName: "Пётр Соколов",
+    phone: "+7 900 123-45-10",
+    email: "petr.sokolov@example.com",
+    status: "DELIVERED",
+    daysAgo: 22,
+    items: [
+      { productId: 50, quantity: 1 }, // Сэндвич с куриными стрипсами
+      { productId: 8, quantity: 2 }, // Латте
+    ],
+  },
+  {
+    id: 9001,
+    customerName: "Елена Морозова",
+    phone: "+7 900 123-45-11",
+    email: "elena.morozova@example.com",
+    status: "DELIVERED",
+    daysAgo: 33,
+    items: [
+      { productId: 68, quantity: 1 }, // Торт "Фисташковая меренга"
+      { productId: 65, quantity: 2 }, // Эклер ванильный
+    ],
+  },
+];
+
+async function seedOrders() {
+  for (const f of ORDER_FIXTURES) {
+    // Цена/имя товара — снимком из уже засиженного каталога, а не из фикстуры.
+    const products = await prisma.product.findMany({
+      where: { id: { in: f.items.map((i) => i.productId) } },
+      select: { id: true, name: true, price: true },
+    });
+    const byId = new Map(products.map((p) => [p.id, p]));
+
+    const orderItems = f.items.flatMap((i) => {
+      const p = byId.get(i.productId);
+      if (!p) return []; // товар из фикстуры не найден в menu.json — пропускаем позицию
+      return [
+        {
+          productId: p.id,
+          productNameSnapshot: p.name,
+          priceSnapshot: p.price,
+          quantity: i.quantity,
+        },
+      ];
+    });
+    if (orderItems.length === 0) continue; // заказ без позиций не создаём
+
+    const totalAmount = orderItems.reduce((s, it) => s + it.priceSnapshot * it.quantity, 0);
+    const createdAt = new Date();
+    createdAt.setDate(createdAt.getDate() - f.daysAgo);
+
+    await prisma.order.upsert({
+      where: { id: f.id },
+      // update — только скаляры: вложенный items.create здесь плодил бы дубли позиций
+      // при повторном сиде. Позиции создаются один раз в create-ветке.
+      update: { status: f.status, totalAmount, createdAt },
+      create: {
+        id: f.id,
+        status: f.status,
+        customerName: f.customerName,
+        customerContact: f.phone,
+        customerEmail: f.email,
+        totalAmount,
+        createdAt,
+        items: { create: orderItems },
+      },
+    });
+  }
+
+  // id заказов проставлены вручную — двигаем SERIAL-последовательность, чтобы
+  // следующая настоящая заявка (POST /api/orders без явного id) не столкнулась с занятым.
+  await prisma.$executeRaw`SELECT setval(pg_get_serial_sequence('"Order"', 'id'), COALESCE((SELECT MAX(id) FROM "Order"), 1))`;
 }
 
 // Три фиксированные страницы витрины (docs/plan.md, пункт 20). upsert с update: {} —
