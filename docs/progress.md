@@ -2298,3 +2298,16 @@ ON DELETE SET NULL); новые таблицы `SitePage`, `Banner`, `Notificati
   `formatTimeAgo` вместо `minutesAgo`, вкладки периода) и `(protected)/page.tsx` (разбор `?range=`).
 
 **Security review:** применялся — находок нет (только чтение, `range` валидируется по `SALES_RANGES`).
+
+## Задача 75
+
+Блок D «Управление страницами» на Prisma, задача 4/7. Ветка `feature/admin-prisma-tail`.
+
+- `lib/pages.ts` — чтение из Prisma; стаб-мутации вынесены в новый `lib/pageAdminApi.ts`.
+  Новые роуты `PATCH /api/pages/[slug]`, `PUT /api/banners` за `requireAdminSession(ADMIN)`
+  (`PUT` = `$transaction([deleteMany, createMany])`). Новые `lib/validations/{page,banner}.ts`.
+- `PageContentForm.tsx`/`BannerManager.tsx` — мутации через `pageAdminApi`, показ ошибки сервера,
+  `router.refresh()`. `prisma/seed.ts` — `seedSitePages` (upsert) + `seedBanners` (если пусто).
+- Тесты: `pages`, `validations/page`, `validations/banner`, `api/pages/[slug]/route`, `api/banners/route`.
+
+**Security review:** применялся — находок нет (ручки за ADMIN до БД, zod, `slug` по белому списку). Новых env нет.

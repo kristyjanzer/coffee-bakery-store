@@ -80,6 +80,54 @@ async function main() {
   await seedReviews();
   await seedAdminUser();
   await backfillCustomers();
+  await seedSitePages();
+  await seedBanners();
+}
+
+// Три фиксированные страницы витрины (docs/plan.md, пункт 20). upsert с update: {} —
+// только создать отсутствующие, не перетирать правки, сделанные через админку.
+async function seedSitePages() {
+  const pages = [
+    {
+      slug: "about",
+      title: "О нас",
+      content:
+        "Мы — небольшая кофейня-пекарня в центре города. Печём хлеб и десерты каждое утро, " +
+        "варим кофе на свежеобжаренных зёрнах. Адрес: ул. Примерная, 10. Часы работы: 8:00-21:00 ежедневно.",
+      seoTitle: "О нас — Coffee Bakery",
+      seoDescription: "История кофейни-пекарни, адрес и часы работы.",
+    },
+    {
+      slug: "contacts",
+      title: "Контакты",
+      content: "Телефон: +7 (900) 000-00-00. Email: hello@example.com. Адрес: ул. Примерная, 10.",
+      seoTitle: "Контакты — Coffee Bakery",
+      seoDescription: "Телефон, email и адрес кофейни-пекарни.",
+    },
+    {
+      slug: "delivery",
+      title: "Доставка и оплата",
+      content:
+        "Самовывоз бесплатно. Доставка по городу — от 200 ₽, срок 60-90 минут. Оплата наличными " +
+        "или картой курьеру при получении.",
+      seoTitle: "Доставка и оплата — Coffee Bakery",
+      seoDescription: "Условия доставки и способы оплаты заказов.",
+    },
+  ];
+  for (const page of pages) {
+    await prisma.sitePage.upsert({ where: { slug: page.slug }, update: {}, create: page });
+  }
+}
+
+// Демо-баннеры — только если таблица пуста (не перетирать правки пользователя).
+async function seedBanners() {
+  if ((await prisma.banner.count()) > 0) return;
+  await prisma.banner.createMany({
+    data: [
+      { imageUrl: "", title: "Сезонное меню уже в продаже", link: "#menu", isActive: true, sortOrder: 0 },
+      { imageUrl: "", title: "Скидка 10% при самовывозе", link: "#menu", isActive: false, sortOrder: 1 },
+    ],
+  });
 }
 
 // Исторические заказы (созданные до появления связи Order↔Customer) — привязать к
