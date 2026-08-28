@@ -77,6 +77,18 @@ describe("createOrderSchema", () => {
     ).toBe(false);
   });
 
+  it("отклоняет абсурдное количество одной позиции", () => {
+    expect(
+      createOrderSchema.safeParse({ ...validOrder, items: [{ productId: 1, quantity: 1_000_000 }] })
+        .success
+    ).toBe(false);
+  });
+
+  it("отклоняет слишком много позиций в заказе", () => {
+    const items = Array.from({ length: 51 }, (_, i) => ({ productId: i + 1, quantity: 1 }));
+    expect(createOrderSchema.safeParse({ ...validOrder, items }).success).toBe(false);
+  });
+
   it("отклоняет некорректную дату предзаказа", () => {
     expect(
       createOrderSchema.safeParse({ ...validOrder, preferredDate: "не дата" }).success
