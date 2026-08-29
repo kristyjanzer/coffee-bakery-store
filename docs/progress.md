@@ -2440,3 +2440,16 @@ build-time only, фикс = downgrade Prisma 7→6, breaking — задача 70
 (без изменений); `next/image` рендерит только `res.cloudinary.com` (`next.config.js`) — произвольный
 URL из поля не пройдёт оптимизацию, SSRF-поверхности нет; текст/URL рендерятся как атрибуты React,
 `dangerouslySetInnerHTML` не используется.
+
+## Задача 83
+
+Фикс «зависания» слайдера отзывов на главной (долгий старт Swiper после перезагрузки).
+Ветка `fix/reviews-slider-ssr-fallback`.
+
+- `components/catalog/ReviewsSlider.tsx` — до гидратации рендерится статичная сетка первых
+  3 отзывов (общий `ReviewCard`), Swiper монтируется после гидратации (`useSyncExternalStore`).
+  Стрелки вынесены в `NavArrows`, до инстанса Swiper — `disabled`; инстанс из `useRef` в `useState`.
+
+Проверено: `vitest` (304/304), `typecheck`, `lint`, `build` — чисто; в браузере под CPU×20 +
+Slow 4G тройная перезагрузка «на лету» — секция сразу корректная сетка 3-в-ряд, после
+гидратации Swiper подхватывает, стрелки листают.
