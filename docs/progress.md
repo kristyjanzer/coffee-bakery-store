@@ -2453,3 +2453,18 @@ URL из поля не пройдёт оптимизацию, SSRF-поверх�
 Проверено: `vitest` (304/304), `typecheck`, `lint`, `build` — чисто; в браузере под CPU×20 +
 Slow 4G тройная перезагрузка «на лету» — секция сразу корректная сетка 3-в-ряд, после
 гидратации Swiper подхватывает, стрелки листают.
+
+## Задача 84
+
+CD-пайплайн: прод-деплой теперь через GitHub Actions, а не по пушу в main.
+
+- `.github/workflows/deploy.yml` — создан: `workflow_run` после успешного CI на main →
+  `prisma migrate deploy` (прод DIRECT_URL) → POST на Vercel Deploy Hook.
+- `vercel.json` — создан: `git.deploymentEnabled.main: false` (выключен авто-деплой Vercel на main).
+- `.github/workflows/ci.yml` — в джобу `checks` добавлен шаг `npm run build` (фейковый
+  DATABASE_URL), чтобы сломанная сборка валила CI до триггера деплоя.
+- `app/(site)/page.tsx` — `export const dynamic = "force-dynamic"`: главная больше не
+  пререндерится статически на этапе build (падала без доступа к БД на Vercel).
+- `docs/architecture.md` — раздел 8 актуализирован (CD, миграции больше не вручную).
+
+Секреты GitHub Actions (не .env): `PROD_DIRECT_URL`, `VERCEL_DEPLOY_HOOK_URL` — заводит владелец репо.

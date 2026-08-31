@@ -4,6 +4,11 @@ import { ReviewsSlider } from "@/components/catalog/ReviewsSlider";
 import { getCatalog } from "@/lib/catalog";
 import { getSliderReviews } from "@/lib/reviewsApi";
 
+// Каталог и отзывы правятся через админку и должны быть свежими на каждый запрос.
+// Без этого Next пытается «запечь» главную на этапе `next build` (на Vercel — без
+// доступа к БД) и сборка падает на prerender-е "/".
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [catalog, reviews] = await Promise.all([getCatalog(), getSliderReviews()]);
 

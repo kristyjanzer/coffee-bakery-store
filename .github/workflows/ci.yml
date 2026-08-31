@@ -26,6 +26,14 @@ jobs:
 
       - run: npm run test
 
+      # Ловим ошибки прод-сборки (напр. падение prerender-а) до того, как CD дёрнет
+      # деплой на Vercel — deploy.yml триггерится по факту зелёного CI. Витринные
+      # страницы динамические (force-dynamic), поэтому реальная БД сборке не нужна —
+      # фейковой строки хватает, чтобы Prisma-клиент инициализировался.
+      - run: npm run build
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/placeholder
+
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
