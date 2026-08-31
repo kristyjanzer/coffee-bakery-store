@@ -384,7 +384,14 @@ Facebook, восстановление через Telegram): `providers` в `lib
 
 ## 8. Деплой
 
-- Один Next.js-проект → GitHub → автодеплой на Vercel (Preview на PR/ветку, Production на main).
+- Один Next.js-проект → GitHub. **Preview** — автодеплой Vercel на каждый PR/ветку (как из коробки).
+  **Production** — не по пушу в `main`, а через CD-пайплайн (см. ниже): авто-деплой Vercel на `main`
+  выключен через `vercel.json` (`git.deploymentEnabled.main: false`).
+- **CD (`.github/workflows/deploy.yml`):** триггерится по `workflow_run` после успешного завершения
+  workflow «CI» на `main`. Шаги: `npm ci` → `prisma migrate deploy` против прод-`DIRECT_URL` →
+  POST на Vercel Deploy Hook (ветка `main`), который и катит прод-код. Порядок «сначала схема БД,
+  потом код» — чтобы новый код не оказался на секунды впереди схемы. Если CI упал — деплой не стартует.
+  Секреты в GitHub Actions: `PROD_DIRECT_URL`, `VERCEL_DEPLOY_HOOK_URL`.
 - Postgres — управляемый инстанс на Neon или Supabase, независимо от Vercel.
 - Переменные окружения задаются в Vercel per environment: `DATABASE_URL`, `DIRECT_URL`,
   `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, ключи хранилища
@@ -408,10 +415,11 @@ Facebook, восстановление через Telegram): `providers` в `lib
   главный подводный камень при связке serverless + managed Postgres, стоит сразу закладывать обе
   переменные.
 - **Миграции:** `prisma migrate dev` локально генерирует файлы миграций (коммитятся в
-  `prisma/migrations/`), `prisma migrate deploy` применяет их на проде. Для масштаба
-  учебного проекта достаточно запускать `npx prisma migrate deploy` вручную со своей машины
-  против прод-`DIRECT_URL` перед/после деплоя — CI не обязателен, но это естественный
-  апгрейд на будущее (build-хук Vercel или маленький GitHub Action).
+  `prisma/migrations/`), `prisma migrate deploy` применяет их на проде. На проде это делает
+  CD-пайплайн (`.github/workflows/deploy.yml`) при каждом деплое — вручную со своей машины
+  запускать больше не нужно. Требование к миграциям: они должны быть обратно совместимы со
+  старым кодом (expand-and-contract) — деплой хука Vercel стартует сразу после `migrate deploy`,
+  поэтому на короткое время старый код работает уже с новой схемой.
 - **Сидирование:** `npx prisma db seed` запускается один раз на проде после первой миграции,
   чтобы загрузить `menu.json`. Не часть обычного деплоя; upsert делает повторные запуски
   безопасными.
