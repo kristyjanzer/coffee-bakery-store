@@ -8,19 +8,21 @@ import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { scrollToId } from "@/lib/utils";
 
 // Пункты навигации в порядке сверху вниз по странице. sectionId — id секции
-// витрины, за которой следит scroll-spy: #menu/#reviews — на главной,
-// #contacts — футер (есть на всех страницах). null — обычный маршрут.
+// витрины, за которой следит scroll-spy. null — обычный маршрут.
 interface NavItem {
   href: string;
   sectionId: string | null;
   label: string;
+  // Секция есть на любой странице витрины (футер #contacts живёт в layout), а не
+  // только на главной — значит, якорь всегда скроллит по месту, не уводит на "/".
+  alwaysPresent?: boolean;
 }
 
 const links: NavItem[] = [
   { href: "/", sectionId: null, label: "Главная" },
   { href: "#menu", sectionId: "menu", label: "Меню" },
   { href: "#reviews", sectionId: "reviews", label: "Отзывы" },
-  { href: "#contacts", sectionId: "contacts", label: "Контакты" },
+  { href: "#contacts", sectionId: "contacts", label: "Контакты", alwaysPresent: true },
 ];
 
 const SECTION_IDS: string[] = links
@@ -76,13 +78,14 @@ interface NavLinkProps {
   href: string;
   label: string;
   active: boolean;
-  // true — мы на главной, где секции реально есть и якорь скроллит по месту.
-  onHomePage: boolean;
+  // true — целевая секция есть на текущей странице (якорь скроллит по месту),
+  // false — секции тут нет, нужен переход на главную к этому якорю.
+  sectionOnPage: boolean;
   className: string;
   onNavigate?: () => void;
 }
 
-function NavLink({ href, label, active, onHomePage, className, onNavigate }: NavLinkProps) {
+function NavLink({ href, label, active, sectionOnPage, className, onNavigate }: NavLinkProps) {
   const ariaCurrent = active ? "page" : undefined;
 
   // Обычный маршрут.
@@ -94,9 +97,9 @@ function NavLink({ href, label, active, onHomePage, className, onNavigate }: Nav
     );
   }
 
-  // Якорь не с главной: секций #menu/#reviews на этой странице нет — ведём на
-  // "/#slug" обычным переходом (next/link сам доведёт до якоря на главной).
-  if (!onHomePage) {
+  // Секции нет на этой странице (#menu/#reviews вне главной) — ведём на "/#slug"
+  // обычным переходом (next/link сам доведёт до якоря на главной).
+  if (!sectionOnPage) {
     return (
       <Link
         href={`/${href}`}
@@ -109,8 +112,8 @@ function NavLink({ href, label, active, onHomePage, className, onNavigate }: Nav
     );
   }
 
-  // Якорь на главной: ручной скролл — next/link не всегда доводит до конца при
-  // переходе по якорю в пределах той же страницы (см. scrollToId в lib/utils.ts).
+  // Секция на этой странице — ручной скролл: next/link не всегда доводит до конца
+  // при переходе по якорю в пределах той же страницы (см. scrollToId в lib/utils.ts).
   return (
     <a
       href={href}
@@ -156,7 +159,7 @@ export function Nav() {
         href={link.href}
         label={link.label}
         active={active}
-        onHomePage={onHomePage}
+        sectionOnPage={onHomePage || link.alwaysPresent === true}
         className={`${linkClass(active)}${extraClass ? ` ${extraClass}` : ""}`}
         onNavigate={onNavigate}
       />

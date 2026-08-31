@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import { Nav } from "@/components/layout/Nav";
 
 // usePathname — задаём per-test через переменную (Nav решает по маршруту, какой
@@ -7,6 +7,14 @@ import { Nav } from "@/components/layout/Nav";
 let mockPathname = "/";
 vi.mock("next/navigation", () => ({
   usePathname: () => mockPathname,
+}));
+
+// scrollToId мокаем, чтобы проверять ручной скролл по якорю (jsdom не умеет
+// scrollIntoView). Остальные утилиты — как есть.
+const scrollToIdMock = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/utils", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/utils")>()),
+  scrollToId: scrollToIdMock,
 }));
 
 // Управляемый IntersectionObserver: на странице их несколько (next/link заводит
@@ -51,6 +59,7 @@ function enterViewport(id: string, isIntersecting = true) {
 beforeEach(() => {
   mockPathname = "/";
   observers.length = 0;
+  scrollToIdMock.mockClear();
   vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
   // Секции витрины, за которыми следит scroll-spy.
   document.body.innerHTML = `
@@ -89,11 +98,24 @@ describe("Nav — активный пункт", () => {
     );
   });
 
-  it("не с главной «Меню» ведёт на /#menu (секции живут на главной)", () => {
+  it("не с главной «Меню» ведёт на /#menu (секция #menu живёт только на главной)", () => {
     mockPathname = "/product/12";
     render(<Nav />);
 
     expect(screen.getByRole("link", { name: "Меню" })).toHaveAttribute("href", "/#menu");
+  });
+
+  it("не с главной «Контакты» остаётся якорем #contacts (футер есть на всех страницах)", () => {
+    mockPathname = "/product/12";
+    render(<Nav />);
+
+    const contacts = screen.getByRole("link", { name: "Контакты" });
+    expect(contacts).toHaveAttribute("href", "#contacts");
+
+    // Клик скроллит по месту, а не уводит на главную.
+    const prevented = fireEvent.click(contacts);
+    expect(prevented).toBe(false); // preventDefault() вызван
+    expect(scrollToIdMock).toHaveBeenCalledWith("contacts");
   });
 
   it("scroll-spy: секция отзывов во вьюпорте → активны «Отзывы»", () => {
