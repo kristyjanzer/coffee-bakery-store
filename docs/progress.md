@@ -2468,3 +2468,8 @@ CD-пайплайн: прод-деплой теперь через GitHub Action
 - `docs/architecture.md` — раздел 8 актуализирован (CD, миграции больше не вручную).
 
 Секреты GitHub Actions (не .env): `PROD_DIRECT_URL`, `VERCEL_DEPLOY_HOOK_URL` — заводит владелец репо.
+
+## Задача 85
+
+- `.github/workflows/ci.yml` — `node-version` 22 → 24 в обеих джобах (`checks`, `e2e`),
+  чтобы CI совпадал с рантаймом Vercel (Node 24.x).
