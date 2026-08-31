@@ -2461,6 +2461,10 @@ CD-пайплайн: прод-деплой теперь через GitHub Action
 - `.github/workflows/deploy.yml` — создан: `workflow_run` после успешного CI на main →
   `prisma migrate deploy` (прод DIRECT_URL) → POST на Vercel Deploy Hook.
 - `vercel.json` — создан: `git.deploymentEnabled.main: false` (выключен авто-деплой Vercel на main).
+- `.github/workflows/ci.yml` — в джобу `checks` добавлен шаг `npm run build` (фейковый
+  DATABASE_URL), чтобы сломанная сборка валила CI до триггера деплоя.
+- `app/(site)/page.tsx` — `export const dynamic = "force-dynamic"`: главная больше не
+  пререндерится статически на этапе build (падала без доступа к БД на Vercel).
 - `docs/architecture.md` — раздел 8 актуализирован (CD, миграции больше не вручную).
 
 Секреты GitHub Actions (не .env): `PROD_DIRECT_URL`, `VERCEL_DEPLOY_HOOK_URL` — заводит владелец репо.
