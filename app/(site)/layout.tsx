@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AnchorScrollFix } from "@/components/layout/AnchorScrollFix";
 import { CartHydration } from "@/components/cart/CartHydration";
 import { CartWidget } from "@/components/cart/CartWidget";
 
@@ -11,6 +12,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <CartHydration />
+      <AnchorScrollFix />
       <Header />
       {children}
       <Footer />
