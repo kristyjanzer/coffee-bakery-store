@@ -56,9 +56,10 @@ export function CategoryTabs({ categories, activeSlug, onSelect }: CategoryTabsP
     >
       {/* w-max + mx-auto: список центрируется, пока у́же контейнера; когда категорий
           станет больше и он шире — mx-auto перестаёт действовать, работает обычный
-          горизонтальный скролл. px-2.5 на этом блоке (а не на скролл-контейнере) —
-          чтобы отступ ~10px сохранялся у обоих концов при прокрутке. */}
-      <div className="mx-auto flex w-max shrink-0 items-center gap-3 px-2.5">
+          горизонтальный скролл. sm:px-2.5 (а не на скролл-контейнере) — отступ ~10px
+          у обоих концов при прокрутке; на мобилке отступа нет, чтобы первый таб был
+          на одной линии с остальными блоками страницы (у секции свой px-6). */}
+      <div className="mx-auto flex w-max shrink-0 items-center gap-3 sm:px-2.5">
         {categories.map((category) => (
           <button
             key={category.slug}
