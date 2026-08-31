@@ -44,13 +44,15 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* flex-1 + mt-auto на цене — цена и "+" всегда приклеены к низу карточки,
-          независимо от того, сколько строк занимает название соседних товаров в ряду. */}
-      <div className="mt-[30px] flex flex-1 flex-col">
+          независимо от того, сколько строк занимает название соседних товаров в ряду.
+          mt на мобилке меньше (по запросу пользователя), с sm — прежний отступ. */}
+      <div className="mt-[10px] flex flex-1 flex-col sm:mt-[30px]">
         <Link href={`/product/${product.id}`} onClick={saveCatalogScrollPosition}>
           {/* На мобильных body-lg (20px) сжимает карточку в 2-колоночной сетке —
-              по запросу пользователя уменьшено до 18px, начиная с sm: (переход на
-              широкую сетку) возвращается токен DESIGN.md. */}
-          <h3 className="font-venuscom text-[18px] text-black-olive sm:text-body-lg">
+              по запросу пользователя уменьшено до 18px, с sm: возвращается токен
+              DESIGN.md. break-words — длинное слово без пробелов ("Монастырская")
+              в узкой карточке иначе вылезает за край и даёт горизонтальный скролл. */}
+          <h3 className="break-words font-venuscom text-[18px] text-black-olive sm:text-body-lg">
             {product.name}
           </h3>
         </Link>
