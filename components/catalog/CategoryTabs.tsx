@@ -48,38 +48,44 @@ export function CategoryTabs({ categories, activeSlug, onSelect }: CategoryTabsP
     <div
       ref={trackRef}
       role="tablist"
-      className="scrollbar-hide sticky top-20 z-30 flex h-16 cursor-grab select-none items-center gap-3 overflow-x-auto border-b border-sage-mist bg-warm-cream active:cursor-grabbing"
+      className="scrollbar-hide sticky top-20 z-30 flex h-16 cursor-grab select-none items-center overflow-x-auto border-b border-sage-mist bg-warm-cream active:cursor-grabbing"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={stopDragging}
       onMouseLeave={stopDragging}
     >
-      {categories.map((category) => (
-        <button
-          key={category.slug}
-          type="button"
-          role="tab"
-          aria-selected={category.slug === activeSlug}
-          onClick={() => {
-            // Клик в конце драга (mouseup срабатывает прямо на табе под курсором) не
-            // должен ещё и переключать категорию — иначе перетаскивание "дёргается".
-            if (drag.current.moved) return;
-            onSelect(category.slug);
-            // Если пользователь долистал длинную категорию вниз, а новая короче —
-            // без этого он окажется в следующем блоке (отзывы), а не в начале секции.
-            // Цель — не сам (sticky) таб-бар: у sticky-элементов scrollIntoView
-            // в headless-хроме не пересчитывает позицию, скроллим к секции целиком.
-            scrollToId("menu");
-          }}
-          className={
-            category.slug === activeSlug
-              ? "shrink-0 rounded-sm border border-black-olive px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive shadow-[0_2px_8px_rgba(0,0,0,0.1)]"
-              : "shrink-0 rounded-sm border border-transparent px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:text-black-olive"
-          }
-        >
-          {category.name}
-        </button>
-      ))}
+      {/* w-max + mx-auto: список центрируется, пока у́же контейнера; когда категорий
+          станет больше и он шире — mx-auto перестаёт действовать, работает обычный
+          горизонтальный скролл. px-2.5 на этом блоке (а не на скролл-контейнере) —
+          чтобы отступ ~10px сохранялся у обоих концов при прокрутке. */}
+      <div className="mx-auto flex w-max shrink-0 items-center gap-3 px-2.5">
+        {categories.map((category) => (
+          <button
+            key={category.slug}
+            type="button"
+            role="tab"
+            aria-selected={category.slug === activeSlug}
+            onClick={() => {
+              // Клик в конце драга (mouseup срабатывает прямо на табе под курсором) не
+              // должен ещё и переключать категорию — иначе перетаскивание "дёргается".
+              if (drag.current.moved) return;
+              onSelect(category.slug);
+              // Если пользователь долистал длинную категорию вниз, а новая короче —
+              // без этого он окажется в следующем блоке (отзывы), а не в начале секции.
+              // Цель — не сам (sticky) таб-бар: у sticky-элементов scrollIntoView
+              // в headless-хроме не пересчитывает позицию, скроллим к секции целиком.
+              scrollToId("menu");
+            }}
+            className={
+              category.slug === activeSlug
+                ? "shrink-0 rounded-sm border border-black-olive px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive shadow-[0_2px_8px_rgba(0,0,0,0.1)]"
+                : "shrink-0 rounded-sm border border-transparent px-4 py-2 font-venuscom text-body-sm uppercase text-black-olive/60 shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:text-black-olive"
+            }
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
