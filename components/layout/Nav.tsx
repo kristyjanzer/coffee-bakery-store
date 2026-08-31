@@ -32,8 +32,22 @@ const SECTION_IDS: string[] = links
 // Возвращает id секций, пересекающих "полосу активности" — среднюю половину
 // экрана. rootMargin поджимает область наблюдения на 25% сверху и снизу: полоса
 // широкая (стабильнее узкой при быстром скролле) и достаёт до короткого футера.
-function useVisibleSections(): string[] {
+//
+// pathname в зависимостях эффекта — обязателен: Nav живёт в общем layout витрины
+// и при переходе между страницами не перемонтируется. Без пере-подписки обсёрвер
+// продолжал бы следить за DOM-узлами предыдущей страницы (или не видел бы секции,
+// появившиеся только сейчас).
+function useVisibleSections(pathname: string): string[] {
   const [visible, setVisible] = useState<string[]>([]);
+  const [trackedPath, setTrackedPath] = useState(pathname);
+
+  // Сменился маршрут — секции предыдущей страницы больше не в DOM, старый набор
+  // невалиден. Сброс на фазе рендера (паттерн React "adjust state on prop
+  // change"), а не в эффекте — иначе успел бы мелькнуть неверный активный пункт.
+  if (pathname !== trackedPath) {
+    setTrackedPath(pathname);
+    setVisible([]);
+  }
 
   useEffect(() => {
     const elements = SECTION_IDS.map((id) => document.getElementById(id)).filter(
@@ -57,7 +71,7 @@ function useVisibleSections(): string[] {
 
     elements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   return visible;
 }
@@ -133,7 +147,7 @@ function NavLink({ href, label, active, sectionOnPage, className, onNavigate }: 
 export function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const visibleSections = useVisibleSections();
+  const visibleSections = useVisibleSections(pathname);
 
   const onHomePage = pathname === "/";
 
