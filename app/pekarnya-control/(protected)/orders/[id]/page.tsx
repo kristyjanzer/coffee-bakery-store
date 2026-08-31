@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatPrice, formatTimeAgo } from "@/lib/utils";
-import { getCustomerOrderHistory, getOrderById } from "@/lib/orderAdmin";
-import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type PaymentStatus } from "@/lib/orderStatus";
+import { getCustomerOrderHistory, getOrderById } from "@/lib/server/orderAdmin";
+import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type PaymentStatus } from "@/lib/shared/orderStatus";
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
 
 function paymentStatusLabel(status: string): string {

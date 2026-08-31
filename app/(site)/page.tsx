@@ -1,8 +1,8 @@
 import { Hero } from "@/components/layout/Hero";
 import { Catalog } from "@/components/catalog/Catalog";
 import { ReviewsSlider } from "@/components/catalog/ReviewsSlider";
-import { getCatalog } from "@/lib/catalog";
-import { getSliderReviews } from "@/lib/reviewsApi";
+import { getCatalog } from "@/lib/server/catalog";
+import { getSliderReviews } from "@/lib/server/reviewsApi";
 
 // Каталог и отзывы правятся через админку и должны быть свежими на каждый запрос.
 // Без этого Next пытается «запечь» главную на этапе `next build` (на Vercel — без

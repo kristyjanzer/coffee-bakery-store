@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { OrderStatus } from "@/generated/prisma/client";
 import { createOrderSchema } from "@/lib/validations/order";
-import { createOrder } from "@/lib/orderCreation";
-import { getOrders } from "@/lib/orderAdmin";
-import { notifyNewOrder } from "@/lib/telegram";
-import { requireAdminSession } from "@/lib/auth";
+import { createOrder } from "@/lib/server/orderCreation";
+import { getOrders } from "@/lib/server/orderAdmin";
+import { notifyNewOrder } from "@/lib/integrations/telegram";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 const ORDER_STATUS_VALUES = Object.values(OrderStatus) as OrderStatus[];
 

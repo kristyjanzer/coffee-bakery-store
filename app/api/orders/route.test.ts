@@ -4,15 +4,15 @@ const createOrderMock = vi.hoisted(() => vi.fn());
 const getOrdersMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/orderCreation", () => ({
+vi.mock("@/lib/server/orderCreation", () => ({
   createOrder: createOrderMock,
 }));
 
-vi.mock("@/lib/orderAdmin", () => ({
+vi.mock("@/lib/server/orderAdmin", () => ({
   getOrders: getOrdersMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

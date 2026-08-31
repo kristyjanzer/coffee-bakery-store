@@ -7,7 +7,7 @@ import type { Swiper as SwiperInstance } from "swiper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight, faImage } from "@fortawesome/free-solid-svg-icons";
 import "swiper/css";
-import type { Review } from "@/lib/reviews";
+import type { Review } from "@/lib/shared/reviews";
 
 interface ReviewsSliderProps {
   reviews: Review[];

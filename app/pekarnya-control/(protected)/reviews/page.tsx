@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAdminReviews } from "@/lib/reviewsApi";
+import { getAdminReviews } from "@/lib/server/reviewsApi";
 
 export const metadata: Metadata = {
   title: "Отзывы — Coffee Bakery",

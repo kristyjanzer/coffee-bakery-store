@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAdminCategories, getAdminProductById } from "@/lib/products";
+import { getAdminCategories, getAdminProductById } from "@/lib/server/products";
 import { ProductForm } from "@/components/admin/ProductForm";
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ interface EditProductPageProps {
 }
 
 // Редактирование товара (docs/plan.md, пункт 17). ProductForm сама вызывает
-// updateProduct()/deleteProduct() (заглушки, lib/products.ts) и редиректит на
+// updateProduct()/deleteProduct() (заглушки, lib/server/products.ts) и редиректит на
 // список после "сохранения"/удаления.
 export default async function EditProductPage({ params }: EditProductPageProps) {
   const { id } = await params;

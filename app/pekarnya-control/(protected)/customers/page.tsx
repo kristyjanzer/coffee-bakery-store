@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { formatPrice, formatTimeAgo } from "@/lib/utils";
-import { getCustomers } from "@/lib/customers";
+import { getCustomers } from "@/lib/server/customers";
 
 export const metadata: Metadata = {
   title: "Клиенты — Coffee Bakery",

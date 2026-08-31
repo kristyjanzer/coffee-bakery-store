@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/auth";
-import { uploadImage } from "@/lib/storage";
+import { requireAdminSession } from "@/lib/auth/auth";
+import { uploadImage } from "@/lib/integrations/storage";
 import { validateImageFile } from "@/lib/validations/upload";
 
 // POST /api/uploads — загрузка фото товара в Cloudinary, только ADMIN
 // (docs/plan.md, пункт 34; docs/architecture.md, раздел 6). Клиентский ProductForm
 // шлёт сюда multipart/form-data с полем `file`; сервер проверяет сессию, тип и
-// размер файла, затем отдаёт его в Cloudinary через lib/storage.ts и возвращает
+// размер файла, затем отдаёт его в Cloudinary через lib/integrations/storage.ts и возвращает
 // { url }. Запись URL в товар остаётся за PATCH /api/products/[id].
 export async function POST(request: Request) {
   const auth = await requireAdminSession();

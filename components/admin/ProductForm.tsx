@@ -8,9 +8,9 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { productFormSchema } from "@/lib/validations/product";
-import type { AdminCategory, AdminProduct, ProductInput } from "@/lib/products";
-import { createProduct, deleteProduct, updateProduct } from "@/lib/productAdminApi";
-import { uploadProductImage } from "@/lib/uploadApi";
+import type { AdminCategory, AdminProduct, ProductInput } from "@/lib/server/products";
+import { createProduct, deleteProduct, updateProduct } from "@/lib/api-client/productAdminApi";
+import { uploadProductImage } from "@/lib/api-client/uploadApi";
 
 export interface ProductFormState {
   name: string;
@@ -35,7 +35,7 @@ export interface ProductFormState {
 type FormErrors = Partial<Record<keyof ProductFormState, string>>;
 
 // "" в числовом поле формы значит "не указано" — при заполнении редактирования
-// из мок-товара (lib/products.ts, число | null) конвертируем обратно в строку.
+// из мок-товара (lib/server/products.ts, число | null) конвертируем обратно в строку.
 function numberToFieldValue(value: number | null | undefined): string {
   return value === null || value === undefined ? "" : String(value);
 }

@@ -4,8 +4,8 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
-import { moderateReview } from "@/lib/reviewAdminApi";
-import { uploadProductImage } from "@/lib/uploadApi";
+import { moderateReview } from "@/lib/api-client/reviewAdminApi";
+import { uploadProductImage } from "@/lib/api-client/uploadApi";
 
 interface ReviewModerationControlProps {
   reviewId: number;

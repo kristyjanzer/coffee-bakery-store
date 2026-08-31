@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getProductById, updateProduct, deleteProduct } from "@/lib/productCatalog";
+import { getProductById, updateProduct, deleteProduct } from "@/lib/server/productCatalog";
 import { updateProductInputSchema } from "@/lib/validations/product";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

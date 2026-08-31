@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { scrollToId } from "@/lib/utils";
-import type { MenuCategory } from "@/lib/menu";
+import type { MenuCategory } from "@/lib/shared/menu";
 
 interface CategoryTabsProps {
   categories: MenuCategory[];

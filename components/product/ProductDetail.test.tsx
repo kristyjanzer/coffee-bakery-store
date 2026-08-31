@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ProductDetail } from "@/components/product/ProductDetail";
-import type { MenuProduct } from "@/lib/menu";
+import type { MenuProduct } from "@/lib/shared/menu";
 
 vi.mock("next/image", () => ({
   // eslint-disable-next-line @next/next/no-img-element -- заглушка next/image для теста

@@ -4,8 +4,8 @@ import { MAX_IMAGE_BYTES } from "@/lib/validations/upload";
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 const uploadImageMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/auth", () => ({ requireAdminSession: requireAdminSessionMock }));
-vi.mock("@/lib/storage", () => ({ uploadImage: uploadImageMock }));
+vi.mock("@/lib/auth/auth", () => ({ requireAdminSession: requireAdminSessionMock }));
+vi.mock("@/lib/integrations/storage", () => ({ uploadImage: uploadImageMock }));
 
 beforeEach(() => {
   requireAdminSessionMock.mockReset();

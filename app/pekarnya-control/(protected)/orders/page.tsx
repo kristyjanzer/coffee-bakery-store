@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { formatPrice, formatTimeAgo } from "@/lib/utils";
-import { getOrders } from "@/lib/orderAdmin";
-import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/orderStatus";
+import { getOrders } from "@/lib/server/orderAdmin";
+import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/shared/orderStatus";
 
 export const metadata: Metadata = {
   title: "Заказы — Coffee Bakery",

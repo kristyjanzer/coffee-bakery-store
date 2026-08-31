@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAdminReviewById } from "@/lib/reviewsApi";
+import { getAdminReviewById } from "@/lib/server/reviewsApi";
 import { ReviewModerationControl } from "@/components/admin/ReviewModerationControl";
 
 export const metadata: Metadata = {

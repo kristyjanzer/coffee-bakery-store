@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/orderStatus";
-import { updateOrderStatus } from "@/lib/orderAdminApi";
+import { ORDER_STATUSES, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/shared/orderStatus";
+import { updateOrderStatus } from "@/lib/api-client/orderAdminApi";
 
 interface OrderStatusControlProps {
   orderId: number;

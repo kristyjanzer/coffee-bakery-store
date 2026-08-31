@@ -4,8 +4,8 @@ import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { saveBanners } from "@/lib/pageAdminApi";
-import type { Banner, BannerInput } from "@/lib/pages";
+import { saveBanners } from "@/lib/api-client/pageAdminApi";
+import type { Banner, BannerInput } from "@/lib/server/pages";
 
 interface BannerRow extends BannerInput {
   key: number;
@@ -21,7 +21,7 @@ interface BannerManagerProps {
 
 // Управление баннерами/слайдером на главной (docs/plan.md, пункт 20). Весь список
 // редактируется и сохраняется одной кнопкой — saveBanners() (PUT /api/banners,
-// lib/pageAdminApi.ts) принимает целый массив разом и заменяет таблицу в транзакции,
+// lib/api-client/pageAdminApi.ts) принимает целый массив разом и заменяет таблицу в транзакции,
 // проще, чем отдельные ручки под добавление/удаление/переупорядочивание каждой строки.
 export function BannerManager({ banners }: BannerManagerProps) {
   const [rows, setRows] = useState<BannerRow[]>(() => banners.map(bannerToRow));

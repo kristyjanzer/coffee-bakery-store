@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getSitePageBySlug, getBanners, type PageSlug } from "@/lib/pages";
+import { getSitePageBySlug, getBanners, type PageSlug } from "@/lib/server/pages";
 import { PageContentForm } from "@/components/admin/PageContentForm";
 import { BannerManager } from "@/components/admin/BannerManager";
 

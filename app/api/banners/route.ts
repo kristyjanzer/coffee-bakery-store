@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 import { bannerListSchema } from "@/lib/validations/banner";
 
 // PUT /api/banners — форма админки редактирует весь список баннеров разом

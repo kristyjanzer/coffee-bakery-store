@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/catalog/ProductCard";
-import type { MenuCategory } from "@/lib/menu";
+import type { MenuCategory } from "@/lib/shared/menu";
 
 interface ProductSectionProps {
   category: MenuCategory;

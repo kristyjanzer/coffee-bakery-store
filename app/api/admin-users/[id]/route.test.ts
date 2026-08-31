@@ -13,13 +13,13 @@ class LastAdminError extends Error {
   }
 }
 
-vi.mock("@/lib/settings", () => ({
+vi.mock("@/lib/server/settings", () => ({
   updateAdminUserRole: updateAdminUserRoleMock,
   deleteAdminUser: deleteAdminUserMock,
   LastAdminError,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
   authOptions: {},
 }));

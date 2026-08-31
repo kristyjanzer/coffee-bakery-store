@@ -23,7 +23,7 @@ function optionalNonNegativeNumber(message: string) {
 
 // Форма товара (docs/plan.md, пункт 17) — все текстовые поля в состоянии формы
 // (ProductFormState в ProductForm.tsx) хранятся строками, эта схема и парсит, и
-// валидирует их в типизированный ProductInput (lib/products.ts) при отправке.
+// валидирует их в типизированный ProductInput (lib/server/products.ts) при отправке.
 // Имена полей — как в модели Product (docs/architecture.md, раздел 3).
 export const productFormSchema = z.object({
   name: z.string().trim().min(2, "Укажите название").max(200),

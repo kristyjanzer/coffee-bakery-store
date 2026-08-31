@@ -18,7 +18,7 @@ interface LoginFormProps {
 
 // Форма логина администратора (docs/plan.md, пункты 13 и 31): email + пароль.
 // Клиентская zod-валидация — тот же стек, что в CheckoutForm. Реальный вход —
-// через signIn("credentials") из NextAuth (lib/auth.ts).
+// через signIn("credentials") из NextAuth (lib/auth/auth.ts).
 export function LoginForm({ callbackUrl }: LoginFormProps) {
   const router = useRouter();
   const [values, setValues] = useState<LoginFormValues>(loginFormDefaultValues);

@@ -3,11 +3,11 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 const updateNotificationSettingsMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/settings", () => ({
+vi.mock("@/lib/server/settings", () => ({
   updateNotificationSettings: updateNotificationSettingsMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

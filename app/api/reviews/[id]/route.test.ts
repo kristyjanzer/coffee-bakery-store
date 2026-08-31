@@ -3,11 +3,11 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 const moderateReviewMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/reviewsApi", () => ({
+vi.mock("@/lib/server/reviewsApi", () => ({
   moderateReview: moderateReviewMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 
