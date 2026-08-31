@@ -2481,3 +2481,11 @@ CD-пайплайн: прод-деплой теперь через GitHub Action
 `lib/shared/` (Prisma-free: orderStatus, reviews, menu); `prisma.ts`, `utils.ts`, `validations/`
 на месте. Тесты переехали рядом с исходниками, пути импортов обновлены по всему проекту,
 `docs/architecture.md` (блок «lib/») актуализирован.
+
+## Задача 87
+
+Активная ссылка в шапке (раньше обводка была захардкожена на «Главной»).
+`components/layout/Nav.tsx` — `usePathname()` + `IntersectionObserver` (scroll-spy по
+`#menu`/`#reviews`/`#contacts`, активна нижняя из видимых секций); на `/product/*` по
+умолчанию активно «Меню», якорные ссылки вне главной ведут на `/#slug`; добавлен `aria-current`.
+Новый `components/layout/Nav.test.tsx` (маршрут + scroll-spy).
