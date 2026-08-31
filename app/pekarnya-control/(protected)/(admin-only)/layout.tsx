@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/auth/auth";
 
 // Разделы «Управление страницами» и «Настройки» — только для роли ADMIN
 // (docs/plan.md, пункты 20-21; управление админ-юзерами и настройками

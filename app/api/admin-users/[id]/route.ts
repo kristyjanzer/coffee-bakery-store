@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { updateAdminUserRole, deleteAdminUser, LastAdminError } from "@/lib/settings";
+import { updateAdminUserRole, deleteAdminUser, LastAdminError } from "@/lib/server/settings";
 import { updateAdminUserRoleSchema } from "@/lib/validations/adminUser";
-import { authOptions, requireAdminSession } from "@/lib/auth";
+import { authOptions, requireAdminSession } from "@/lib/auth/auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

@@ -4,12 +4,12 @@ const getOrderByIdMock = vi.hoisted(() => vi.fn());
 const updateOrderStatusMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/orderAdmin", () => ({
+vi.mock("@/lib/server/orderAdmin", () => ({
   getOrderById: getOrderByIdMock,
   updateOrderStatus: updateOrderStatusMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

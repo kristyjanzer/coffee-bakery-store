@@ -5,9 +5,9 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useCartStore, selectTotalPrice } from "@/stores/cartStore";
-import { getProductById } from "@/lib/menu";
+import { getProductById } from "@/lib/shared/menu";
 import { formatPrice } from "@/lib/utils";
-import { submitOrder } from "@/lib/orders";
+import { submitOrder } from "@/lib/api-client/orders";
 import type { OrderFormValues } from "@/lib/validations/order";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -25,7 +25,7 @@ const STEP_TITLES: Record<WidgetStep, string> = {
 // Открывается по клику на CartIcon (isWidgetOpen в cartStore). Список позиций +
 // итоговая стоимость (docs/plan.md, пункт 10). QtyStepper переиспользуется как есть
 // (docs/architecture.md, раздел 5 — общий для карточки товара, страницы товара и виджета
-// корзины); max берём из lib/menu.ts по productId, так как CartItem остаток не хранит.
+// корзины); max берём из lib/shared/menu.ts по productId, так как CartItem остаток не хранит.
 //
 // Шаг "checkout"/"success" (docs/plan.md, пункт 12) — та же модалка переключается на форму
 // заявки без орехов/оплаты. submitOrder() шлёт POST /api/orders (пункт 28), при ошибке

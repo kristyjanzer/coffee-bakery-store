@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAdminUsers, createAdminUser } from "@/lib/settings";
+import { getAdminUsers, createAdminUser } from "@/lib/server/settings";
 import { createAdminUserSchema } from "@/lib/validations/adminUser";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 // GET/POST /api/admin-users — управление пользователями админки, только ADMIN
 // (docs/plan.md, пункт 21; docs/architecture.md, раздел 7 — проверка сессии до Prisma).

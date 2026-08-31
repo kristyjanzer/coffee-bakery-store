@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { CategoryTabs } from "@/components/catalog/CategoryTabs";
 import { ProductSection } from "@/components/catalog/ProductSection";
 import { CATALOG_SCROLL_KEY } from "@/lib/utils";
-import type { MenuCategory } from "@/lib/menu";
+import type { MenuCategory } from "@/lib/shared/menu";
 
 interface CatalogProps {
   categories: MenuCategory[];

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getOrderById, updateOrderStatus } from "@/lib/orderAdmin";
+import { getOrderById, updateOrderStatus } from "@/lib/server/orderAdmin";
 import { updateOrderStatusSchema } from "@/lib/validations/orderStatus";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

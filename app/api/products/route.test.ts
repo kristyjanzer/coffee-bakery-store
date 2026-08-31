@@ -4,12 +4,12 @@ const getProductsMock = vi.hoisted(() => vi.fn());
 const createProductMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/productCatalog", () => ({
+vi.mock("@/lib/server/productCatalog", () => ({
   getProducts: getProductsMock,
   createProduct: createProductMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

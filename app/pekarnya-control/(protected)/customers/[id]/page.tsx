@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatPrice, formatTimeAgo } from "@/lib/utils";
-import { getCustomerById } from "@/lib/customers";
-import { getOrdersByCustomerId } from "@/lib/orderAdmin";
-import { ORDER_STATUS_LABELS } from "@/lib/orderStatus";
+import { getCustomerById } from "@/lib/server/customers";
+import { getOrdersByCustomerId } from "@/lib/server/orderAdmin";
+import { ORDER_STATUS_LABELS } from "@/lib/shared/orderStatus";
 
 export const metadata: Metadata = {
   title: "Клиент — Coffee Bakery",

@@ -4,8 +4,8 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { updateSitePage } from "@/lib/pageAdminApi";
-import type { PageSlug } from "@/lib/pages";
+import { updateSitePage } from "@/lib/api-client/pageAdminApi";
+import type { PageSlug } from "@/lib/server/pages";
 
 interface PageContentFormProps {
   slug: PageSlug;
@@ -17,7 +17,7 @@ interface PageContentFormProps {
 
 // Форма редактирования одной из фиксированных страниц (О нас/Контакты/Доставка и
 // оплата) + SEO title/description (docs/plan.md, пункт 20). Сохраняет через
-// PATCH /api/pages/[slug] (lib/pageAdminApi.ts), после успеха — router.refresh(),
+// PATCH /api/pages/[slug] (lib/api-client/pageAdminApi.ts), после успеха — router.refresh(),
 // чтобы серверный компонент перечитал свежий контент из БД.
 export function PageContentForm({
   slug,

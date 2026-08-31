@@ -2,15 +2,15 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBagShopping, faStar } from "@fortawesome/free-solid-svg-icons";
 import { formatPrice, formatTimeAgo } from "@/lib/utils";
-import type { Review } from "@/lib/reviews";
-import { ORDER_STATUS_LABELS } from "@/lib/orders";
+import type { Review } from "@/lib/shared/reviews";
+import { ORDER_STATUS_LABELS } from "@/lib/api-client/orders";
 import type {
   DashboardSummary,
   PendingOrder,
   SalesChartPoint,
   SalesRange,
   TopProduct,
-} from "@/lib/dashboardStats";
+} from "@/lib/server/dashboardStats";
 import { SalesRangeTabs } from "./SalesRangeTabs";
 
 interface DashboardProps {
@@ -24,7 +24,7 @@ interface DashboardProps {
 
 // Классы столбиков/полосок графиков — только литеральные строки, перечисленные прямо
 // здесь (в components/**, которые сканирует Tailwind, см. tailwind.config.ts). Держать
-// их в lib/dashboardStats.ts (данные) нельзя: там Tailwind их не увидит и не сгенерирует
+// их в lib/server/dashboardStats.ts (данные) нельзя: там Tailwind их не увидит и не сгенерирует
 // нужный CSS — ровно так это и сломалось при первой попытке. Высота/ширина подобраны
 // по рангу значения в наборе, а не проценту (inline style запрещён code-style.md).
 // 8 шагов — под максимум точек графика (вкладка «Недели» возвращает 8, «Дни» — 7,
@@ -60,7 +60,7 @@ function SectionHeading({ children }: { children: string }) {
 
 // Наполнение дашборда (docs/plan.md, пункт 15; about-project.md, раздел "Страница
 // административной панели", пункт 1) — сводка, график, топ товаров, новые заказы,
-// уведомления. Данные — Prisma-агрегаты из lib/dashboardStats.ts, кроме
+// уведомления. Данные — Prisma-агрегаты из lib/server/dashboardStats.ts, кроме
 // уведомлений о новых отзывах — они собираются здесь же из отзывов (прокинуто
 // пропом из app/pekarnya-control/(protected)/page.tsx как getAdminReviews() — видит и неодобренные
 // отзывы, задача 19), а не дублируются отдельным мок-массивом.

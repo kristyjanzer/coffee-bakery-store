@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // Валидация тела запросов /api/admin-users (docs/plan.md, пункт 21). Роли —
 // строго из enum AdminRole в prisma/schema.prisma. Пароль ≥ 8 символов (тот же
-// минимум, что для входа в админку) — bcrypt-хэш кладётся в БД уже в lib/settings.ts.
+// минимум, что для входа в админку) — bcrypt-хэш кладётся в БД уже в lib/server/settings.ts.
 export const ADMIN_ROLE_VALUES = ["ADMIN", "ORDER_MANAGER"] as const;
 
 export const createAdminUserSchema = z.object({

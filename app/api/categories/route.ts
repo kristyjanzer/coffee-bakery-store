@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getCategories } from "@/lib/categories";
+import { getCategories } from "@/lib/server/categories";
 
 // GET /api/categories — публичный роут для клиентских перезапросов (табы, формы
 // админки), docs/architecture.md раздел "Роутинг". Server Component за категориями
-// ходит в Prisma напрямую через lib/categories.ts, минуя этот роут.
+// ходит в Prisma напрямую через lib/server/categories.ts, минуя этот роут.
 export async function GET() {
   try {
     const categories = await getCategories();

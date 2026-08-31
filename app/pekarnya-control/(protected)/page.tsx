@@ -7,8 +7,8 @@ import {
   getTopProducts,
   SALES_RANGES,
   type SalesRange,
-} from "@/lib/dashboardStats";
-import { getAdminReviews } from "@/lib/reviewsApi";
+} from "@/lib/server/dashboardStats";
+import { getAdminReviews } from "@/lib/server/reviewsApi";
 
 export const metadata: Metadata = {
   title: "Дашборд — Coffee Bakery",
@@ -22,7 +22,7 @@ function parseRange(raw: string | undefined): SalesRange {
   return SALES_RANGES.includes(raw as SalesRange) ? (raw as SalesRange) : "days";
 }
 
-// Server Component — данные читаются напрямую из Prisma (lib/dashboardStats.ts —
+// Server Component — данные читаются напрямую из Prisma (lib/server/dashboardStats.ts —
 // агрегаты по не-отменённым заказам), без похода через /api/*. Период графика
 // продаж — из ?range= (дни/недели/месяцы), переключается ссылками SalesRangeTabs.
 export default async function AdminDashboardPage({ searchParams }: Props) {

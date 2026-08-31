@@ -51,16 +51,20 @@ store/
 │   └── ui/             # общие примитивы (Button, Modal, Input)
 │
 ├── lib/
-│   ├── prisma.ts       # singleton PrismaClient (@prisma/adapter-pg, безопасно для serverless)
-│   ├── auth.ts          # NextAuth authOptions, requireAdminSession(roles) — проверка роли в API
-│   ├── telegram.ts      # notifyNewOrder() — только на сервере
-│   ├── storage.ts        # uploadImage() — заливка фото товара в Cloudinary (из POST /api/uploads)
-│   ├── dashboardStats.ts # агрегаты дашборда (summary/salesChart/topProducts/pendingOrders) из Prisma
-│   ├── customers.ts      # раздел «Клиенты» — агрегаты по заказам из Prisma
-│   ├── pages.ts / settings.ts  # чтение SitePage/Banner/AdminUser/NotificationSettings из Prisma
-│   ├── *AdminApi.ts      # клиентские обёртки fetch к мутирующим /api/* (order/product/review/page/settings)
-│   ├── validations/      # zod-схемы (order.ts, product.ts, page.ts, banner.ts, adminUser.ts, notificationSettings.ts)
-│   └── utils.ts           # formatPrice, slugify и т.д.
+│   ├── prisma.ts        # singleton PrismaClient (@prisma/adapter-pg, безопасно для serverless)
+│   ├── utils.ts          # formatPrice, slugify, formatTimeAgo и т.д.
+│   ├── auth/             # auth.ts (NextAuth authOptions, verifyAdminCredentials, requireAdminSession),
+│   │                     #   adminRoles.ts (Prisma-free константы ролей — тянет клиентский AdminUsersManager)
+│   ├── server/           # серверный слой данных, читает Prisma напрямую (Server Components + роут-хендлеры):
+│   │                     #   categories, catalog, productCatalog, products, reviewsApi,
+│   │                     #   orderAdmin, orderCreation, pages, settings, customers, dashboardStats
+│   ├── api-client/       # клиентские обёртки fetch к /api/* (нельзя в Server Component):
+│   │                     #   orders (гостевой чекаут), orderAdminApi, productAdminApi,
+│   │                     #   reviewAdminApi, pageAdminApi, settingsAdminApi, uploadApi
+│   ├── integrations/     # telegram.ts (notifyNewOrder), storage.ts (uploadImage → Cloudinary) — только сервер
+│   ├── shared/           # Prisma-free, безопасно для клиентского бандла:
+│   │                     #   orderStatus.ts (константы статусов), reviews.ts (типы), menu.ts (мок из menu.json)
+│   └── validations/      # zod-схемы (order.ts, product.ts, page.ts, banner.ts, adminUser.ts, notificationSettings.ts…)
 │
 ├── stores/
 │   └── cartStore.ts        # zustand + persist(localStorage)
@@ -317,13 +321,13 @@ model NotificationSettings {
 
 ## 6. Внешние интеграции
 
-**Telegram** — `lib/telegram.ts` экспортирует `notifyNewOrder(order)`: обычный `fetch` на
+**Telegram** — `lib/integrations/telegram.ts` экспортирует `notifyNewOrder(order)`: обычный `fetch` на
 `https://api.telegram.org/bot<TOKEN>/sendMessage`. Вызывается только из `POST` в
 `app/api/orders/route.ts`, после успешной записи заказа в БД, обёрнут в try/catch — чтобы сбой
 Telegram не ронял создание заказа. `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` — только на сервере,
 никогда не попадают в клиентский бандл.
 
-**Хранение изображений (Cloudinary)** — `lib/storage.ts` экспортирует `uploadImage(file)`:
+**Хранение изображений (Cloudinary)** — `lib/integrations/storage.ts` экспортирует `uploadImage(file)`:
 `fetch` на `https://api.cloudinary.com/v1_1/<cloud_name>/image/upload` с `upload_preset`
 (unsigned), обёрнут в try/catch. Вызывается только из `POST /api/uploads` — форма товара в
 админке (`ProductForm`, клиентский компонент) шлёт файл туда, роут проверяет сессию `ADMIN`,
@@ -343,7 +347,7 @@ Telegram не ронял создание заказа. `TELEGRAM_BOT_TOKEN`/`TE
 
 ## 7. Авторизация
 
-- `lib/auth.ts` — `authOptions` для NextAuth: один `Credentials`-провайдер, проверяющий
+- `lib/auth/auth.ts` — `authOptions` для NextAuth: один `Credentials`-провайдер, проверяющий
   `AdminUser` (пароль — bcrypt-хэш), JWT-сессии (без таблицы сессий в БД — проще для
   serverless), роль (`ADMIN`/`ORDER_MANAGER`) кладётся в JWT/session callback.
 - `app/api/auth/[...nextauth]/route.ts` — экспортирует хендлеры.
@@ -368,13 +372,13 @@ Telegram не ронял создание заказа. `TELEGRAM_BOT_TOKEN`/`TE
   `Sidebar` скрывает эти пункты (`isAdmin`). На уровне API каждый соответствующий хендлер
   (`PATCH /api/pages/[slug]`, `PUT /api/banners`, `/api/admin-users(/[id])`,
   `PUT /api/settings/notifications`) первой строкой вызывает `requireAdminSession(["ADMIN"])`
-  из `lib/auth.ts` — до любого обращения к Prisma и до разбора тела. `/api/admin-users`
+  из `lib/auth/auth.ts` — до любого обращения к Prisma и до разбора тела. `/api/admin-users`
   дополнительно: `passwordHash` никогда не попадает в ответ (в `select` только `id`/`email`/`role`),
   guard последнего `ADMIN` (нельзя удалить/разжаловать) и запрет удалять/менять самого себя
   (сверка с `getServerSession`).
 
 **Задел на будущую авторизацию покупателей** (по about-project.md — email/телефон/Google/
-Facebook, восстановление через Telegram): `providers` в `lib/auth.ts` — единая точка, куда
+Facebook, восстановление через Telegram): `providers` в `lib/auth/auth.ts` — единая точка, куда
 позже добавляются `Email`/`Google`/`Facebook` провайдеры без переделки структуры. Для OAuth
 понадобится Prisma-адаптер NextAuth со своими таблицами `User`/`Account`/`Session`/
 `VerificationToken` — они добавляются рядом с `AdminUser`, не вместо него. `Order.customerId`

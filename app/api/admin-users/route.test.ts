@@ -4,12 +4,12 @@ const getAdminUsersMock = vi.hoisted(() => vi.fn());
 const createAdminUserMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/settings", () => ({
+vi.mock("@/lib/server/settings", () => ({
   getAdminUsers: getAdminUsersMock,
   createAdminUser: createAdminUserMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

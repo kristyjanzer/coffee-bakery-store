@@ -8,7 +8,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: { sitePage: { update: sitePageUpdateMock } },
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

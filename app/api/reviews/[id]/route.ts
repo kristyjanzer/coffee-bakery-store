@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { moderateReview } from "@/lib/reviewsApi";
+import { moderateReview } from "@/lib/server/reviewsApi";
 import { moderateReviewSchema } from "@/lib/validations/review";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -14,7 +14,7 @@ function parseReviewId(id: string): number | null {
 
 // PATCH /api/reviews/[id] — модерация отзыва и ответ магазина, только ADMIN
 // (docs/plan.md, пункт 30; docs/architecture.md, "Роутинг"). Роль ORDER_MANAGER
-// сюда не пускаем — она про заказы, не про контент (см. lib/auth.ts).
+// сюда не пускаем — она про заказы, не про контент (см. lib/auth/auth.ts).
 export async function PATCH(request: Request, { params }: RouteParams) {
   const auth = await requireAdminSession();
   if (!auth.ok) {

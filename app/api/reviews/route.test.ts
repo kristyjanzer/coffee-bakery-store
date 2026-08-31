@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const getApprovedReviewsMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/reviewsApi", () => ({
+vi.mock("@/lib/server/reviewsApi", () => ({
   getApprovedReviews: getApprovedReviewsMock,
 }));
 

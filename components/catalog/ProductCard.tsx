@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { formatPrice, saveCatalogScrollPosition } from "@/lib/utils";
-import type { MenuProduct } from "@/lib/menu";
+import type { MenuProduct } from "@/lib/shared/menu";
 import { QtyStepper } from "@/components/catalog/QtyStepper";
 
 interface ProductCardProps {

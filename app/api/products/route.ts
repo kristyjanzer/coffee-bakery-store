@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getProducts, createProduct } from "@/lib/productCatalog";
+import { getProducts, createProduct } from "@/lib/server/productCatalog";
 import { createProductInputSchema } from "@/lib/validations/product";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 // GET /api/products — публичный список товаров (docs/plan.md, пункт 27).
 export async function GET() {

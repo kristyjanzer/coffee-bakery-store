@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getApprovedReviews } from "@/lib/reviewsApi";
+import { getApprovedReviews } from "@/lib/server/reviewsApi";
 
 // GET /api/reviews — публичный список одобренных отзывов для слайдера на главной
 // (docs/plan.md, пункт 30; docs/architecture.md, "Роутинг"). Server Component

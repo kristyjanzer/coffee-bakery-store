@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 // Сквозной сценарий (docs/plan.md, пункт 36): каталог → корзина → заявка.
-// submitOrder() (lib/orders.ts) теперь делает реальный fetch("/api/orders") и
+// submitOrder() (lib/api-client/orders.ts) теперь делает реальный fetch("/api/orders") и
 // пишет заказ в БД (задача 66), а /pekarnya-control/* защищён proxy.ts (задача 61).
 // Шаг 5 плана (заявка видна в списке заказов админки после входа) вынесен в
 // отдельный спек e2e/admin-order.spec.ts.

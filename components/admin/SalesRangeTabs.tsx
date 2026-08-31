@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { SalesRange } from "@/lib/dashboardStats";
+import type { SalesRange } from "@/lib/server/dashboardStats";
 
 const TABS: { range: SalesRange; label: string }[] = [
   { range: "days", label: "Дни" },

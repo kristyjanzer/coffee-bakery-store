@@ -2473,3 +2473,11 @@ CD-пайплайн: прод-деплой теперь через GitHub Action
 
 - `.github/workflows/ci.yml` — `node-version` 22 → 24 в обеих джобах (`checks`, `e2e`),
   чтобы CI совпадал с рантаймом Vercel (Node 24.x).
+
+## Задача 86
+
+Файлы `lib/` разложены по подпапкам без изменения имён и логики: `lib/auth/`, `lib/server/`
+(Prisma-слой данных), `lib/api-client/` (fetch-обёртки), `lib/integrations/` (telegram, storage),
+`lib/shared/` (Prisma-free: orderStatus, reviews, menu); `prisma.ts`, `utils.ts`, `validations/`
+на месте. Тесты переехали рядом с исходниками, пути импортов обновлены по всему проекту,
+`docs/architecture.md` (блок «lib/») актуализирован.

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 import { sitePageInputSchema, PAGE_SLUGS, type PageSlug } from "@/lib/validations/page";
 
 // PATCH /api/pages/[slug] — правка контента одной фиксированной страницы + SEO

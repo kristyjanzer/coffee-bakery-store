@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const getCategoriesMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/categories", () => ({
+vi.mock("@/lib/server/categories", () => ({
   getCategories: getCategoriesMock,
 }));
 

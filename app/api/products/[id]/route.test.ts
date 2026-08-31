@@ -5,13 +5,13 @@ const updateProductMock = vi.hoisted(() => vi.fn());
 const deleteProductMock = vi.hoisted(() => vi.fn());
 const requireAdminSessionMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/lib/productCatalog", () => ({
+vi.mock("@/lib/server/productCatalog", () => ({
   getProductById: getProductByIdMock,
   updateProduct: updateProductMock,
   deleteProduct: deleteProductMock,
 }));
 
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth/auth", () => ({
   requireAdminSession: requireAdminSessionMock,
 }));
 

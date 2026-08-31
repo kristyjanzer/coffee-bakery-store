@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAdminCategories } from "@/lib/products";
+import { getAdminCategories } from "@/lib/server/products";
 import { ProductForm } from "@/components/admin/ProductForm";
 
 export const metadata: Metadata = {
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 // Создание товара (docs/plan.md, пункт 17). ProductForm сама вызывает createProduct()
-// (заглушка, lib/products.ts) и редиректит на список после "сохранения".
+// (заглушка, lib/server/products.ts) и редиректит на список после "сохранения".
 export default async function NewProductPage() {
   const categories = await getAdminCategories();
 

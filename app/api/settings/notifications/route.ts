@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { updateNotificationSettings } from "@/lib/settings";
+import { updateNotificationSettings } from "@/lib/server/settings";
 import { notificationSettingsSchema } from "@/lib/validations/notificationSettings";
-import { requireAdminSession } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/auth/auth";
 
 // PUT /api/settings/notifications — настройки email/SMS-уведомлений о заказах,
 // только ADMIN (docs/plan.md, пункт 21). Одна строка (id: 1) — целиком заменяется.

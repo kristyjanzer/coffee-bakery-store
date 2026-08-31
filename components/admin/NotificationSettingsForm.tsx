@@ -4,8 +4,8 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import type { NotificationSettings } from "@/lib/settings";
-import { updateNotificationSettings } from "@/lib/settingsAdminApi";
+import type { NotificationSettings } from "@/lib/server/settings";
+import { updateNotificationSettings } from "@/lib/api-client/settingsAdminApi";
 
 interface NotificationSettingsFormProps {
   initialSettings: NotificationSettings;
@@ -14,7 +14,7 @@ interface NotificationSettingsFormProps {
 // Настройки уведомлений — email/SMS при новом заказе (docs/plan.md, пункт 21).
 // Сохранение идёт в PUT /api/settings/notifications (проверка сессии ADMIN + zod
 // в роуте), при успехе router.refresh(). Реальная отправка уведомлений при заказе —
-// lib/telegram.ts (пункт 33 плана), эти настройки лишь описывают, куда/включено ли.
+// lib/integrations/telegram.ts (пункт 33 плана), эти настройки лишь описывают, куда/включено ли.
 export function NotificationSettingsForm({ initialSettings }: NotificationSettingsFormProps) {
   const router = useRouter();
   const [settings, setSettings] = useState(initialSettings);

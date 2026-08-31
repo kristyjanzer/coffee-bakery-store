@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAdminUsers, getNotificationSettings } from "@/lib/settings";
+import { getAdminUsers, getNotificationSettings } from "@/lib/server/settings";
 import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 import { NotificationSettingsForm } from "@/components/admin/NotificationSettingsForm";
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
-import { getAdminCategories, getAdminProducts } from "@/lib/products";
+import { getAdminCategories, getAdminProducts } from "@/lib/server/products";
 
 export const metadata: Metadata = {
   title: "Товары — Coffee Bakery",

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // Имена полей совпадают с моделью Order (docs/architecture.md, раздел 3) —
 // когда появится POST /api/orders (пункт 28 плана), схема и форма подключатся
-// без переименований, как lib/menu.ts/lib/reviews.ts для каталога/отзывов.
+// без переименований, как lib/shared/menu.ts/lib/shared/reviews.ts для каталога/отзывов.
 export const orderFormSchema = z.object({
   customerName: z.string().trim().min(2, "Укажите имя").max(100),
   // Значение приходит уже промаскированным (formatPhoneInput в CheckoutForm,
@@ -24,7 +24,7 @@ export type OrderFormValues = z.infer<typeof orderFormSchema>;
 
 // Телефон к единому виду +7XXXXXXXXXX: только цифры, ведущая 8 → 7, префикс +.
 // Нужно, чтобы один человек с "+7 900…" и "8 900…" не создал двух Customer
-// (upsert по phone в lib/orderCreation.ts).
+// (upsert по phone в lib/server/orderCreation.ts).
 export function normalizePhone(raw: string): string {
   let digits = raw.replace(/\D/g, ""); // выкидываем скобки, пробелы, дефисы, плюс
   if (digits.length === 11 && digits.startsWith("8")) {
@@ -46,7 +46,7 @@ export const orderFormDefaultValues: OrderFormValues = {
 
 // Тело запроса POST /api/orders (пункт 28 плана): те же поля формы + состав корзины.
 // Цену и название товара с клиента не берём — сервер сам смотрит их в Prisma по
-// productId (lib/orderCreation.ts), чтобы нельзя было подделать сумму заказа.
+// productId (lib/server/orderCreation.ts), чтобы нельзя было подделать сумму заказа.
 export const orderItemInputSchema = z.object({
   productId: z.number().int().positive(),
   // Верхняя граница — заведомо больше любого реального заказа пекарни, но не даёт
