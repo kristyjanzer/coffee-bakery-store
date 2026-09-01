@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { orderFormDefaultValues, orderFormSchema, type OrderFormValues } from "@/lib/validations/order";
@@ -30,6 +31,12 @@ export function CheckoutForm({
 }: CheckoutFormProps) {
   const [values, setValues] = useState<OrderFormValues>(orderFormDefaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
+  // Согласие на обработку персональных данных (152-ФЗ). Пока данные собираются
+  // формой, на сайте обязана быть политика — до отметки чекбокса кнопка
+  // «Отправить заявку» неактивна. Проверка чисто клиентская: сам факт согласия
+  // выражается нажатием кнопки (см. текст политики, раздел 4), в тело запроса
+  // и БД не пишется.
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   function handleChange(field: keyof OrderFormValues, value: string) {
     const nextValues = { ...values, [field]: value };
@@ -192,8 +199,32 @@ export function CheckoutForm({
         <p className="font-venuscom text-caption font-semibold text-red-600">{submitError}</p>
       )}
 
+      <label className="mt-2 flex items-start gap-2 font-venuscom text-caption leading-relaxed text-black-olive/70">
+        <input
+          type="checkbox"
+          checked={privacyConsent}
+          onChange={(event) => setPrivacyConsent(event.target.checked)}
+          className="mt-0.5 size-4 shrink-0 border-sage-mist accent-forest-ink"
+        />
+        <span>
+          Нажимая «Отправить заявку», вы соглашаетесь с{" "}
+          <Link
+            href="/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-forest-ink underline underline-offset-2"
+          >
+            политикой конфиденциальности
+          </Link>
+        </span>
+      </label>
+
       <div className="mt-2">
-        <Button type="submit" disabled={isSubmitting} className="w-full">
+        <Button
+          type="submit"
+          disabled={isSubmitting || !privacyConsent}
+          className="w-full"
+        >
           {isSubmitting ? "Отправляем…" : "Отправить заявку"}
         </Button>
       </div>

@@ -16,6 +16,7 @@ describe("CheckoutForm", () => {
       <CheckoutForm items={items} totalPrice={400} onSubmit={onSubmit} isSubmitting={false} />
     );
 
+    await user.click(screen.getByRole("checkbox")); // согласие есть, но поля пустые
     await user.click(screen.getByRole("button", { name: "Отправить заявку" }));
 
     expect(screen.getByText("Укажите имя")).toBeInTheDocument();
@@ -32,11 +33,35 @@ describe("CheckoutForm", () => {
     await user.type(screen.getByLabelText("Имя"), "Анна");
     await user.type(screen.getByLabelText("Телефон"), "9001234501");
     await user.type(screen.getByLabelText("Email (пришлем чек об оплате)"), "anna@example.com");
+    await user.click(screen.getByRole("checkbox")); // согласие с политикой конфиденциальности
     await user.click(screen.getByRole("button", { name: "Отправить заявку" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ customerName: "Анна", email: "anna@example.com" })
     );
+  });
+
+  it("кнопка «Отправить заявку» неактивна, пока не отмечено согласие с политикой", async () => {
+    const user = userEvent.setup();
+    render(
+      <CheckoutForm items={items} totalPrice={400} onSubmit={vi.fn()} isSubmitting={false} />
+    );
+
+    expect(screen.getByRole("button", { name: "Отправить заявку" })).toBeDisabled();
+
+    await user.click(screen.getByRole("checkbox"));
+
+    expect(screen.getByRole("button", { name: "Отправить заявку" })).toBeEnabled();
+  });
+
+  it("слова «политикой конфиденциальности» ведут на /privacy-policy", () => {
+    render(
+      <CheckoutForm items={items} totalPrice={400} onSubmit={vi.fn()} isSubmitting={false} />
+    );
+
+    expect(
+      screen.getByRole("link", { name: "политикой конфиденциальности" })
+    ).toHaveAttribute("href", "/privacy-policy");
   });
 
   it("показывает ошибку сервера из пропа submitError", () => {
