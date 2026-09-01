@@ -4,8 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperInstance } from "swiper";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight, faImage } from "@fortawesome/free-solid-svg-icons";
+import { IconChevronLeft, IconChevronRight, IconImage } from "@/components/ui/icons";
 import "swiper/css";
 import type { Review } from "@/lib/shared/reviews";
 
@@ -30,7 +29,7 @@ function ReviewCard({ review }: { review: Review }) {
         </div>
       ) : (
         <div className="flex aspect-square w-full items-center justify-center bg-sage-mist/10">
-          <FontAwesomeIcon icon={faImage} className="size-8 text-warm-cream/30" />
+          <IconImage className="size-8 text-warm-cream/30" />
         </div>
       )}
 
@@ -57,7 +56,7 @@ function NavArrows({ swiper }: { swiper: SwiperInstance | null }) {
         onClick={() => swiper?.slidePrev()}
         className="flex size-10 items-center justify-center rounded-sm border border-pure-white text-warm-cream transition-colors hover:bg-pure-white/10 disabled:opacity-40"
       >
-        <FontAwesomeIcon icon={faChevronLeft} className="size-4" />
+        <IconChevronLeft className="size-4" />
       </button>
       <button
         type="button"
@@ -66,7 +65,7 @@ function NavArrows({ swiper }: { swiper: SwiperInstance | null }) {
         onClick={() => swiper?.slideNext()}
         className="flex size-10 items-center justify-center rounded-sm border border-pure-white text-warm-cream transition-colors hover:bg-pure-white/10 disabled:opacity-40"
       >
-        <FontAwesomeIcon icon={faChevronRight} className="size-4" />
+        <IconChevronRight className="size-4" />
       </button>
     </div>
   );

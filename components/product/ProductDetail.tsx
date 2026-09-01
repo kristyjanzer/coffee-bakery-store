@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faImage } from "@fortawesome/free-solid-svg-icons";
+import { IconChevronLeft, IconImage } from "@/components/ui/icons";
 import { formatPrice } from "@/lib/utils";
 import type { MenuProduct } from "@/lib/shared/menu";
 import { QtyStepper } from "@/components/catalog/QtyStepper";
@@ -36,7 +35,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         aria-label="Назад на главную"
         className="flex size-10 shrink-0 items-center justify-center self-start rounded-sm border border-black-olive text-black-olive transition-opacity hover:opacity-70"
       >
-        <FontAwesomeIcon icon={faChevronLeft} className="size-4" />
+        <IconChevronLeft className="size-4" />
       </Link>
 
       <div className="grid flex-1 gap-10 lg:grid-cols-2 lg:gap-[60px]">
@@ -53,7 +52,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
         ) : (
           <div className="flex aspect-square w-full items-center justify-center bg-sage-mist/30">
-            <FontAwesomeIcon icon={faImage} className="size-16 text-black-olive/20" />
+            <IconImage className="size-16 text-black-olive/20" />
           </div>
         )}
 

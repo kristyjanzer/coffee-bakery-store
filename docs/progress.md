@@ -2559,3 +2559,16 @@ submit добавлен `modal.getByRole("checkbox").check()`. Unit-тесты �
 
 Фавиконка: `app/layout.tsx` — в `metadata` добавлено `icons: { icon: "/images/favicon.ico" }`
 (файл — `public/images/favicon.ico`). Next рендерит `<link rel="icon">` в `<head>`.
+
+## Задача 91
+
+Оптимизация LCP, шаг 1: убран FontAwesome с публичных страниц (его CSS ~30 КБ блокировал
+первую отрисовку на мобиле).
+
+- `components/ui/icons.tsx` — новый файл: инлайн-SVG иконки (lucide/simple-icons), без рантайма.
+- `components/layout/Nav.tsx`, `Footer.tsx`, `cart/CartIcon.tsx`, `cart/CartWidget.tsx`,
+  `catalog/ProductCard.tsx`, `catalog/ReviewsSlider.tsx`, `product/ProductDetail.tsx` —
+  `<FontAwesomeIcon>` заменён на иконки из `components/ui/icons.tsx`.
+- `app/layout.tsx` — убраны импорт CSS FontAwesome и `config.autoAddCss`.
+- `app/pekarnya-control/(protected)/layout.tsx` — импорт CSS FontAwesome и `config.autoAddCss`
+  перенесены сюда (в админке FontAwesome остаётся).

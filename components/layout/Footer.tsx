@@ -1,18 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faInstagram,
-  faTelegram,
-  faWhatsapp,
-} from "@fortawesome/free-brands-svg-icons";
+import { IconInstagram, IconTelegram, IconWhatsApp } from "@/components/ui/icons";
 
 // Адрес, часы работы и ссылки на соцсети — временные плейсхолдеры, станут
 // редактируемыми через админку (docs/plan.md, пункт 20 "Управление страницами")
 const socialLinks = [
-  { href: "#", label: "Instagram", icon: faInstagram },
-  { href: "#", label: "Telegram", icon: faTelegram },
-  { href: "#", label: "WhatsApp", icon: faWhatsapp },
+  { href: "#", label: "Instagram", Icon: IconInstagram },
+  { href: "#", label: "Telegram", Icon: IconTelegram },
+  { href: "#", label: "WhatsApp", Icon: IconWhatsApp },
 ];
 
 export function Footer() {
@@ -50,7 +45,7 @@ export function Footer() {
                   aria-label={social.label}
                   className="text-warm-cream hover:opacity-80"
                 >
-                  <FontAwesomeIcon icon={social.icon} className="size-5" />
+                  <social.Icon className="size-5" />
                 </a>
               </li>
             ))}
