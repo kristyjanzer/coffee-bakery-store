@@ -55,16 +55,13 @@ export function Footer() {
               </li>
             ))}
           </ul>
+          <Link
+            href="/privacy-policy"
+            className="mt-4 inline-block font-venuscom text-caption text-warm-cream/60 hover:text-warm-cream"
+          >
+            Политика конфиденциальности
+          </Link>
         </div>
-      </div>
-
-      <div className="mx-auto mt-10 max-w-[1200px] border-t border-sage-mist/20 pt-6">
-        <Link
-          href="/privacy-policy"
-          className="font-venuscom text-caption text-warm-cream/60 hover:text-warm-cream"
-        >
-          Политика конфиденциальности
-        </Link>
       </div>
     </footer>
   );
