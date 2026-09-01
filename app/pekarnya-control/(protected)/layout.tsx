@@ -1,9 +1,17 @@
 import type { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import { authOptions } from "@/lib/auth/auth";
 import { Sidebar } from "@/components/admin/Sidebar";
 import { AdminSessionProvider } from "@/components/admin/AdminSessionProvider";
+
+// FontAwesome остался только в админке (Sidebar/Dashboard/формы). CSS пакета
+// подключаем здесь, а не в корневом layout — иначе он ~30 КБ блокирующего стиля
+// висел на публичной витрине, где иконок FA больше нет (components/ui/icons.tsx).
+// autoAddCss=false — иначе FA пытается вставить те же стили ещё и через JS.
+config.autoAddCss = false;
 
 // Route group — на URL не влияет (app/pekarnya-control/(protected)/page.tsx → /pekarnya-control, как
 // app/(site)/page.tsx → /), но не даёт этому layout оборачивать /pekarnya-control/login

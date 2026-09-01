@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { IconMenu, IconClose } from "@/components/ui/icons";
 import { scrollToId } from "@/lib/utils";
 
 // Пункты навигации в порядке сверху вниз по странице. sectionId — id секции
@@ -195,7 +194,7 @@ export function Nav() {
         aria-expanded={isOpen}
         className="text-warm-cream md:hidden"
       >
-        <FontAwesomeIcon icon={isOpen ? faXmark : faBars} className="size-5" />
+        {isOpen ? <IconClose className="size-5" /> : <IconMenu className="size-5" />}
       </button>
 
       {isOpen && (

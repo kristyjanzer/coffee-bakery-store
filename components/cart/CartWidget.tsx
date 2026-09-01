@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { IconImage, IconTrash } from "@/components/ui/icons";
 import { useCartStore, selectTotalPrice } from "@/stores/cartStore";
 import { getProductById } from "@/lib/shared/menu";
 import { formatPrice } from "@/lib/utils";
@@ -126,7 +125,7 @@ export function CartWidget() {
                     </div>
                   ) : (
                     <div className="flex size-16 shrink-0 items-center justify-center bg-sage-mist/30 sm:size-24">
-                      <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
+                      <IconImage className="size-8 text-black-olive/20" />
                     </div>
                   )}
 
@@ -141,7 +140,7 @@ export function CartWidget() {
                         onClick={() => removeItem(item.productId)}
                         className="shrink-0 text-black-olive/40 hover:text-black-olive"
                       >
-                        <FontAwesomeIcon icon={faTrash} className="size-4" />
+                        <IconTrash className="size-4" />
                       </button>
                     </div>
                     {item.unit && (

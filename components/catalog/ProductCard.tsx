@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { IconImage } from "@/components/ui/icons";
 import { formatPrice, saveCatalogScrollPosition } from "@/lib/utils";
 import type { MenuProduct } from "@/lib/shared/menu";
 import { QtyStepper } from "@/components/catalog/QtyStepper";
@@ -38,7 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         ) : (
           <div className="flex aspect-square w-full items-center justify-center bg-sage-mist/30">
-            <FontAwesomeIcon icon={faImage} className="size-8 text-black-olive/20" />
+            <IconImage className="size-8 text-black-olive/20" />
           </div>
         )}
       </Link>

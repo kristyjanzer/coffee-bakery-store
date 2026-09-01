@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import { Dela_Gothic_One, Gabriela, Manrope } from "next/font/google";
-import { config } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
-
-// Next.js сам управляет CSS — отключаем автовставку стилей Font Awesome,
-// чтобы избежать конфликта и "мигания" неотстилизованных иконок
-config.autoAddCss = false;
 
 // VenusCom (шрифт из DESIGN.md) недоступен как веб-шрифт, а предложенные там замены
 // (DM Sans/Outfit/Plus Jakarta Sans) не поддерживают кириллицу — критично для русского
