@@ -122,4 +122,11 @@ describe("cartStore persist", () => {
     const parsed = JSON.parse(raw as string);
     expect(parsed.state.items).toEqual([{ ...espresso, quantity: 1 }]);
   });
+
+  it("isWidgetOpen в localStorage не пишется — виджет не всплывает после перезагрузки", () => {
+    useCartStore.getState().addItem(espresso);
+    useCartStore.getState().openWidget();
+    const parsed = JSON.parse(localStorage.getItem("cart-storage") as string);
+    expect(parsed.state).not.toHaveProperty("isWidgetOpen");
+  });
 });
