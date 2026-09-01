@@ -66,6 +66,11 @@ export const useCartStore = create<CartState>()(
     {
       name: "cart-storage",
       skipHydration: true,
+      // В localStorage кладём только содержимое корзины. isWidgetOpen — эфемерное
+      // состояние UI (открыт ли виджет прямо сейчас); без partialize оно тоже
+      // сохранялось, и виджет всплывал на любой перезагрузке / в новой вкладке
+      // (например, при открытии ссылки на политику из формы оформления).
+      partialize: (state) => ({ items: state.items }),
     }
   )
 );

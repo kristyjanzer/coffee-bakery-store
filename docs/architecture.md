@@ -286,10 +286,12 @@ model NotificationSettings {
 
 ## 4. Разделение состояния: Zustand vs серверные данные
 
-**Zustand (`stores/cartStore.ts`) — только клиент, персистится в localStorage:**
-- `items: CartItem[]` — `{ productId, name, price, imageUrl, quantity, unit }`
-- `isWidgetOpen: boolean` — чтобы иконка корзины могла открыть виджет
-- действия: `addItem`, `removeItem`, `incrementQty`, `decrementQty`, `clearCart`
+**Zustand (`stores/cartStore.ts`) — только клиент:**
+- `items: CartItem[]` — `{ productId, name, price, imageUrl, quantity, unit }` — **единственное,
+  что персистится в localStorage** (`partialize`, ключ `cart-storage`)
+- `isWidgetOpen: boolean` — чтобы иконка корзины могла открыть виджет; эфемерное состояние UI,
+  в localStorage не пишется (иначе виджет всплывал бы на каждой перезагрузке / в новой вкладке)
+- действия: `addItem`, `removeItem`, `incrementQty`, `decrementQty`, `clearCart`, `openWidget`, `closeWidget`
 - производные значения (`totalCount`, `totalPrice`) — через селекторы, не хранить отдельно
 
 **Серверное состояние (никогда не дублируется в Zustand):**
