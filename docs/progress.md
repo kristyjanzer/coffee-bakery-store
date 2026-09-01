@@ -2554,3 +2554,8 @@ DOM; добавлен `pathname` в зависимости + сброс сост
 Чекбокс согласия сделал кнопку «Отправить заявку» неактивной — e2e `checkout-flow.spec.ts`
 и `admin-order.spec.ts` (гостевой чекаут) зависали на клике по ней. В обоих спеках перед
 submit добавлен `modal.getByRole("checkbox").check()`. Unit-тесты уже были поправлены в 89.
+
+## Задача 90
+
+Фавиконка: `app/layout.tsx` — в `metadata` добавлено `icons: { icon: "/images/favicon.ico" }`
+(файл — `public/images/favicon.ico`). Next рендерит `<link rel="icon">` в `<head>`.
