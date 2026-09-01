@@ -54,6 +54,8 @@ test("каталог → добавление в корзину → измене
   await modal.getByLabel("Имя").fill("Тест Тестов");
   await modal.getByLabel("Телефон").fill("9001234567");
   await modal.getByLabel("Email (пришлем чек об оплате)").fill("test@example.com");
+  // Согласие на обработку персональных данных — без него кнопка неактивна.
+  await modal.getByRole("checkbox").check();
   await modal.getByRole("button", { name: "Отправить заявку" }).click();
 
   // Запас по времени: dev-сервер компилирует роут POST /api/orders при первом

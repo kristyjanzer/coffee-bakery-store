@@ -43,6 +43,8 @@ test("гость оформляет заявку → админ видит её 
   await modal.getByLabel("Имя").fill(customerName);
   await modal.getByLabel("Телефон").fill("9008887766");
   await modal.getByLabel("Email (пришлем чек об оплате)").fill("e2e@example.com");
+  // Согласие на обработку персональных данных — без него кнопка неактивна.
+  await modal.getByRole("checkbox").check();
   await modal.getByRole("button", { name: "Отправить заявку" }).click();
 
   // Запас по времени: dev-сервер компилирует роут POST /api/orders при первом
