@@ -41,6 +41,7 @@ const delaGothicOne = Dela_Gothic_One({
 export const metadata: Metadata = {
   title: "Coffee Bakery",
   description: "Кофе, выпечка и десерты на заказ",
+  icons: { icon: "/images/favicon.ico" },
 };
 
 // Корневой layout — оборачивает все страницы App Router в <html>/<body>
