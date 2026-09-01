@@ -2572,3 +2572,17 @@ submit добавлен `modal.getByRole("checkbox").check()`. Unit-тесты �
 - `app/layout.tsx` — убраны импорт CSS FontAwesome и `config.autoAddCss`.
 - `app/pekarnya-control/(protected)/layout.tsx` — импорт CSS FontAwesome и `config.autoAddCss`
   перенесены сюда (в админке FontAwesome остаётся).
+
+## Задача 92
+
+Оптимизация LCP, шаги 2–3.
+
+- `public/images/hero.jpg` — пережат с 1991 КБ до 291 КБ (2048×1360).
+- `components/layout/Hero.tsx` — `fetchPriority="high"` + `quality={65}` на `<Image>`.
+- `next.config.js` — `images.formats` (AVIF+WebP), `images.qualities [65, 75]`,
+  `images.minimumCacheTTL` 31 день.
+- `components/catalog/ReviewsSlider.tsx` — Swiper вынесен в `next/dynamic(ssr:false)`,
+  на первой загрузке главной его JS и CSS больше нет.
+- `components/catalog/ReviewsSwiper.tsx` — новый: сам `<Swiper>` + `swiper/css`.
+- `components/catalog/ReviewCard.tsx` — новый: `ReviewCard` и `NavArrows` вынесены из
+  `ReviewsSlider.tsx` (нужны и статичной сетке, и динамическому Swiper).

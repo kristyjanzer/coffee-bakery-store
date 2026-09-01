@@ -15,6 +15,10 @@ export function Hero() {
           alt="Витрина кофейни-пекарни со свежей выпечкой"
           fill
           priority
+          // Next 16 при priority больше не проставляет fetchpriority сам — без
+          // этого LCP-картинка грузится обычным приоритетом (PageSpeed это ловит).
+          fetchPriority="high"
+          quality={65}
           sizes="100vw"
           className="scale-125 object-cover"
         />
